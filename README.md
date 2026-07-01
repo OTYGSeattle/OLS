@@ -1,249 +1,108 @@
-# Compass
+# OpenLiturgy Standard (OLS) v1.0 Documentation Repository
 
 [![Astro 6](https://img.shields.io/badge/Astro-6-FF5D01?style=for-the-badge&logo=astro&logoColor=white)](https://astro.build/)
 [![Tailwind CSS 4](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Configured-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![MDX](https://img.shields.io/badge/MDX-Content_Collections-000000?style=for-the-badge&logo=mdx&logoColor=white)](https://docs.astro.build/en/guides/integrations-guide/mdx/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-84cc16?style=for-the-badge)](./LICENSE)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue?style=for-the-badge)](./LICENSE)
 
-Compass is a clean Astro documentation template for product docs, support centers, and internal knowledge bases. Use it as a starting repository, then replace the sample content, structure, and branding with your own. It combines MDX content collections, category-driven navigation, Pagefind-powered search, reusable content components, and a polished light/dark UI without pulling in a heavyweight docs framework.
+This repository houses the full technical documentation and specification for the **OpenLiturgy Standard (OLS) v1.0**—a source-aware, authority-aware data standard for encoding Christian liturgical texts, actions, calendars, music, and commentary notes. 
 
-**Preview:** [https://compass-lilac-tau.vercel.app/](https://compass-lilac-tau.vercel.app/)
+The site is built as a highly performant static documentation portal using **Astro**, **React**, and **Tailwind CSS**, based on the [andreialba/compass](https://github.com/andreialba/compass) theme.
 
-[![Compass preview screenshot](./screenshot.webp)](https://compass-lilac-tau.vercel.app/)
+## Architecture & Section Hierarchy
 
-## Highlights
+The specification is modularly divided into 40 documentation files (`.mdx`) and organized across 3 parent categories and 9 sub-categories:
 
-- Built with Astro 6 and Tailwind CSS 4
-- MDX content collections for article authoring
-- Parent landing pages plus nested sub-category and article routes
-- Expanded article frontmatter for tags, status, edit links, hero images, redirects, and search visibility
-- Previous and next article navigation within each docs section
-- Searchable docs landing page and sidebar search powered by Pagefind
-- Optional RSS feed for recent docs updates at `/rss.xml`
-- Reusable docs components like callouts, tabs, badges, tables, cards, steps, accordions, checklists, buttons, and quotes
-- Dedicated code tabs for command and framework variants inside MDX articles
-- File tree blocks for documenting repo structure and editing paths
-- Syntax-aware code blocks with language headers for code-focused snippets
-- Light and dark mode support
-- Shared site config for branding, links, and CTA text
+1. **Specification**
+   - **Introduction**: Release overview, document status, scope rules, package layout, and referencing.
+   - **Metadata & Authority**: citations, source provenance, ecclesial authority review, jurisdictions, and person/org metadata.
+2. **Liturgical Data Model**
+   - **Core Data Model**: Localized text structures, transliterations, roles, and role inheritance.
+   - **Liturgical Elements**: Spoken/chanted utterances, scripture readings, chant performance systems, inline zema alignments, rubrics, elements, blocks, and poetry.
+   - **Space & Actions**: Sacred space access, rubric state transitions, timeline bindings, and propers mutations.
+   - **Ordo & Calendar**: Sections, ordinary/proper slots, calendar models, deterministic resolution conflict rules, and ServiceInstances.
+3. **Advanced & Profiles**
+   - **Scholarly & Media**: Variants, apparatus, teaching annotations, commentary, and assets references.
+   - **Schemas & Governance**: JSON schema verification, conformance levels (L0 to L7), test fixtures, and technical governance.
+   - **Profiles & Examples**: EOTC Profile v1, Oriental Orthodox layers, bibliography references, and a complete corpus JSON example.
 
-## Tech Stack
+---
 
-- `astro`
-- `@astrojs/mdx`
-- `@astrojs/rss`
-- `@astrojs/sitemap`
-- `tailwindcss`
-- `@tailwindcss/typography`
-- `pagefind`
-- `typescript`
+## Getting Started
 
-## Use This Template
+### Local Setup
 
-Compass is designed to be copied as a repository template.
+To run the documentation portal locally on your machine, you must have Node.js (>= 18.17.0) installed.
 
-1. Open the GitHub repository.
-2. Click **Use this template**.
-3. Create a new repository for your docs site.
-4. Clone your new repository locally.
+1. Clone this repository:
+   ```bash
+   git clone https://github.com/OTYGSeattle/OSL.git
+   cd OSL
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Run the development server:
+   ```bash
+   npm run dev
+   ```
 
-Then install dependencies and start Astro:
+Open `http://localhost:3000` in your browser.
 
-```bash
-npm install
-npm run dev
-```
+---
 
-Open `http://localhost:3000`.
+## Core Build Scripts
 
-Search is generated during `npm run build`, so use `npm run preview` when you want to test the full search experience locally.
-Compass also generates an RSS feed for docs updates at `/rss.xml`.
+Use the following npm commands for linting, format checks, building, and previews:
 
-Useful scripts:
+- `npm run dev`: Runs the local Astro development server.
+- `npm run check`: Performs Astro diagnostics, type-checks, and content validation.
+- `npm run build`: Generates the optimized production build (`dist/`), including sitemap, RSS feed, and **Pagefind static search indexes**.
+- `npm run preview`: Serves the built production folder locally (recommended to test the full Pagefind search behavior).
+- `npm run format`: Standardizes file formatting using Prettier.
+- `npm run clean`: Cleans up local build outputs (`dist/`, `.astro/`).
 
-```bash
-npm run dev
-npm run build
-npm run preview
-npm run check
-npm run format:check
-npm run clean
-```
+---
 
-## Project Docs
+## Document Modification and Authoring
 
-- [Contributing guide](./CONTRIBUTING.md)
-- [Changelog](./CHANGELOG.md)
+All documentation content resides under the `src/content/docs/` directory.
 
-## Template Setup
+### Structure
 
-The main theme settings live in [site.config.mjs](./site.config.mjs).
-
-Update these before publishing your docs site:
-
-- `siteUrl`
-- `name`
-- `title`
-- `description`
-- `githubUrl`
-- `navCtaLabel`
-- `navCtaHref`
-- `footerText`
-
-## Writing Docs
-
-Documentation content lives in `src/content/docs`.
-
-Each article lives in its own folder with a slug-matched `.mdx` file:
-
+Articles are grouped by category folders, with each article having its own subfolder and `.mdx` file:
 ```text
-src/content/docs/compass-docs/get-started-with-docs/
-`-- get-started-with-docs.mdx
+src/content/docs/[category]/[slug]/[slug].mdx
 ```
 
-Inside that article file, use frontmatter like this:
+### Frontmatter Schema
+
+Compliant spec files must configure the Zod schema properties in their YAML frontmatter:
 
 ```mdx
 ---
-title: 'Set Up Compass'
-description: 'Start customizing the theme and content structure.'
-category: 'start-here'
-tags: ['setup', 'branding']
-status: 'published'
-author: 'Docs Team'
-editUrl: 'https://github.com/your-org/your-repo/edit/main/src/content/docs/start-here/set-up-compass/set-up-compass.mdx'
-heroImage: './hero.png'
-redirectFrom:
-  - '/old-setup-guide'
-order: 1
-updatedAt: 2026-06-03
+title: 'Roles & RoleGroups'
+description: 'Liturgical Roles and RoleGroups for clergy, choir, and congregation roles.'
+category: 'data-model'
+order: 12
+updatedAt: 2026-07-01
 ---
 
-## Add your content here
+## Spec Content Here
 ```
 
-Useful optional frontmatter fields:
+### Reusable Layout Components
 
-- `tags` for future filters, grouping, or editorial workflows
-- `status` for lifecycle states like `draft`, `published`, `deprecated`, or `archived`; `draft` and `archived` articles are excluded from generated routes, navigation, search, redirects, and RSS
-- `author` for ownership metadata
-- `editUrl` to show an "Edit this page" link on article pages
-- `heroImage` for a top-of-page article image loaded through Astro's image pipeline
-- `hideFromSearch` to keep a page out of the Pagefind index
-- `redirectFrom` to generate redirect aliases for renamed or moved docs routes
-- `relatedLinks` to render end-of-article recommendation cards for next steps or related guides
+This portal supports built-in components registered globally in `src/components/docs/mdx-components.ts` for rich specifications layouts:
 
-If an article includes screenshots or diagrams, keep them beside the article entry:
+- **Callouts**: `<Callout tone="info" title="Important">...</Callout>` (supports `info`, `success`, `warning`, and `danger` tones).
+- **QuoteBlocks**: `<QuoteBlock author="1 Corinthians 14:40">...</QuoteBlock>` for scriptural quotes or verses.
+- **Badges**: `<Badge tone="success">printed-book</Badge>` for chip metadata.
+- **Tables**, **Checklists**, **Accordions**, **FileTrees**, and **CodeTabs** for structured specifications details.
 
-```text
-src/content/docs/compass-docs/adding-images/
-|-- adding-images.mdx
-`-- docs-image-placeholder.png
-```
-
-Compass uses this folder-per-article pattern everywhere so contributors never have to choose between flat files and nested entries. It also keeps article-owned images in `src/`, where Astro can optimize them and generate responsive output.
-
-Inside MDX, use either a relative Markdown image:
-
-```mdx
-![Diagram](./docs-image-placeholder.png)
-```
-
-or Astro's image component when you need more control:
-
-```mdx
-import { Image } from 'astro:assets';
-import diagram from './docs-image-placeholder.png';
-
-<Image src={diagram} alt="Diagram" width={1200} layout="constrained" />
-```
-
-Use `public/` only for assets that need a stable direct URL and should not be processed by Astro, such as favicons or Open Graph images.
-
-Categories are defined in [src/data/docs.ts](./src/data/docs.ts). That file powers:
-
-- homepage cards
-- parent category organization
-- sidebar navigation
-- nested category and article route generation
-
-Compass uses one canonical URL shape for docs sections:
-
-- parent pages: `/:parent`, such as `/getting-started`
-- sub-category pages: `/:parent/:category`, such as `/getting-started/start-here`
-- article pages: `/:parent/:category/:slug`, such as `/getting-started/start-here/set-up-compass`
-
-One-segment sub-category URLs such as `/start-here`, `/compass-docs`, or `/components` are not generated and do not redirect by default.
-
-The content tree mirrors those category slugs:
-
-- `src/content/docs/start-here`
-- `src/content/docs/compass-docs`
-- `src/content/docs/components`
-- `src/content/docs/channels-and-apps`
-
-Article frontmatter `category` values must match one of those category slugs. If a category typo slips in, `npm run check` reports a content validation error.
-
-## Reusable Components
-
-Compass includes MDX-ready components for richer docs pages:
-
-- `Callout`
-- `ButtonLink`
-- `Card`
-- `CardGrid`
-- `Badge`
-- `QuoteBlock`
-- `Accordion`
-- `Steps`
-- `Step`
-- `Tabs`
-- `CodeTabs`
-- `FileTree`
-- `Table`
-- `Checklist`
-
-They are registered in [src/components/docs/mdx-components.ts](./src/components/docs/mdx-components.ts) and used automatically in article routes.
-
-If you add your own Astro component, register it there to make it available inside `.mdx` articles.
-
-## Project Structure
-
-```text
-.
-|-- public/
-|   `-- icons/
-|-- src/
-|   |-- components/
-|   |   `-- docs/
-|   |-- content/
-|   |   `-- docs/
-|   |-- data/
-|   |   `-- docs.ts
-|   |-- layouts/
-|   |-- pages/
-|   `-- index.css
-|-- astro.config.mjs
-|-- package.json
-|-- site.config.mjs
-`-- tsconfig.json
-```
-
-## Publishing Notes
-
-- `site.config.mjs` still contains placeholder URLs by default.
-- `astro.config.mjs` uses the value from `site.config.mjs` for the canonical site URL.
-- `astro.config.mjs` enables responsive local images by default with Astro's image pipeline.
-- `npm run build` generates the static site, RSS feed, sitemap, and Pagefind search bundle.
-- `package.json` is marked private because Compass is meant to be used as a template repository, not published as an npm package.
-
-## Template Releases
-
-Compass uses GitHub Releases for template versions. The current stable release is `v1.0.0`.
-
-For a new release, update `package.json`, `package-lock.json`, `CHANGELOG.md`, and the matching notes in `.github/releases/`, then create a GitHub tag such as `v1.0.0`.
+---
 
 ## License
 
-[MIT](./LICENSE)
+This specification and documentation repository are released under the [Apache 2.0 Spec License](./LICENSE).
