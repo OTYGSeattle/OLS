@@ -1,0 +1,27 @@
+---
+title: 'Sacred Space &amp; Access Rules'
+description: 'Sacred space zoning and accessibility levels for liturgical actors.'
+category: 'space-actions'
+order: 19
+updatedAt: 2026-07-01
+---
+
+
+Each tradition profile defines its own zones and access rules to accurately model movement.
+
+
+```json
+{
+  "sacredSpace": {
+    "id": "eotc-church-zones",
+    "zones": [
+      {
+        "id": "qeddest",
+        "label": { "en": "Holy Place", "am-Ethi": "ቅድስት" },
+        "access": ["deacon", "priest", "bishop"]
+      }
+    ]
+  }
+}
+```
+

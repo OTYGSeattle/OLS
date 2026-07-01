@@ -1,0 +1,23 @@
+---
+title: 'Test Fixtures'
+description: 'Specification test fixtures validation examples (valid and invalid).'
+category: 'conformance-schemas'
+order: 38
+updatedAt: 2026-07-01
+---
+
+
+OLS v1.0 packages SHOULD include valid and invalid examples so implementers can test validators and renderers.
+
+
+```json
+{
+  "test": {
+    "id": "invalid-unresolved-ref",
+    "expected": "fail",
+    "errorCode": "OLS_REF_UNRESOLVED",
+    "description": "A section references a block that does not exist."
+  }
+}
+```
+

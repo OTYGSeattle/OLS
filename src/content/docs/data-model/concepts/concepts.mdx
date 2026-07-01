@@ -1,0 +1,37 @@
+---
+title: 'Core Data Model'
+description: 'Core reusable data model entities and references mapping.'
+category: 'data-model'
+order: 6
+updatedAt: 2026-07-01
+---
+
+
+OLS v1.0 is built from reusable entities. These entities can be used independently or composed into complete services.
+
+        
+| Entity | Purpose | Required In |
+| --- | --- | --- |
+| `LocalizedText` | Multilingual and transliterated text container. | All human-readable text. |
+| `Citation` | Bibliographic or source reference. | Source-aware content. |
+| `Provenance` | Who transcribed, translated, reviewed, and when. | All serious corpora. |
+| `Authority` | Ecclesial review and permitted use. | Liturgical and teaching corpora. |
+| `Person` | Priest, deacon, cantor, translator, reviewer, or performer. | ServiceInstance, review, provenance. |
+| `Organization` | Parish, diocese, monastery, publisher, school. | Authority and source context. |
+| `Role` | Liturgical function such as priest, deacon, cantor, congregation. | Utterance, Rubric, ServiceInstance. |
+| `RoleGroup` | Addressable ensemble of roles. | Unison, antiphony, collective actions. |
+| `Utterance` | Atomic spoken, chanted, sung, silent, or whispered text. | Blocks and service content. |
+| `Reading` | Scriptural or synaxarial reading. | Lectionary and service books. |
+| `Chant` | Musical metadata and performance notes. | Chanted/sung elements. |
+| `Rubric` | Action, posture, movement, setting, sound, or instruction. | Performable service content. |
+| `Block` | Reusable group of utterances, readings, rubrics, and line groups. | Sections and propers. |
+| `Section` | Major division of a service. | Ordo. |
+| `ProperSlot` | Placeholder for calendar-variable content. | Ordo and sections. |
+| `Proper` | Calendar-activated content filling slots. | Calendar-aware services. |
+| `Calendar` | Feasts, fasts, seasons, readings, commemorations. | Propers and planning. |
+| `Ordo` | Template for a complete service. | Service books. |
+| `ServiceInstance` | Record of a real service occurrence. | Parish logs, research, planning. |
+| `TeachingNote` | Catechetical explanation, Bible links, discussion questions. | Teaching tools. |
+| `Variant` | Alternate text, local custom, manuscript reading. | Scholarly and parish editions. |
+
+

@@ -1,0 +1,27 @@
+---
+title: 'Calendar Model'
+description: 'Liturgical calendar model resolving feasts, fasts, and lectionary cycles.'
+category: 'ordo-calendar'
+order: 26
+updatedAt: 2026-07-01
+---
+
+
+The calendar model must resolve a complete `LiturgicalDay`: date, season, feast, fast, commemorations, readings, propers, and conflicts.
+
+
+```json
+{
+  "id": "calendar-eotc",
+  "system": "ethiopian",
+  "epoch": "amete-mihret",
+  "monthCount": 13,
+  "supports": [
+    "fixed-feasts",
+    "movable-feasts",
+    "fasting-periods",
+    "lectionary"
+  ]
+}
+```
+

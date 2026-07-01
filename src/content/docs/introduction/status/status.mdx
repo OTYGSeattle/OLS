@@ -1,0 +1,42 @@
+---
+title: 'Document Status'
+description: 'Official status of the document, status levels, and normative keywords.'
+category: 'introduction'
+order: 2
+updatedAt: 2026-07-01
+---
+
+
+This document defines the expected shape, behavior, and governance of OLS v1.0. It is written as a **standard specification**, not merely a UI demo.
+
+        
+### Status Values
+
+        
+| Status | Meaning |
+| --- | --- |
+| `draft` | Work in progress. Not stable. May change without migration support. |
+| `review` | Submitted for technical and ecclesial review. |
+| `candidate` | Feature-complete pending final validation. |
+| `stable` | Approved v1.0 format. Breaking changes require a major version. |
+| `deprecated` | Still readable but should not be used for new content. |
+
+
+        
+### Normative Keywords
+
+        
+| Keyword | Meaning |
+| --- | --- |
+| MUST | Required for OLS v1.0 compliance. |
+| MUST NOT | Forbidden in compliant files. |
+| SHOULD | Strongly recommended unless there is a documented reason. |
+| MAY | Optional feature. |
+| RECOMMENDED | Best practice for interoperability and long-term preservation. |
+
+
+        
+<Callout tone="info">
+  A file that claims `ols_version: 1.0.0` MUST validate against the appropriate v1.0 schema and MUST declare its file type.
+</Callout>
+

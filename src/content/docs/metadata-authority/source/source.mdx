@@ -1,0 +1,71 @@
+---
+title: 'Citation, Source &amp; Provenance'
+description: 'Citations, source type categorization, and content provenance tracking.'
+category: 'metadata-authority'
+order: 9
+updatedAt: 2026-07-01
+---
+
+
+OLS v1.0 requires serious liturgical content to identify its source. This protects against confusion between official texts, study translations, parish handouts, and drafts.
+
+        
+### Citation
+
+
+```json
+{
+  "citation": {
+    "id": "src-mesHafe-qeddase-ed1-p42",
+    "type": "printed-book",
+    "title": "Mäṣḥafä Qeddase",
+    "language": "gez",
+    "edition": "unknown",
+    "publisher": null,
+    "year": null,
+    "page": "42",
+    "line": "3",
+    "license": "restricted",
+    "notes": {
+      "en": "Exact edition requires verification."
+    }
+  }
+}
+```
+
+        
+### Provenance
+
+
+```json
+{
+  "provenance": {
+    "sourceStatus": "transcribed",
+    "transcriber": "person-transcriber-001",
+    "translator": "person-translator-001",
+    "editors": ["person-editor-001"],
+    "reviewers": ["person-priest-001", "person-geez-scholar-001"],
+    "confidence": "medium",
+    "lastReviewed": "2026-06-29",
+    "changeReason": "Initial v1.0 transcription from printed source."
+  }
+}
+```
+
+        
+### Source Types
+
+        
+<div className="flex flex-wrap gap-2 my-4">
+  <Badge>printed-book</Badge>
+  <Badge>manuscript</Badge>
+  <Badge>oral-tradition</Badge>
+  <Badge>parish-handout</Badge>
+  <Badge>scholarly-edition</Badge>
+  <Badge>translation</Badge>
+  <Badge>audio-recording</Badge>
+  <Badge>video-recording</Badge>
+  <Badge>web-source</Badge>
+  <Badge>field-notes</Badge>
+</div>
+

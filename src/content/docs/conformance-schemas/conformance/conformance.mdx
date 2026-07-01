@@ -1,0 +1,23 @@
+---
+title: 'Conformance Levels'
+description: 'Conformance level requirements and feature checklists (L0 to L7).'
+category: 'conformance-schemas'
+order: 34
+updatedAt: 2026-07-01
+---
+
+
+Tools do not need to support every feature. OLS v1.0 defines conformance levels so apps can honestly state what they implement.
+
+
+```json
+{
+  "conformance": {
+    "ols": "1.0.0",
+    "levels": ["L0", "L1", "L2", "L5", "L7"],
+    "profiles": ["eotc.v1"],
+    "unsupported": ["service-instance", "audio-assets"]
+  }
+}
+```
+

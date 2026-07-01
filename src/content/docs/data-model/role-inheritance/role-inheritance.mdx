@@ -1,0 +1,30 @@
+---
+title: 'Role Inheritance &amp; Substitution'
+description: 'Role inheritance, substitutions, and custom tradition rules.'
+category: 'data-model'
+order: 13
+updatedAt: 2026-07-01
+---
+
+
+Liturgical roles are not flat. A bishop may serve in the place of a priest, a senior celebrant may fulfill a lower role, and local practice may allow substitutions.
+
+
+```json
+{
+  "id": "role-bishop",
+  "type": "bishop",
+  "labels": { "en": "Bishop" },
+  "implements": ["role-priest", "role-celebrant"],
+  "substitutesFor": [
+    {
+      "role": "role-priest",
+      "scope": "eucharist",
+      "validWhen": {
+        "authorityStatusAtLeast": "parish-reviewed"
+      }
+    }
+  ]
+}
+```
+

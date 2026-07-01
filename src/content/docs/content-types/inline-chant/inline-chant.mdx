@@ -1,0 +1,31 @@
+---
+title: 'Sub-Utterance Chant Alignment'
+description: 'Inline word and phrase level zema alignment and milikit markers.'
+category: 'content-types'
+order: 17
+updatedAt: 2026-07-01
+---
+
+
+Chant metadata cannot always attach only to a whole utterance. OLS v1.0 defines inline segmentation for alignment.
+
+
+```json
+{
+  "id": "ut-segmented-zema",
+  "roles": ["role-cantor"],
+  "mode": "chanted",
+  "text": {
+    "gez-Ethi": "ቅዱስ እግዚአብሔር"
+  },
+  "segments": [
+    {
+      "id": "seg-001",
+      "range": { "language": "gez-Ethi", "startChar": 0, "endChar": 4 },
+      "text": "ቅዱስ",
+      "chant": { "system": "yared", "mode": "geez", "milikit": ["mark-001"] }
+    }
+  ]
+}
+```
+

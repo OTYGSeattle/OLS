@@ -1,0 +1,28 @@
+---
+title: 'Blocks &amp; Elements'
+description: 'Reusable content Blocks composing utterances, readings, rubrics, and comments.'
+category: 'content-types'
+order: 21
+updatedAt: 2026-07-01
+---
+
+
+A `Block` is a reusable unit. It can contain utterances, readings, rubrics, line groups, references, and teaching notes.
+
+
+```json
+{
+  "id": "block-kyrie",
+  "type": "response",
+  "label": { "en": "Kyrie Eleison" },
+  "elements": [
+    {
+      "utterance": {
+        "roles": ["role-deacon"],
+        "text": { "en": "Lord, have mercy" }
+      }
+    }
+  ]
+}
+```
+

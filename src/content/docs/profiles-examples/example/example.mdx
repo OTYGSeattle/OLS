@@ -1,0 +1,38 @@
+---
+title: 'Complete Minimal Corpus Example'
+description: 'Complete minimal valid liturgical corpus JSON example.'
+category: 'profiles-examples'
+order: 39
+updatedAt: 2026-07-01
+---
+
+
+This minimal example shows the core v1.0 pattern: schema header, metadata, authority, roles, reading, block, section, ordo, proper, and teaching note.
+
+
+```json
+{
+  "$schema": "https://openliturgy.org/schema/v1.0/corpus.schema.json",
+  "ols_version": "1.0.0",
+  "type": "corpus",
+  "id": "eotc-kidase-demo-v1",
+  "metadata": {
+    "title": { "en": "EOTC Kidase Demo Corpus" }
+  },
+  "roles": [
+    { "id": "role-deacon", "type": "deacon" }
+  ],
+  "blocks": [
+    {
+      "id": "block-kyrie",
+      "type": "response",
+      "elements": [
+        {
+          "utterance": { "roles": ["role-deacon"], "text": { "en": "Lord, have mercy" } }
+        }
+      ]
+    }
+  ]
+}
+```
+

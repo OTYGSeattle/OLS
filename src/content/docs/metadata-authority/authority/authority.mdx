@@ -1,0 +1,60 @@
+---
+title: 'Ecclesial Authority'
+description: 'Ecclesial review workflow, jurisdiction approval, and allowed use controls.'
+category: 'metadata-authority'
+order: 10
+updatedAt: 2026-07-01
+---
+
+
+OLS does not make software the authority over the liturgy. It records who reviewed content, what it may be used for, and what remains restricted.
+
+        
+### Authority Object
+
+
+```json
+{
+  "authority": {
+    "status": "educational-only",
+    "jurisdiction": "eotc",
+    "approvingBody": null,
+    "reviewedBy": [
+      {
+        "person": "person-priest-001",
+        "role": "priest",
+        "date": "2026-06-29",
+        "scope": "terminology-and-pastoral-review"
+      }
+    ],
+    "allowedUse": ["education", "private-study", "parish-handout"],
+    "restrictedUse": ["altar-use", "sacramental-celebration"],
+    "requiresClergyReview": true,
+    "notes": {
+      "en": "For teaching and study only unless reviewed by competent ecclesial authority."
+    }
+  }
+}
+```
+
+        
+### Authority Status
+
+        
+| Status | Use |
+| --- | --- |
+| `draft` | May contain errors. Not for public teaching without review. |
+| `needs-review` | Awaiting clergy, liturgical, language, or scholarly review. |
+| `educational-only` | Approved only as teaching material. |
+| `parish-reviewed` | Reviewed for a specific parish context. |
+| `diocesan-approved` | Approved by a diocesan authority. |
+| `synodal-approved` | Approved by a synodal or official ecclesial body. |
+| `historical-only` | Preserved for history; not current practice. |
+| `deprecated` | Should not be used in new materials. |
+
+
+        
+<QuoteBlock author="**2 Thessalonians 2:15**">
+  "Hold fast the traditions which you were taught."
+</QuoteBlock>
+

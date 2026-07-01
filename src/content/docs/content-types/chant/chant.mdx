@@ -1,0 +1,32 @@
+---
+title: 'Chant &amp; Music'
+description: 'Chant notation, Yaredic modes, performance cues, and instrumentation.'
+category: 'content-types'
+order: 16
+updatedAt: 2026-07-01
+---
+
+
+OLS v1.0 separates text from chant metadata while allowing them to be linked.
+
+
+```json
+{
+  "chant": {
+    "system": "yared",
+    "mode": "geez",
+    "zemaType": "deggwa",
+    "source": {
+      "book": "Deggwa",
+      "page": "234"
+    },
+    "performance": {
+      "tempo": "slow",
+      "antiphonalPattern": "cantor-congregation",
+      "instruments": ["kebero", "tsenatsil", "mequamia"],
+      "standingPosture": true
+    }
+  }
+}
+```
+

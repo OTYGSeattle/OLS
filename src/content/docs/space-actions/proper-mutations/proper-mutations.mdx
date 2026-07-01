@@ -1,0 +1,29 @@
+---
+title: 'Structural Proper Mutations'
+description: 'Structural proper mutations including insertions, replacements, and omissions.'
+category: 'space-actions'
+order: 25
+updatedAt: 2026-07-01
+---
+
+
+Propers do not only fill slots. They may insert, omit, replace, or reorder parts of the Ordo.
+
+
+```json
+{
+  "id": "proper-holy-friday",
+  "mutations": [
+    {
+      "op": "insertAfter",
+      "target": "sec-liturgy-of-word",
+      "value": { "$ref": "sec-holy-friday-veneration" }
+    },
+    {
+      "op": "omit",
+      "target": "block-festal-dismissal"
+    }
+  ]
+}
+```
+

@@ -1,0 +1,46 @@
+---
+title: 'IDs, References &amp; Namespaces'
+description: 'Format of stable identifiers, references, namespaces, and uniqueness rules.'
+category: 'introduction'
+order: 5
+updatedAt: 2026-07-01
+---
+
+
+OLS v1.0 uses stable identifiers so content can be reused across apps, service books, teaching tools, and archives.
+
+        
+### ID Format
+
+
+```json
+{
+  "id": "eotc.kidase.common.block.kyrie"
+}
+```
+
+        
+### Reference Forms
+
+        
+| Form | Example | Use |
+| --- | --- | --- |
+| Local ID | `block-kyrie` | Same file or same package context. |
+| Qualified ID | `eotc.kidase.common.block.kyrie` | Stable package-level reference. |
+| URN | `urn:ols:eotc:kidase:block:kyrie` | Long-lived archival reference. |
+| JSON Reference | `{ "$ref": "blocks/kyrie.ols.json" }` | File-level composition. |
+
+
+        
+### ID Rules
+
+        
+| Rule | Requirement |
+| --- | --- |
+| Uniqueness | IDs MUST be unique within a package. |
+| Stability | IDs SHOULD NOT change when text is translated. |
+| Versioning | Breaking textual or structural changes SHOULD create a new version field, not a new random ID. |
+| Human readability | IDs SHOULD be descriptive and lowercase. |
+| No spaces | IDs MUST NOT contain spaces. |
+
+

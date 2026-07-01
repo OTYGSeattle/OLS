@@ -1,0 +1,25 @@
+---
+title: 'Rubric State Machines'
+description: 'Performative state machine tracking for rubrics execution validation.'
+category: 'space-actions'
+order: 20
+updatedAt: 2026-07-01
+---
+
+
+Rubrics act as state transitions for validating performative continuity.
+
+
+```json
+{
+  "id": "rb-deacon-enters-qeddest",
+  "category": "movement",
+  "subtype": "move",
+  "actors": ["role-deacon"],
+  "stateTransition": {
+    "requires": { "role-deacon.zone": "qene_mahlet" },
+    "sets": { "role-deacon.zone": "qeddest" }
+  }
+}
+```
+

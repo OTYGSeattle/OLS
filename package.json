@@ -1,0 +1,74 @@
+{
+  "name": "openliturgy-docs",
+  "version": "1.0.0",
+  "description": "OpenLiturgy Standard v1.0 technical specification and data standard documentation repository.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "private": true,
+  "author": "OpenLiturgy Contributors",
+  "homepage": "https://openliturgy.org",
+  "engines": {
+    "node": ">=18.17.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OTYG/osl.git"
+  },
+  "files": [
+    "src",
+    "public",
+    "LICENSE",
+    "README.md",
+    "CHANGELOG.md",
+    "CONTRIBUTING.md",
+    "screenshot.webp",
+    "astro.config.mjs",
+    "site.config.mjs",
+    "tsconfig.json"
+  ],
+  "scripts": {
+    "dev": "astro dev --host 0.0.0.0 --port 3000",
+    "start": "astro dev --host 0.0.0.0 --port 3000",
+    "build": "astro build && pagefind --site dist",
+    "preview": "astro preview --host 0.0.0.0 --port 3000",
+    "check": "astro check",
+    "lint": "astro check",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "clean": "node -e \"import('node:fs').then((fs) => ['dist', '.astro'].forEach((dir) => fs.rmSync(dir, { recursive: true, force: true })))\""
+  },
+  "keywords": [
+    "astro",
+    "tailwindcss",
+    "documentation",
+    "docs-theme",
+    "mdx",
+    "starter",
+    "template",
+    "theme"
+  ],
+  "dependencies": {
+    "@astrojs/mdx": "^6.0.1",
+    "@astrojs/rss": "^4.0.18",
+    "@astrojs/sitemap": "^3.6.0",
+    "@tailwindcss/typography": "^0.5.16",
+    "@tailwindcss/vite": "^4.1.14",
+    "astro": "^6.4.3",
+    "tailwindcss": "^4.1.14"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.9",
+    "pagefind": "^1.5.2",
+    "prettier": "^3.8.4",
+    "prettier-plugin-astro": "^0.14.1",
+    "typescript": "^5.9.3"
+  },
+  "overrides": {
+    "astro": {
+      "esbuild": "^0.28.1"
+    },
+    "yaml-language-server": {
+      "yaml": "2.9.0"
+    }
+  }
+}

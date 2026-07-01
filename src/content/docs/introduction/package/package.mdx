@@ -1,0 +1,79 @@
+---
+title: 'Package Layout'
+description: 'Package directory structure, standard file layout, and manifest requirements.'
+category: 'introduction'
+order: 4
+updatedAt: 2026-07-01
+---
+
+
+Real liturgical corpora are large. OLS v1.0 therefore defines a package layout, manifest, and modular references.
+
+
+```json
+openliturgy-package/
+  manifest.ols.json
+  schema/
+  roles/
+  persons/
+  organizations/
+  texts/
+  readings/
+  chants/
+  rubrics/
+  blocks/
+  sections/
+  ordos/
+  propers/
+  calendars/
+  service-instances/
+  assets/
+  commentary/
+  tests/
+    valid/
+    invalid/
+```
+
+        
+### Manifest
+
+
+```json
+{
+  "$schema": "https://openliturgy.org/schema/v1.0/manifest.schema.json",
+  "ols_version": "1.0.0",
+  "type": "manifest",
+  "package": "org.openliturgy.eotc.core",
+  "version": "1.0.0",
+  "title": {
+    "en": "EOTC Core Liturgical Package"
+  },
+  "scope": {
+    "family": "oriental-orthodox",
+    "tradition": "eotc",
+    "profile": "eotc.v1"
+  },
+  "dependencies": [
+    "org.openliturgy.common.bible@1",
+    "org.openliturgy.common.psalter@1"
+  ],
+  "license": {
+    "spec": "Apache-2.0",
+    "content": "see-individual-sources"
+  }
+}
+```
+
+        
+### Package Rules
+
+        
+| Rule | Requirement |
+| --- | --- |
+| Manifest | Every distributable package MUST include `manifest.ols.json`. |
+| References | Cross-file references MUST use stable IDs or package-qualified IDs. |
+| Assets | Binary files SHOULD be stored outside JSON and linked by URI. |
+| Content license | MUST be declared per package and MAY be overridden per entity. |
+| Review status | MUST be declared at package level and MAY be overridden per entity. |
+
+

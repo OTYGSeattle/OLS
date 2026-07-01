@@ -1,0 +1,44 @@
+---
+title: 'Release Overview'
+description: 'Overview of the OpenLiturgy Standard (OLS) v1.0 stable release.'
+category: 'introduction'
+order: 1
+updatedAt: 2026-07-01
+---
+
+
+**OpenLiturgy Standard (OLS) v1.0** is a structured, source-aware, authority-aware data standard for encoding Christian liturgical texts, actions, calendars, music, teaching notes, and service records. This version assumes the previous draft was **v0.1** and promotes it into a more complete first stable release candidate.
+
+        
+<Callout tone="success">
+  **v1.0 goal:** make liturgical content portable, validatable, teachable, deterministic, performance-aware, and respectful of ecclesial authority.
+</Callout>
+
+        
+### Major v1.0 Additions
+
+        
+| Area | v1.0 Addition |
+| --- | --- |
+| Validation | Normative JSON Schema requirements, required fields, ID rules, and test fixtures. |
+| Authority | Clergy review, approval status, allowed/restricted use, jurisdiction, and review history. |
+| Sources | Citation, provenance, manuscript/printed source tracking, translation status, and confidence level. |
+| Text | Language tags, scripts, transliteration, direction, register, reading level, and alignment metadata. |
+| Scripture | Dedicated `Reading` entity with OSIS-style references and liturgical introductions. |
+| Calendar | Fixed feasts, movable feasts, fasting periods, monthly commemorations, lectionary cycles, and conflict rules. |
+| Chant | Yaredic modes, chant source, zema type, performance cues, instruments, and audio/notation links. |
+| Rubrics | Movement, posture, action, sound, setting, rubric force, conditions, access constraints, and sacred-space zones. |
+| Teaching | Bible links, commentary, patristic notes, youth explanations, language notes, and discussion questions. |
+| Privacy | ServiceInstance visibility, anonymization, consent, retention, and public-release controls. |
+| Governance | Conformance levels, versioning policy, review workflow, extension namespaces, and profile structure. |
+| Structural Mutation | Propers may fill, insert, replace, omit, move, wrap, or set attributes in a resolved Ordo. |
+| Determinism | Calendar conflicts use explicit override rules, priority class, and canonical fallback; never JSON key order. |
+| Performance Validation | Rubrics can be replayed as state transitions across actors, zones, objects, and posture. |
+| Timeline Binding | ServiceInstance can bind timestamps and durations to sections, blocks, rubrics, readings, and media segments. |
+
+
+        
+<QuoteBlock author="**1 Corinthians 14:40**">
+  "Let all things be done decently and in order."
+</QuoteBlock>
+

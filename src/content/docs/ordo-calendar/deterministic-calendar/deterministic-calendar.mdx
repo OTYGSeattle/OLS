@@ -1,0 +1,24 @@
+---
+title: 'Deterministic Calendar Resolution'
+description: 'Deterministic conflict resolution rules prioritizing feast occurrences.'
+category: 'ordo-calendar'
+order: 27
+updatedAt: 2026-07-01
+---
+
+
+Calendar resolution must be deterministic. OLS v1.0 MUST NOT rely on JSON object key order or file-loading order to resolve liturgical conflicts.
+
+
+```json
+{
+  "conflictRules": [
+    {
+      "id": "cr-timkat-overrides-weekday-fast",
+      "winner": "proper-timkat",
+      "overrides": ["proper-wednesday-fast", "proper-friday-fast"]
+    }
+  ]
+}
+```
+

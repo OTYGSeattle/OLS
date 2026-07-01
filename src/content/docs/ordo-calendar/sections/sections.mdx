@@ -1,0 +1,30 @@
+---
+title: 'Sections &amp; Ordo'
+description: 'Liturgical Sections composing complete service structures (Ordos).'
+category: 'ordo-calendar'
+order: 23
+updatedAt: 2026-07-01
+---
+
+
+A `Section` is a major division of a service. An `Ordo` is the complete template for a service type.
+
+
+```json
+{
+  "id": "ordo-kidase",
+  "type": "eucharist",
+  "tradition": "eotc",
+  "label": { "en": "Divine Liturgy / Kidase" },
+  "sections": [
+    { "$ref": "sec-preparation" },
+    { "$ref": "sec-entrance-rites" },
+    { "$ref": "sec-liturgy-of-word" }
+  ],
+  "properSlots": [
+    "psalm-of-the-day",
+    "gospel-of-the-day"
+  ]
+}
+```
+

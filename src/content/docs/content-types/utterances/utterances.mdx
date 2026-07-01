@@ -1,0 +1,46 @@
+---
+title: 'Utterances'
+description: 'Atomic spoken, chanted, sung, or silent liturgical speech utterances.'
+category: 'content-types'
+order: 14
+updatedAt: 2026-07-01
+---
+
+
+An `Utterance` is the atomic unit of liturgical speech: spoken, chanted, sung, whispered, silent, or interior.
+
+
+```json
+{
+  "id": "ut-kyrie-deacon",
+  "roles": ["role-deacon"],
+  "mode": "chanted",
+  "delivery": "solemn",
+  "audience": "divine",
+  "text": {
+    "gez-Ethi": "ኪርያ ኤሌይሶን",
+    "gez-Latn": "Kyrie Eleison",
+    "en": "Lord, have mercy"
+  },
+  "chant": {
+    "system": "yared",
+    "mode": "geez"
+  }
+}
+```
+
+        
+### Mode Values
+
+        
+<div className="flex flex-wrap gap-2 my-4">
+  <Badge>spoken</Badge>
+  <Badge>chanted</Badge>
+  <Badge>sung</Badge>
+  <Badge>whispered</Badge>
+  <Badge>silent</Badge>
+  <Badge>canticle</Badge>
+  <Badge>responsive</Badge>
+  <Badge>recited</Badge>
+</div>
+

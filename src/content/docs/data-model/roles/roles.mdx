@@ -1,0 +1,54 @@
+---
+title: 'Roles &amp; RoleGroups'
+description: 'Liturgical Roles and RoleGroups for clergy, choir, and congregation roles.'
+category: 'data-model'
+order: 12
+updatedAt: 2026-07-01
+---
+
+
+A `Role` is a liturgical function. A `RoleGroup` is an addressable ensemble such as clergy, choir, congregation, or all present.
+
+        
+### Role
+
+
+```json
+{
+  "id": "role-deacon",
+  "type": "deacon",
+  "labels": {
+    "en": "Deacon",
+    "am-Ethi": "ዲያቆን",
+    "gez-Ethi": "ዲያቆን"
+  },
+  "abbreviation": {
+    "en": "D."
+  },
+  "traditions": {
+    "eotc": {
+      "nativeTitle": "Diyaqon",
+      "sanctuaryAccess": ["qene_mahlet", "qeddest"],
+      "canReadGospel": true,
+      "canHandleGospelBook": true
+    }
+  }
+}
+```
+
+        
+### Core Role Types
+
+        
+| Type | Meaning | Examples |
+| --- | --- | --- |
+| `bishop` | Presiding hierarch. | Abune, bishop. |
+| `celebrant` | Presiding priest. | Priest serving Kidase. |
+| `concelebrant` | Additional priest. | Priests serving together. |
+| `deacon` | Deacon or liturgical assistant. | Deacon reading Gospel or assisting. |
+| `cantor` | Chanter or trained singer. | Debtera, merigeta. |
+| `choir` | Collective singers. | Mahlet choir. |
+| `reader` | Scripture or text reader. | Epistle reader. |
+| `congregation` | Faithful assembly. | All present faithful. |
+
+

@@ -1,0 +1,31 @@
+---
+title: 'ServiceInstance'
+description: 'ServiceInstance schema for recording or planning actual service performances.'
+category: 'ordo-calendar'
+order: 28
+updatedAt: 2026-07-01
+---
+
+
+A `ServiceInstance` records a real or planned service. It references the Ordo and records what happened.
+
+
+```json
+{
+  "id": "si-2026-01-19-timkat-seattle",
+  "type": "service-instance",
+  "ordo": "ordo-kidase",
+  "date": {
+    "gregorian": "2026-01-19"
+  },
+  "cast": [
+    {
+      "role": "role-priest",
+      "person": "person-priest-001"
+    }
+  ],
+  "activePropers": ["proper-timkat"],
+  "anaphora": "anaphora-st-gregory"
+}
+```
+

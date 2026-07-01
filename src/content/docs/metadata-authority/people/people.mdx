@@ -1,0 +1,49 @@
+---
+title: 'Persons &amp; Organizations'
+description: 'Persons and Organizations schema for provenance and authority attribution.'
+category: 'metadata-authority'
+order: 11
+updatedAt: 2026-07-01
+---
+
+
+People and organizations appear in sources, authority review, service instances, translations, and performance records.
+
+        
+### Person
+
+
+```json
+{
+  "id": "person-priest-001",
+  "type": "person",
+  "displayName": "Fr. ____",
+  "roles": ["priest", "reviewer"],
+  "affiliation": "org-parish-001",
+  "privacy": {
+    "visibility": "private-parish",
+    "publicName": "Fr. ____"
+  }
+}
+```
+
+        
+### Organization
+
+
+```json
+{
+  "id": "org-parish-001",
+  "type": "organization",
+  "kind": "parish",
+  "name": {
+    "en": "St. Mary Ethiopian Orthodox Tewahedo Church"
+  },
+  "jurisdiction": "eotc",
+  "location": {
+    "city": "Seattle",
+    "country": "US"
+  }
+}
+```
+

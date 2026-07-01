@@ -1,0 +1,37 @@
+---
+title: 'Scripture &amp; Reading Entity'
+description: 'Liturgical readings, scripture citations, and OSIS-style references.'
+category: 'content-types'
+order: 15
+updatedAt: 2026-07-01
+---
+
+
+Readings are first-class entities, not generic text blocks. This allows lectionaries, service books, teaching tools, and Bible references to interoperate.
+
+
+```json
+{
+  "id": "reading-john-1-1-17",
+  "type": "gospel",
+  "role": "role-deacon",
+  "reference": {
+    "system": "osis",
+    "osisRef": "John.1.1-John.1.17",
+    "book": "John",
+    "chapterStart": 1,
+    "verseStart": 1,
+    "chapterEnd": 1,
+    "verseEnd": 17
+  },
+  "text": {
+    "en": "In the beginning was the Word..."
+  }
+}
+```
+
+        
+<QuoteBlock author="**Psalm 119:105**">
+  "Your word is a lamp to my feet and a light to my path."
+</QuoteBlock>
+

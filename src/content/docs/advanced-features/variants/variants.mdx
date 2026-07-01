@@ -1,0 +1,27 @@
+---
+title: 'Variants &amp; Scholarly Apparatus'
+description: 'Scholarly variants, apparatus footnotes, and manuscript sources.'
+category: 'advanced-features'
+order: 31
+updatedAt: 2026-07-01
+---
+
+
+OLS v1.0 supports textual variation without collapsing all traditions, editions, and local customs into one flattened text.
+
+
+```json
+{
+  "variants": [
+    {
+      "id": "variant-local-custom",
+      "type": "local-custom",
+      "source": "src-parish-handout-001",
+      "text": {
+        "gez-Ethi": "..."
+      }
+    }
+  ]
+}
+```
+

@@ -1,0 +1,43 @@
+---
+title: 'Rubrics &amp; Actions'
+description: 'Rubrics encoding action, movement, posture, force, and performer.'
+category: 'content-types'
+order: 18
+updatedAt: 2026-07-01
+---
+
+
+A `Rubric` encodes what is done, by whom, where, with what force, and under what conditions.
+
+
+```json
+{
+  "id": "rb-gospel-procession",
+  "category": "movement",
+  "subtype": "procession",
+  "force": "required",
+  "actors": ["role-deacon"],
+  "object": "gospel-book",
+  "from": "qeddest",
+  "to": "qene_mahlet",
+  "path": ["qeddest", "qene_mahlet"],
+  "description": {
+    "en": "The deacon processes with the Gospel book."
+  }
+}
+```
+
+        
+### Rubric Categories
+
+        
+<div className="flex flex-wrap gap-2 my-4">
+  <Badge>action</Badge>
+  <Badge>posture</Badge>
+  <Badge>movement</Badge>
+  <Badge>sound</Badge>
+  <Badge>setting</Badge>
+  <Badge>instruction</Badge>
+  <Badge>permission</Badge>
+</div>
+

@@ -1,0 +1,51 @@
+---
+title: 'LocalizedText'
+description: 'LocalizedText container for multi-language translation and text metadata.'
+category: 'data-model'
+order: 7
+updatedAt: 2026-07-01
+---
+
+
+`LocalizedText` is the basic human-readable text type. It supports multiple languages, scripts, transliteration, and text metadata.
+
+        
+### Schema Pattern
+
+
+```json
+{
+  "text": {
+    "gez-Ethi": "ሃሌሉያ",
+    "gez-Latn": "Halleluya",
+    "am-Ethi": "ሃሌሉያ",
+    "ti-Ethi": "ሃሌሉያ",
+    "en": "Hallelujah",
+    "ar": "هلليلويا"
+  },
+  "textMeta": {
+    "direction": "ltr",
+    "register": "liturgical",
+    "translationType": "formal",
+    "readingLevel": "general",
+    "alignment": "phrase",
+    "containsSacredName": false
+  }
+}
+```
+
+        
+### Recommended Language Tags
+
+        
+| Tag | Meaning | Use |
+| --- | --- | --- |
+| `gez-Ethi` | Ge’ez in Ethiopic script | Primary liturgical text. |
+| `gez-Latn` | Ge’ez transliteration | Diaspora teaching and chant practice. |
+| `am-Ethi` | Amharic in Ethiopic script | Vernacular explanation or translation. |
+| `ti-Ethi` | Tigrinya in Ethiopic script | Eritrean/Tigrinya communities. |
+| `om-Latn` | Oromo in Latin script | Oromo-language materials. |
+| `en` | English | Diaspora teaching and translation. |
+| `ar` | Arabic | Arabic-speaking communities; RTL. |
+
+

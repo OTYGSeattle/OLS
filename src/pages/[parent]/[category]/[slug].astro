@@ -1,0 +1,294 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection, render } from 'astro:content';
+import SearchPreviews from '../../../components/SearchPreviews.astro';
+import Sidebar from '../../../components/Sidebar.astro';
+import Card from '../../../components/docs/Card.astro';
+import { mdxComponents } from '../../../components/docs/mdx-components';
+import {
+  docsCategoryDataMap,
+  docsParentMap,
+  getArticleHref,
+  getCategoryHref,
+  getCleanDocSlug,
+  getOrderedDocsForCategory,
+  getPublicDocs,
+  getSearchPreviewLookup,
+  getSidebarSections,
+  getSuggestedSearchArticles,
+} from '../../../data/docs';
+import Layout from '../../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  const allDocs = await getCollection('docs');
+  const publicDocs = getPublicDocs(allDocs);
+
+  return publicDocs.map((doc) => ({
+    params: {
+      parent: docsCategoryDataMap[doc.data.category as keyof typeof docsCategoryDataMap]?.parent,
+      category: doc.data.category,
+      slug: getCleanDocSlug(doc.id),
+    },
+    props: { doc },
+  }));
+}
+
+const { doc } = Astro.props;
+const allDocs = await getCollection('docs');
+const publicDocs = getPublicDocs(allDocs);
+const { Content, headings } = await render(doc);
+const categoryData = docsCategoryDataMap[doc.data.category as keyof typeof docsCategoryDataMap];
+const parent = docsParentMap[categoryData.parent as keyof typeof docsParentMap];
+const pagefindCategory = categoryData?.name ?? doc.data.category;
+const orderedCategoryDocs = getOrderedDocsForCategory(publicDocs, doc.data.category);
+const currentDocIndex = orderedCategoryDocs.findIndex((entry) => entry.id === doc.id);
+const previousDoc = currentDocIndex > 0 ? orderedCategoryDocs[currentDocIndex - 1] : undefined;
+const nextDoc = currentDocIndex >= 0 ? orderedCategoryDocs[currentDocIndex + 1] : undefined;
+const sidebarSections = getSidebarSections(parent.slug);
+const suggestedArticles = getSuggestedSearchArticles(publicDocs, {
+  limit: 3,
+  categories: [doc.data.category],
+});
+const searchPreviews = getSearchPreviewLookup(publicDocs);
+const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.depth <= 3);
+const articlePagefindAttributes = doc.data.hideFromSearch
+  ? {
+      'data-pagefind-meta': `category:${pagefindCategory}`,
+      'data-pagefind-ignore': 'all',
+    }
+  : {
+      'data-pagefind-body': true,
+      'data-pagefind-meta': `category:${pagefindCategory}`,
+    };
+---
+
+<Layout
+  title={`${doc.data.title} | ${categoryData?.name ?? doc.data.category}`}
+  description={doc.data.description}
+  ogType="article"
+  updatedAt={doc.data.updatedAt}
+>
+  <SearchPreviews previews={searchPreviews} />
+
+  {
+    tocHeadings.length > 0 && (
+      <div
+        class="docs-mobile-toc-shell sticky top-[var(--docs-header-height)] z-30 border-b border-[var(--color-border)] bg-[color:color-mix(in_srgb,var(--color-surface)_94%,transparent)] backdrop-blur lg:hidden"
+        data-mobile-toc
+      >
+        <div class="mx-auto max-w-[1280px] px-4 md:px-8">
+          <div class="docs-mobile-toc-row py-2">
+            <details class="docs-mobile-toc relative block w-full">
+              <summary class="docs-mobile-toc-summary flex w-full cursor-pointer list-none items-center gap-3 px-0 py-2.5 text-sm font-medium text-[var(--color-text-strong)]">
+                <span class="shrink-0">On this page</span>
+                <svg
+                  class="docs-mobile-toc-icon h-4 w-4 shrink-0 text-[var(--color-ui-label)]"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  aria-hidden="true"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6" />
+                </svg>
+                <span
+                  class="docs-mobile-toc-current min-w-0 text-sm text-[var(--color-text-strong)]"
+                  data-mobile-toc-current
+                >
+                  {tocHeadings[0].text}
+                </span>
+              </summary>
+              <div class="docs-mobile-toc-panel pt-2 pb-3">
+                <ol class="docs-toc-list mt-0">
+                  {tocHeadings.map((heading) => (
+                    <li>
+                      <a
+                        href={`#${heading.slug}`}
+                        data-toc-link={heading.slug}
+                        class:list={['docs-toc-link', heading.depth === 3 && 'docs-toc-link-subheading']}
+                      >
+                        {heading.text}
+                      </a>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            </details>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  <div class="mx-auto flex max-w-[1280px] flex-col gap-10 px-4 py-10 lg:flex-row lg:px-8">
+    <Sidebar
+      sections={sidebarSections}
+      activeCategory={doc.data.category}
+      tocHeadings={tocHeadings}
+      suggestions={suggestedArticles}
+    />
+
+    <div class="min-w-0 max-w-3xl flex-1">
+      <nav class="docs-breadcrumbs mb-6 flex flex-wrap items-center gap-2 text-sm text-[var(--color-text-muted)]">
+        <a href="/" class="breadcrumb-link transition hover:text-[var(--color-accent)]">Home</a>
+        <span>/</span>
+        <a href={`/${parent.slug}`} class="breadcrumb-link transition hover:text-[var(--color-accent)]">{parent.name}</a
+        >
+        <span>/</span>
+        <a href={getCategoryHref(doc.data.category)} class="breadcrumb-link transition hover:text-[var(--color-accent)]"
+          >{categoryData?.name ?? doc.data.category}</a
+        >
+        <span>/</span>
+        <span class="breadcrumb-current text-[var(--color-text-strong)]">{doc.data.title}</span>
+      </nav>
+
+      <article
+        class="site-panel docs-article rounded-[15px] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 sm:p-8 lg:p-10"
+        {...articlePagefindAttributes}
+      >
+        <h1 class="text-4xl font-semibold tracking-tight text-[var(--color-text-strong)] lg:text-5xl">
+          {doc.data.title}
+        </h1>
+        {
+          doc.data.description && (
+            <p class="mt-5 max-w-2xl text-base leading-7 text-[var(--color-text)]">{doc.data.description}</p>
+          )
+        }
+
+        {
+          doc.data.heroImage && (
+            <div class="mt-8 overflow-hidden rounded-[15px] border border-[var(--color-border)] bg-[var(--color-surface-muted)]">
+              <Image
+                src={doc.data.heroImage}
+                alt=""
+                class="docs-article-hero h-auto w-full"
+                widths={[900, 1400]}
+                sizes="(min-width: 1024px) 900px, 100vw"
+              />
+            </div>
+          )
+        }
+
+        {
+          (doc.data.author || doc.data.status || doc.data.tags.length > 0) && (
+            <div class="sr-only" data-pagefind-ignore>
+              {doc.data.author && (
+                <span
+                  data-pagefind-filter={`author:${doc.data.author}`}
+                  data-pagefind-meta={`author:${doc.data.author}`}
+                >
+                  {doc.data.author}
+                </span>
+              )}
+              {doc.data.status && (
+                <span
+                  data-pagefind-filter={`status:${doc.data.status}`}
+                  data-pagefind-meta={`status:${doc.data.status}`}
+                >
+                  {doc.data.status}
+                </span>
+              )}
+              {doc.data.tags.map((tag) => (
+                <span data-pagefind-filter={`tag:${tag}`}>{tag}</span>
+              ))}
+            </div>
+          )
+        }
+
+        <div class="docs-divider mt-8 border-t"></div>
+
+        <div
+          class="prose mt-8 max-w-none prose-headings:font-semibold prose-a:text-[var(--color-accent)] prose-a:no-underline hover:prose-a:text-[var(--color-accent-hover)] prose-code:rounded prose-code:bg-[var(--color-inline-code-bg)] prose-code:px-1 prose-code:py-0.5 prose-code:text-[var(--color-inline-code-fg)] prose-pre:bg-transparent prose-pre:p-0"
+        >
+          <Content components={mdxComponents} />
+        </div>
+
+        {
+          doc.data.relatedLinks.length > 0 && (
+            <section class="docs-related-links mt-12 border-t border-[var(--color-border)] pt-8">
+              <p class="docs-ui-label">Continue with</p>
+              <div class="docs-card-grid mt-4 grid gap-4 md:grid-cols-2" data-pagefind-ignore>
+                {doc.data.relatedLinks.map((link) => (
+                  <Card href={link.href} title={link.title} description={link.description} eyebrow={link.eyebrow} />
+                ))}
+              </div>
+            </section>
+          )
+        }
+
+        {
+          (previousDoc || nextDoc) && (
+            <section class="docs-article-footer mt-12 border-t border-[var(--color-border)] pt-8">
+              {(previousDoc || nextDoc) && (
+                <nav class="docs-article-pagination" aria-label="Article navigation">
+                  <div class="grid gap-4 md:grid-cols-2">
+                    {previousDoc ? (
+                      <a
+                        href={getArticleHref(previousDoc.data.category, getCleanDocSlug(previousDoc.id))}
+                        class="docs-article-pagination-link"
+                      >
+                        <span class="docs-article-pagination-label">
+                          <svg class="docs-article-pagination-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <use href="/icons/docs-navigation.svg#arrow-left" />
+                          </svg>
+                          Previous article
+                        </span>
+                        <span class="docs-article-pagination-title">{previousDoc.data.title}</span>
+                      </a>
+                    ) : (
+                      <div class="hidden md:block" />
+                    )}
+
+                    {nextDoc && (
+                      <a
+                        href={getArticleHref(nextDoc.data.category, getCleanDocSlug(nextDoc.id))}
+                        class="docs-article-pagination-link docs-article-pagination-link-next"
+                      >
+                        <span class="docs-article-pagination-label">
+                          Next article
+                          <svg class="docs-article-pagination-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <use href="/icons/docs-navigation.svg#arrow-right" />
+                          </svg>
+                        </span>
+                        <span class="docs-article-pagination-title">{nextDoc.data.title}</span>
+                      </a>
+                    )}
+                  </div>
+                </nav>
+              )}
+            </section>
+          )
+        }
+      </article>
+
+      {
+        (doc.data.updatedAt || doc.data.editUrl) && (
+          <div class="docs-article-meta mt-5 flex flex-col gap-3 px-1 sm:flex-row sm:items-center sm:justify-between">
+            {doc.data.updatedAt ? (
+              <p class="docs-article-meta-copy">
+                Updated{' '}
+                {doc.data.updatedAt.toLocaleDateString('en-US', {
+                  month: 'long',
+                  day: 'numeric',
+                  year: 'numeric',
+                })}
+              </p>
+            ) : (
+              <div />
+            )}
+
+            {doc.data.editUrl && (
+              <a href={doc.data.editUrl} target="_blank" rel="noreferrer" class="docs-article-meta-link">
+                Edit this page
+              </a>
+            )}
+          </div>
+        )
+      }
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import '../../../scripts/article-enhancements';
+</script>

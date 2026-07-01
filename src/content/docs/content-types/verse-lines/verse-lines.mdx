@@ -1,0 +1,33 @@
+---
+title: 'Verse, Lines &amp; Poetry'
+description: 'Fine-grained verse lines, hemistich pairs, and antiphonal poetry structure.'
+category: 'content-types'
+order: 22
+updatedAt: 2026-07-01
+---
+
+
+OLS v1.0 supports fine-grained verse structure for Psalms, Deggwa hymns, and antiphonal performance.
+
+
+```json
+{
+  "type": "hemistich-pair",
+  "n": 1,
+  "lines": [
+    {
+      "n": "1a",
+      "hemistich": "a",
+      "roles": ["role-cantor"],
+      "text": { "en": "The Lord is my shepherd" }
+    },
+    {
+      "n": "1b",
+      "hemistich": "b",
+      "roles": ["role-congregation"],
+      "text": { "en": "I shall not want" }
+    }
+  ]
+}
+```
+

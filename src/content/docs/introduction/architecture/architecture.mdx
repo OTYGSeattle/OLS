@@ -1,0 +1,60 @@
+---
+title: 'Architecture &amp; Scope'
+description: 'Layered architecture and scope rules for traditions and profiles.'
+category: 'introduction'
+order: 3
+updatedAt: 2026-07-01
+---
+
+
+OLS is layered. The core standard avoids forcing one tradition’s structure onto another. Tradition-specific details belong in profiles.
+
+
+```json
+OLS Core
+  └── Christian Liturgical Core
+        └── Oriental Orthodox Core
+              ├── EOTC Profile
+              ├── Eritrean Orthodox Profile
+              ├── Coptic Orthodox Profile
+              ├── Syriac Orthodox Profile
+              ├── Armenian Apostolic Profile
+              └── Malankara Orthodox Profile
+```
+
+        
+### Scope Object
+
+
+```json
+{
+  "scope": {
+    "core": "christian-liturgical",
+    "family": "oriental-orthodox",
+    "tradition": "eotc",
+    "profile": "eotc.v1",
+    "status": "eotc-first",
+    "otherTraditionsSupported": [
+      "eritrean-orthodox",
+      "coptic-orthodox",
+      "syriac-orthodox",
+      "armenian-apostolic",
+      "malankara-orthodox"
+    ]
+  }
+}
+```
+
+        
+### Scope Rules
+
+        
+| Rule | Requirement |
+| --- | --- |
+| Core fields | MUST remain usable across Christian liturgical traditions. |
+| Profile fields | MUST live under `traditions.<namespace>`. |
+| EOTC-specific terms | MUST NOT be treated as universal Oriental Orthodox terms. |
+| Local parish customs | SHOULD be encoded as variants or local custom overlays. |
+| Teaching content | MUST distinguish explanation from liturgical text. |
+
+

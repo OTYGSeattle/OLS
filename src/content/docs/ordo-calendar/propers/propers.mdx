@@ -1,0 +1,30 @@
+---
+title: 'Propers &amp; Slots'
+description: 'Feast or season specific propers, slots, and priority classes.'
+category: 'ordo-calendar'
+order: 24
+updatedAt: 2026-07-01
+---
+
+
+The ordinary is fixed service structure. The propers vary by day, feast, season, commemoration, or local usage.
+
+
+```json
+{
+  "id": "proper-timkat",
+  "priority": 100,
+  "priorityClass": "major-feast",
+  "conditions": {
+    "calendarDate": {
+      "system": "ethiopian",
+      "month": 5,
+      "day": 11
+    }
+  },
+  "fills": {
+    "gospel-of-the-day": { "$ref": "reading-timkat-gospel" }
+  }
+}
+```
+

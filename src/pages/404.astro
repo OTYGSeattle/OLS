@@ -1,0 +1,35 @@
+---
+import Layout from '../layouts/Layout.astro';
+import site from '../../site.config.mjs';
+---
+
+<Layout
+  title={`Page not found | ${site.title}`}
+  description="This page could not be found. Return to the Compass docs homepage or browse the main documentation sections."
+  mainClass="bg-[var(--color-surface-muted)]"
+  footerClass="mt-0"
+>
+  <section class="py-20 md:py-24">
+    <div class="mx-auto max-w-[1280px] px-4 md:px-8">
+      <div class="mx-auto max-w-3xl px-8 py-8 text-center md:px-12 md:py-12">
+        <p class="docs-ui-label text-[var(--color-accent)]">404</p>
+        <h1 class="mt-4 text-4xl font-extrabold tracking-tight text-[var(--color-text-strong)] md:text-5xl">
+          We couldn't find that page
+        </h1>
+        <p class="mx-auto mt-5 max-w-2xl text-base leading-7 text-[var(--color-text)] md:text-lg">
+          The link may be outdated, or the URL may have been typed incorrectly. Jump back to the homepage or browse the
+          docs categories to keep moving.
+        </p>
+
+        <div class="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <a
+            href="/"
+            class="inline-flex min-w-44 items-center justify-center rounded-[15px] bg-[var(--color-brand)] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-brand-hover)]"
+          >
+            Go to homepage
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
