@@ -34,7 +34,7 @@ const canonicalUrl = new URL(Astro.url.pathname, site.siteUrl).toString();
     <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width" />
     <meta name="color-scheme" content="light dark" />
-    <link rel="icon" type="image/svg+xml" href="/favicon-light.svg" id="site-favicon" />
+    <link rel="icon" type="image/png" href="/otyg-app-icon.png" />
     <link rel="canonical" href={canonicalUrl} />
     <link
       rel="alternate"
@@ -67,15 +67,7 @@ const canonicalUrl = new URL(Astro.url.pathname, site.siteUrl).toString();
       const shouldUseDark = storedTheme ? storedTheme === 'dark' : systemPrefersDark;
       document.documentElement.classList.toggle('dark', shouldUseDark);
 
-      window.__syncCompassFavicon = (isDark) => {
-        const favicon = document.getElementById('site-favicon');
 
-        if (favicon instanceof HTMLLinkElement) {
-          favicon.href = isDark ? '/favicon-dark.svg' : '/favicon-light.svg';
-        }
-      };
-
-      window.__syncCompassFavicon(shouldUseDark);
     </script>
   </head>
   <body class="relative flex min-h-screen flex-col bg-[var(--color-canvas)] text-[var(--color-text)] antialiased">
