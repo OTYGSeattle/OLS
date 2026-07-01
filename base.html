@@ -1,0 +1,1387 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OpenLiturgy Standard · OLS v1.0</title>
+  <style>
+    :root {
+      /* Classical & Antiquity Inspired Palette */
+      --bg: #FDFBF7;
+      --surface: #FFFFFF;
+      --sidebar: #161412;
+      --sidebar-hover: #26221E;
+      --sidebar-active: #302A25;
+      --sidebar-text: #D6CFC4;
+      --sidebar-accent: #D4AF37; /* Old Gold */
+      
+      --text: #2C2621;
+      --muted: #6E6358;
+      --border: #E8E3DB;
+      
+      --accent: #B8860B; 
+      --accent-bg: #FDF8ED;
+      --accent-dark: #8B6508;
+      
+      --blue: #234E70;
+      --blue-bg: #EDF3F8;
+      --green: #2E5C40;
+      --green-bg: #EEF6F0;
+      --red: #8B2323;
+      --red-bg: #FDF0F0;
+      
+      --code: #1E1B18;
+      --code-text: #E6DFD3;
+      
+      --sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --serif: "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+      --mono: ui-monospace, "Cascadia Code", "Fira Code", monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      height: 100vh;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .layout {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Sidebar Navigation */
+    aside {
+      width: 280px;
+      min-width: 280px;
+      background: var(--sidebar);
+      height: 100vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid #000;
+      box-shadow: 2px 0 15px rgba(0,0,0,0.4);
+      z-index: 10;
+    }
+
+    .brand {
+      padding: 1.5rem 1.25rem 1.25rem;
+      border-bottom: 1px solid #2A2520;
+    }
+
+    .eyebrow {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      color: var(--sidebar-accent);
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .brand-title {
+      color: #FFF;
+      font-weight: 700;
+      font-family: var(--serif);
+      font-size: 1.4rem;
+      line-height: 1.1;
+      letter-spacing: 0.02em;
+    }
+
+    .brand-subtitle {
+      color: var(--sidebar-text);
+      font-size: 0.75rem;
+      margin-top: 6px;
+      line-height: 1.4;
+    }
+
+    .cross {
+      text-align: center;
+      padding: 0.75rem 0 0.5rem;
+      font-size: 1.2rem;
+      color: var(--sidebar-accent);
+      opacity: 0.5;
+      border-bottom: 1px solid #2A2520;
+    }
+
+    nav {
+      flex: 1;
+      padding: 0.5rem 0;
+    }
+
+    .nav-item {
+      width: 100%;
+      text-align: left;
+      background: transparent;
+      color: var(--sidebar-text);
+      border: none;
+      padding: 0.45rem 1.25rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+      line-height: 1.4;
+      border-left: 3px solid transparent;
+      display: flex;
+      justify-content: space-between;
+      gap: 0.5rem;
+      align-items: center;
+      transition: all 0.2s ease;
+    }
+
+    .nav-item:hover, .nav-item:focus-visible {
+      background: var(--sidebar-hover);
+      color: #FFF;
+      outline: none;
+    }
+
+    .nav-item[aria-current="page"] {
+      background: var(--sidebar-active);
+      color: #FFF;
+      border-left-color: var(--sidebar-accent);
+      font-weight: 600;
+    }
+
+    .nav-item em {
+      background: rgba(212, 175, 55, 0.15);
+      color: var(--sidebar-accent);
+      font-style: normal;
+      font-size: 0.55rem;
+      font-weight: 700;
+      padding: 2px 5px;
+      border-radius: 3px;
+      white-space: nowrap;
+      border: 1px solid rgba(212, 175, 55, 0.3);
+    }
+
+    .license {
+      padding: 1rem 1.25rem;
+      border-top: 1px solid #2A2520;
+      font-size: 0.7rem;
+      color: #7A6F62;
+      line-height: 1.6;
+    }
+
+    /* Main Content Area */
+    main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 3rem 4rem 5rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .doc-section {
+      display: none;
+      animation: fadeUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .doc-section.active {
+      display: block;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Typography */
+    h2 {
+      font-family: var(--serif);
+      font-size: 2rem;
+      font-weight: 600;
+      color: var(--text);
+      margin: 0 0 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    h2 span {
+      background: var(--sidebar);
+      color: var(--sidebar-accent);
+      border-radius: 4px;
+      padding: 3px 10px;
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    h3 {
+      font-family: var(--serif);
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text);
+      margin: 2rem 0 0.75rem;
+    }
+
+    p {
+      color: var(--muted);
+      line-height: 1.8;
+      margin: 0.75rem 0;
+      font-size: 0.95rem;
+    }
+
+    code {
+      font-family: var(--mono);
+      font-size: 0.85em;
+      background: rgba(0,0,0,0.04);
+      padding: 0.15em 0.3em;
+      border-radius: 4px;
+      color: var(--accent-dark);
+    }
+
+    /* Code Blocks */
+    pre {
+      background: var(--code);
+      color: var(--code-text);
+      padding: 1.25rem 1.5rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      overflow-x: auto;
+      line-height: 1.6;
+      margin: 1.25rem 0;
+      border: 1px solid #332D27;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    pre code {
+      background: transparent;
+      padding: 0;
+      color: inherit;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      margin: 1.25rem 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+
+    th {
+      background: #F4F1EA;
+      padding: 0.75rem 1rem;
+      text-align: left;
+      font-weight: 600;
+      color: var(--text);
+      border-bottom: 2px solid var(--border);
+    }
+
+    td {
+      padding: 0.75rem 1rem;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      line-height: 1.6;
+      vertical-align: top;
+    }
+
+    tr:last-child td { border-bottom: none; }
+    td:first-child { color: var(--text); font-weight: 500; font-family: var(--mono); }
+
+    /* Notes & Callouts */
+    .note {
+      border-left: 4px solid var(--accent);
+      background: var(--accent-bg);
+      color: var(--accent-dark);
+      padding: 1rem 1.25rem;
+      border-radius: 0 8px 8px 0;
+      margin: 1.25rem 0;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+    .note.new { border-left-color: var(--blue); background: var(--blue-bg); color: var(--blue); }
+    .note.tip { border-left-color: var(--green); background: var(--green-bg); color: var(--green); }
+    .note.warn { border-left-color: var(--red); background: var(--red-bg); color: var(--red); }
+
+    /* Quotes / Verses */
+    .verse {
+      margin: 1.5rem 0;
+      padding: 1.25rem;
+      background: transparent;
+      border-left: 2px solid var(--sidebar-accent);
+      color: var(--muted);
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+
+    /* Chips */
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 0.75rem 0;
+    }
+
+    .chips span {
+      background: var(--surface);
+      color: var(--muted);
+      padding: 3px 10px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-family: var(--mono);
+      border: 1px solid var(--border);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      body { overflow: auto; height: auto; }
+      .layout { flex-direction: column; height: auto; overflow: visible; }
+      aside { width: 100%; height: auto; max-height: 50vh; border-right: none; border-bottom: 1px solid #000; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+      main { padding: 2rem 1.5rem; max-width: 100%; margin: 0; }
+      table { display: block; overflow-x: auto; white-space: nowrap; }
+    }
+
+    @media print {
+      body { overflow: visible; height: auto; background: white; }
+      .layout { display: block; height: auto; }
+      aside { display: none; }
+      main { max-width: none; padding: 0; overflow: visible; }
+      .doc-section { display: block !important; page-break-after: auto; margin-bottom: 2rem; opacity: 1; transform: none; animation: none; }
+      pre { white-space: pre-wrap; border: 1px solid #ccc; box-shadow: none; color: #000; background: #f9f9f9; }
+      table { page-break-inside: avoid; border: 1px solid #ccc; }
+      th, td { border-bottom: 1px solid #ccc; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside>
+      <div class="brand">
+        <div class="eyebrow">Open Source Spec</div>
+        <div class="brand-title">OpenLiturgy</div>
+        <div class="brand-subtitle">Standard Specification v1.0</div>
+      </div>
+      <div class="cross">✙</div>
+      <nav role="navigation" aria-label="Documentation sections">
+        <button class="nav-item" data-target="overview"><span>1 · Release Overview</span><em>v1.0</em></button>
+        <button class="nav-item" data-target="status"><span>2 · Document Status</span><em>v1.0</em></button>
+        <button class="nav-item" data-target="architecture"><span>3 · Architecture &amp; Scope</span><em>v1.0</em></button>
+        <button class="nav-item" data-target="package"><span>4 · Package Layout</span><em>v1.0</em></button>
+        <button class="nav-item" data-target="ids"><span>5 · IDs &amp; References</span><em>v1.0</em></button>
+        <button class="nav-item" data-target="concepts"><span>6 · Core Data Model</span><em>v1.0</em></button>
+        <button class="nav-item" data-target="localized"><span>7 · LocalizedText</span><em>v1.0</em></button>
+        <button class="nav-item" data-target="transliteration-systems"><span>7A · Transliteration</span><em>v1.0</em></button>
+        <button class="nav-item" data-target="source"><span>8 · Source &amp; Provenance</span><em>v1.0</em></button>
+        <button class="nav-item" data-target="authority"><span>9 · Ecclesial Authority</span><em>v1.0</em></button>
+        <button class="nav-item" data-target="people"><span>10 · Persons &amp; Orgs</span><em>v1.0</em></button>
+        <button class="nav-item" data-target="roles"><span>11 · Roles &amp; RoleGroups</span><em>v1.0</em></button>
+        <button class="nav-item" data-target="role-inheritance"><span>11A · Role Inheritance</span><em>v1.0</em></button>
+        <button class="nav-item" data-target="utterances"><span>12 · Utterances</span><em>v1.0</em></button>
+        <button class="nav-item" data-target="readings"><span>13 · Scripture &amp; Reading</span><em>v1.0</em></button>
+        <button class="nav-item" data-target="chant"><span>14 · Chant &amp; Music</span><em>v1.0</em></button>
+        <button class="nav-item" data-target="inline-chant"><span>14A · Inline Chant Alignment</span><em>v1.0</em></button>
+        <button class="nav-item" data-target="rubrics"><span>15 · Rubrics &amp; Actions</span><em>v1.0</em></button>
+        <button class="nav-item" data-target="space"><span>16 · Sacred Space &amp; Access</span><em>v1.0</em></button>
+        <button class="nav-item" data-target="rubric-state"><span>16A · Rubric State Machines</span><em>v1.0</em></button>
+        <button class="nav-item" data-target="blocks"><span>17 · Blocks &amp; Elements</span><em>v1.0</em></button>
+        <button class="nav-item" data-target="verse-lines"><span>18 · Verse &amp; Poetry</span><em>v1.0</em></button>
+        <button class="nav-item" data-target="sections"><span>19 · Sections &amp; Ordo</span><em>v1.0</em></button>
+        <button class="nav-item" data-target="propers"><span>20 · Propers &amp; Slots</span><em>v1.0</em></button>
+        <button class="nav-item" data-target="proper-mutations"><span>20A · Proper Mutations</span><em>v1.0</em></button>
+        <button class="nav-item" data-target="calendar"><span>21 · Calendar Model</span><em>v1.0</em></button>
+        <button class="nav-item" data-target="deterministic-calendar"><span>21A · Deterministic Resolution</span><em>v1.0</em></button>
+        <button class="nav-item" data-target="service"><span>22 · ServiceInstance</span><em>v1.0</em></button>
+        <button class="nav-item" data-target="execution-timeline"><span>22A · Timeline Binding</span><em>v1.0</em></button>
+        <button class="nav-item" data-target="assets"><span>23 · Assets &amp; Media</span><em>v1.0</em></button>
+        <button class="nav-item" data-target="variants"><span>24 · Scholarly Apparatus</span><em>v1.0</em></button>
+        <button class="nav-item" data-target="teaching"><span>25 · Teaching &amp; Commentary</span><em>v1.0</em></button>
+        <button class="nav-item" data-target="schemas"><span>26 · JSON Schema</span><em>v1.0</em></button>
+        <button class="nav-item" data-target="conformance"><span>27 · Conformance Levels</span><em>v1.0</em></button>
+        <button class="nav-item" data-target="governance"><span>28 · Governance</span><em>v1.0</em></button>
+        <button class="nav-item" data-target="eotc"><span>29 · EOTC Profile v1</span><em>v1.0</em></button>
+        <button class="nav-item" data-target="oo-core"><span>30 · Oriental Orthodox</span><em>v1.0</em></button>
+        <button class="nav-item" data-target="testing"><span>31 · Test Fixtures</span><em>v1.0</em></button>
+        <button class="nav-item" data-target="example"><span>32 · Full Corpus Example</span><em>v1.0</em></button>
+        <button class="nav-item" data-target="bibliography"><span>33 · Reference Sources</span><em>v1.0</em></button>
+      </nav>
+      <div class="license">Apache 2.0 Spec<br />openliturgy.org/schema/v1.0</div>
+    </aside>
+
+    <main id="main-content" tabindex="-1">
+      
+      <section id="overview" class="doc-section">
+        <h2><span>1</span>Release Overview</h2>
+        <p><strong>OpenLiturgy Standard (OLS) v1.0</strong> is a structured, source-aware, authority-aware data standard for encoding Christian liturgical texts, actions, calendars, music, teaching notes, and service records. This version assumes the previous draft was <strong>v0.1</strong> and promotes it into a more complete first stable release candidate.</p>
+        <div class="note new">
+          <strong>v1.0 goal:</strong> make liturgical content portable, validatable, teachable, deterministic, performance-aware, and respectful of ecclesial authority.
+        </div>
+        <h3>Major v1.0 Additions</h3>
+        <table>
+          <thead>
+            <tr><th>Area</th><th>v1.0 Addition</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Validation</td><td>Normative JSON Schema requirements, required fields, ID rules, and test fixtures.</td></tr>
+            <tr><td>Authority</td><td>Clergy review, approval status, allowed/restricted use, jurisdiction, and review history.</td></tr>
+            <tr><td>Sources</td><td>Citation, provenance, manuscript/printed source tracking, translation status, and confidence level.</td></tr>
+            <tr><td>Text</td><td>Language tags, scripts, transliteration, direction, register, reading level, and alignment metadata.</td></tr>
+            <tr><td>Scripture</td><td>Dedicated <code>Reading</code> entity with OSIS-style references and liturgical introductions.</td></tr>
+            <tr><td>Calendar</td><td>Fixed feasts, movable feasts, fasting periods, monthly commemorations, lectionary cycles, and conflict rules.</td></tr>
+            <tr><td>Chant</td><td>Yaredic modes, chant source, zema type, performance cues, instruments, and audio/notation links.</td></tr>
+            <tr><td>Rubrics</td><td>Movement, posture, action, sound, setting, rubric force, conditions, access constraints, and sacred-space zones.</td></tr>
+            <tr><td>Teaching</td><td>Bible links, commentary, patristic notes, youth explanations, language notes, and discussion questions.</td></tr>
+            <tr><td>Privacy</td><td>ServiceInstance visibility, anonymization, consent, retention, and public-release controls.</td></tr>
+            <tr><td>Governance</td><td>Conformance levels, versioning policy, review workflow, extension namespaces, and profile structure.</td></tr>
+            <tr><td>Structural Mutation</td><td>Propers may fill, insert, replace, omit, move, wrap, or set attributes in a resolved Ordo.</td></tr>
+            <tr><td>Determinism</td><td>Calendar conflicts use explicit override rules, priority class, and canonical fallback; never JSON key order.</td></tr>
+            <tr><td>Performance Validation</td><td>Rubrics can be replayed as state transitions across actors, zones, objects, and posture.</td></tr>
+            <tr><td>Timeline Binding</td><td>ServiceInstance can bind timestamps and durations to sections, blocks, rubrics, readings, and media segments.</td></tr>
+          </tbody>
+        </table>
+        <div class="verse">“Let all things be done decently and in order.” — <strong>1 Corinthians 14:40</strong></div>
+      </section>
+
+      <section id="status" class="doc-section">
+        <h2><span>2</span>Document Status</h2>
+        <p>This document defines the expected shape, behavior, and governance of OLS v1.0. It is written as a <strong>standard specification</strong>, not merely a UI demo.</p>
+        <h3>Status Values</h3>
+        <table>
+          <thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+          <tbody>
+            <tr><td><code>draft</code></td><td>Work in progress. Not stable. May change without migration support.</td></tr>
+            <tr><td><code>review</code></td><td>Submitted for technical and ecclesial review.</td></tr>
+            <tr><td><code>candidate</code></td><td>Feature-complete pending final validation.</td></tr>
+            <tr><td><code>stable</code></td><td>Approved v1.0 format. Breaking changes require a major version.</td></tr>
+            <tr><td><code>deprecated</code></td><td>Still readable but should not be used for new content.</td></tr>
+          </tbody>
+        </table>
+        <h3>Normative Keywords</h3>
+        <table>
+          <thead><tr><th>Keyword</th><th>Meaning</th></tr></thead>
+          <tbody>
+            <tr><td>MUST</td><td>Required for OLS v1.0 compliance.</td></tr>
+            <tr><td>MUST NOT</td><td>Forbidden in compliant files.</td></tr>
+            <tr><td>SHOULD</td><td>Strongly recommended unless there is a documented reason.</td></tr>
+            <tr><td>MAY</td><td>Optional feature.</td></tr>
+            <tr><td>RECOMMENDED</td><td>Best practice for interoperability and long-term preservation.</td></tr>
+          </tbody>
+        </table>
+        <div class="note">
+          A file that claims <code>ols_version: 1.0.0</code> MUST validate against the appropriate v1.0 schema and MUST declare its file type.
+        </div>
+      </section>
+
+      <section id="architecture" class="doc-section">
+        <h2><span>3</span>Architecture &amp; Scope</h2>
+        <p>OLS is layered. The core standard avoids forcing one tradition’s structure onto another. Tradition-specific details belong in profiles.</p>
+<pre><code>OLS Core
+  └── Christian Liturgical Core
+        └── Oriental Orthodox Core
+              ├── EOTC Profile
+              ├── Eritrean Orthodox Profile
+              ├── Coptic Orthodox Profile
+              ├── Syriac Orthodox Profile
+              ├── Armenian Apostolic Profile
+              └── Malankara Orthodox Profile</code></pre>
+        <h3>Scope Object</h3>
+<pre><code>{
+  "scope": {
+    "core": "christian-liturgical",
+    "family": "oriental-orthodox",
+    "tradition": "eotc",
+    "profile": "eotc.v1",
+    "status": "eotc-first",
+    "otherTraditionsSupported": [
+      "eritrean-orthodox",
+      "coptic-orthodox",
+      "syriac-orthodox",
+      "armenian-apostolic",
+      "malankara-orthodox"
+    ]
+  }
+}</code></pre>
+        <h3>Scope Rules</h3>
+        <table>
+          <thead><tr><th>Rule</th><th>Requirement</th></tr></thead>
+          <tbody>
+            <tr><td>Core fields</td><td>MUST remain usable across Christian liturgical traditions.</td></tr>
+            <tr><td>Profile fields</td><td>MUST live under <code>traditions.&lt;namespace&gt;</code>.</td></tr>
+            <tr><td>EOTC-specific terms</td><td>MUST NOT be treated as universal Oriental Orthodox terms.</td></tr>
+            <tr><td>Local parish customs</td><td>SHOULD be encoded as variants or local custom overlays.</td></tr>
+            <tr><td>Teaching content</td><td>MUST distinguish explanation from liturgical text.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="package" class="doc-section">
+        <h2><span>4</span>Package Layout</h2>
+        <p>Real liturgical corpora are large. OLS v1.0 therefore defines a package layout, manifest, and modular references.</p>
+<pre><code>openliturgy-package/
+  manifest.ols.json
+  schema/
+  roles/
+  persons/
+  organizations/
+  texts/
+  readings/
+  chants/
+  rubrics/
+  blocks/
+  sections/
+  ordos/
+  propers/
+  calendars/
+  service-instances/
+  assets/
+  commentary/
+  tests/
+    valid/
+    invalid/</code></pre>
+        <h3>Manifest</h3>
+<pre><code>{
+  "$schema": "https://openliturgy.org/schema/v1.0/manifest.schema.json",
+  "ols_version": "1.0.0",
+  "type": "manifest",
+  "package": "org.openliturgy.eotc.core",
+  "version": "1.0.0",
+  "title": {
+    "en": "EOTC Core Liturgical Package"
+  },
+  "scope": {
+    "family": "oriental-orthodox",
+    "tradition": "eotc",
+    "profile": "eotc.v1"
+  },
+  "dependencies": [
+    "org.openliturgy.common.bible@1",
+    "org.openliturgy.common.psalter@1"
+  ],
+  "license": {
+    "spec": "Apache-2.0",
+    "content": "see-individual-sources"
+  }
+}</code></pre>
+        <h3>Package Rules</h3>
+        <table>
+          <thead><tr><th>Rule</th><th>Requirement</th></tr></thead>
+          <tbody>
+            <tr><td>Manifest</td><td>Every distributable package MUST include <code>manifest.ols.json</code>.</td></tr>
+            <tr><td>References</td><td>Cross-file references MUST use stable IDs or package-qualified IDs.</td></tr>
+            <tr><td>Assets</td><td>Binary files SHOULD be stored outside JSON and linked by URI.</td></tr>
+            <tr><td>Content license</td><td>MUST be declared per package and MAY be overridden per entity.</td></tr>
+            <tr><td>Review status</td><td>MUST be declared at package level and MAY be overridden per entity.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="ids" class="doc-section">
+        <h2><span>5</span>IDs, References &amp; Namespaces</h2>
+        <p>OLS v1.0 uses stable identifiers so content can be reused across apps, service books, teaching tools, and archives.</p>
+        <h3>ID Format</h3>
+<pre><code>{
+  "id": "eotc.kidase.common.block.kyrie"
+}</code></pre>
+        <h3>Reference Forms</h3>
+        <table>
+          <thead><tr><th>Form</th><th>Example</th><th>Use</th></tr></thead>
+          <tbody>
+            <tr><td>Local ID</td><td><code>block-kyrie</code></td><td>Same file or same package context.</td></tr>
+            <tr><td>Qualified ID</td><td><code>eotc.kidase.common.block.kyrie</code></td><td>Stable package-level reference.</td></tr>
+            <tr><td>URN</td><td><code>urn:ols:eotc:kidase:block:kyrie</code></td><td>Long-lived archival reference.</td></tr>
+            <tr><td>JSON Reference</td><td><code>{ "$ref": "blocks/kyrie.ols.json" }</code></td><td>File-level composition.</td></tr>
+          </tbody>
+        </table>
+        <h3>ID Rules</h3>
+        <table>
+          <thead><tr><th>Rule</th><th>Requirement</th></tr></thead>
+          <tbody>
+            <tr><td>Uniqueness</td><td>IDs MUST be unique within a package.</td></tr>
+            <tr><td>Stability</td><td>IDs SHOULD NOT change when text is translated.</td></tr>
+            <tr><td>Versioning</td><td>Breaking textual or structural changes SHOULD create a new version field, not a new random ID.</td></tr>
+            <tr><td>Human readability</td><td>IDs SHOULD be descriptive and lowercase.</td></tr>
+            <tr><td>No spaces</td><td>IDs MUST NOT contain spaces.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="concepts" class="doc-section">
+        <h2><span>6</span>Core Data Model</h2>
+        <p>OLS v1.0 is built from reusable entities. These entities can be used independently or composed into complete services.</p>
+        <table>
+          <thead><tr><th>Entity</th><th>Purpose</th><th>Required In</th></tr></thead>
+          <tbody>
+            <tr><td><code>LocalizedText</code></td><td>Multilingual and transliterated text container.</td><td>All human-readable text.</td></tr>
+            <tr><td><code>Citation</code></td><td>Bibliographic or source reference.</td><td>Source-aware content.</td></tr>
+            <tr><td><code>Provenance</code></td><td>Who transcribed, translated, reviewed, and when.</td><td>All serious corpora.</td></tr>
+            <tr><td><code>Authority</code></td><td>Ecclesial review and permitted use.</td><td>Liturgical and teaching corpora.</td></tr>
+            <tr><td><code>Person</code></td><td>Priest, deacon, cantor, translator, reviewer, or performer.</td><td>ServiceInstance, review, provenance.</td></tr>
+            <tr><td><code>Organization</code></td><td>Parish, diocese, monastery, publisher, school.</td><td>Authority and source context.</td></tr>
+            <tr><td><code>Role</code></td><td>Liturgical function such as priest, deacon, cantor, congregation.</td><td>Utterance, Rubric, ServiceInstance.</td></tr>
+            <tr><td><code>RoleGroup</code></td><td>Addressable ensemble of roles.</td><td>Unison, antiphony, collective actions.</td></tr>
+            <tr><td><code>Utterance</code></td><td>Atomic spoken, chanted, sung, silent, or whispered text.</td><td>Blocks and service content.</td></tr>
+            <tr><td><code>Reading</code></td><td>Scriptural or synaxarial reading.</td><td>Lectionary and service books.</td></tr>
+            <tr><td><code>Chant</code></td><td>Musical metadata and performance notes.</td><td>Chanted/sung elements.</td></tr>
+            <tr><td><code>Rubric</code></td><td>Action, posture, movement, setting, sound, or instruction.</td><td>Performable service content.</td></tr>
+            <tr><td><code>Block</code></td><td>Reusable group of utterances, readings, rubrics, and line groups.</td><td>Sections and propers.</td></tr>
+            <tr><td><code>Section</code></td><td>Major division of a service.</td><td>Ordo.</td></tr>
+            <tr><td><code>ProperSlot</code></td><td>Placeholder for calendar-variable content.</td><td>Ordo and sections.</td></tr>
+            <tr><td><code>Proper</code></td><td>Calendar-activated content filling slots.</td><td>Calendar-aware services.</td></tr>
+            <tr><td><code>Calendar</code></td><td>Feasts, fasts, seasons, readings, commemorations.</td><td>Propers and planning.</td></tr>
+            <tr><td><code>Ordo</code></td><td>Template for a complete service.</td><td>Service books.</td></tr>
+            <tr><td><code>ServiceInstance</code></td><td>Record of a real service occurrence.</td><td>Parish logs, research, planning.</td></tr>
+            <tr><td><code>TeachingNote</code></td><td>Catechetical explanation, Bible links, discussion questions.</td><td>Teaching tools.</td></tr>
+            <tr><td><code>Variant</code></td><td>Alternate text, local custom, manuscript reading.</td><td>Scholarly and parish editions.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="localized" class="doc-section">
+        <h2><span>7</span>LocalizedText</h2>
+        <p><code>LocalizedText</code> is the basic human-readable text type. It supports multiple languages, scripts, transliteration, and text metadata.</p>
+        <h3>Schema Pattern</h3>
+<pre><code>{
+  "text": {
+    "gez-Ethi": "ሃሌሉያ",
+    "gez-Latn": "Halleluya",
+    "am-Ethi": "ሃሌሉያ",
+    "ti-Ethi": "ሃሌሉያ",
+    "en": "Hallelujah",
+    "ar": "هلليلويا"
+  },
+  "textMeta": {
+    "direction": "ltr",
+    "register": "liturgical",
+    "translationType": "formal",
+    "readingLevel": "general",
+    "alignment": "phrase",
+    "containsSacredName": false
+  }
+}</code></pre>
+        <h3>Recommended Language Tags</h3>
+        <table>
+          <thead><tr><th>Tag</th><th>Meaning</th><th>Use</th></tr></thead>
+          <tbody>
+            <tr><td><code>gez-Ethi</code></td><td>Ge’ez in Ethiopic script</td><td>Primary liturgical text.</td></tr>
+            <tr><td><code>gez-Latn</code></td><td>Ge’ez transliteration</td><td>Diaspora teaching and chant practice.</td></tr>
+            <tr><td><code>am-Ethi</code></td><td>Amharic in Ethiopic script</td><td>Vernacular explanation or translation.</td></tr>
+            <tr><td><code>ti-Ethi</code></td><td>Tigrinya in Ethiopic script</td><td>Eritrean/Tigrinya communities.</td></tr>
+            <tr><td><code>om-Latn</code></td><td>Oromo in Latin script</td><td>Oromo-language materials.</td></tr>
+            <tr><td><code>en</code></td><td>English</td><td>Diaspora teaching and translation.</td></tr>
+            <tr><td><code>ar</code></td><td>Arabic</td><td>Arabic-speaking communities; RTL.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="transliteration-systems" class="doc-section">
+        <h2><span>7A</span>Transliteration Systems</h2>
+        <p><code>gez-Latn</code> is not sufficient by itself. Ge’ez transliteration may be scholarly, phonetic, pedagogical, or parish-specific. OLS v1.0 therefore requires transliteration metadata when Latin-script Ge’ez is used.</p>
+        <h3>Transliteration Metadata</h3>
+<pre><code>{
+  "text": {
+    "gez-Ethi": "ቅዱስ እግዚአብሔር",
+    "gez-Latn": "Qəddus Ǝgziʾabəḥer"
+  },
+  "textMeta": {
+    "transliteration": {
+      "sourceLanguage": "gez-Ethi",
+      "targetTag": "gez-Latn",
+      "system": "scholarly-ies",
+      "purpose": "study",
+      "pronunciationBase": "classical-geez",
+      "reversible": true,
+      "reviewStatus": "needs-review"
+    }
+  }
+}</code></pre>
+        <h3>Transliteration Systems</h3>
+        <table>
+          <thead><tr><th>System</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td><code>scholarly-ies</code></td><td>Academic transliteration preserving classical distinctions.</td></tr>
+            <tr><td><code>bgn-pcgn</code></td><td>Standardized romanization where available.</td></tr>
+            <tr><td><code>phonetic-amharic</code></td><td>Pronunciation-oriented guide for Amharic-speaking readers.</td></tr>
+            <tr><td><code>phonetic-english</code></td><td>Pronunciation-oriented guide for English-speaking diaspora learners.</td></tr>
+            <tr><td><code>parish-custom</code></td><td>Local parish handout style; MUST identify source or reviewer.</td></tr>
+            <tr><td><code>custom</code></td><td>Requires a declared mapping table.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="source" class="doc-section">
+        <h2><span>8</span>Citation, Source &amp; Provenance</h2>
+        <p>OLS v1.0 requires serious liturgical content to identify its source. This protects against confusion between official texts, study translations, parish handouts, and drafts.</p>
+        <h3>Citation</h3>
+<pre><code>{
+  "citation": {
+    "id": "src-mesHafe-qeddase-ed1-p42",
+    "type": "printed-book",
+    "title": "Mäṣḥafä Qeddase",
+    "language": "gez",
+    "edition": "unknown",
+    "publisher": null,
+    "year": null,
+    "page": "42",
+    "line": "3",
+    "license": "restricted",
+    "notes": {
+      "en": "Exact edition requires verification."
+    }
+  }
+}</code></pre>
+        <h3>Provenance</h3>
+<pre><code>{
+  "provenance": {
+    "sourceStatus": "transcribed",
+    "transcriber": "person-transcriber-001",
+    "translator": "person-translator-001",
+    "editors": ["person-editor-001"],
+    "reviewers": ["person-priest-001", "person-geez-scholar-001"],
+    "confidence": "medium",
+    "lastReviewed": "2026-06-29",
+    "changeReason": "Initial v1.0 transcription from printed source."
+  }
+}</code></pre>
+        <h3>Source Types</h3>
+        <div class="chips"><span>printed-book</span><span>manuscript</span><span>oral-tradition</span><span>parish-handout</span><span>scholarly-edition</span><span>translation</span><span>audio-recording</span><span>video-recording</span><span>web-source</span><span>field-notes</span></div>
+      </section>
+
+      <section id="authority" class="doc-section">
+        <h2><span>9</span>Ecclesial Authority</h2>
+        <p>OLS does not make software the authority over the liturgy. It records who reviewed content, what it may be used for, and what remains restricted.</p>
+        <h3>Authority Object</h3>
+<pre><code>{
+  "authority": {
+    "status": "educational-only",
+    "jurisdiction": "eotc",
+    "approvingBody": null,
+    "reviewedBy": [
+      {
+        "person": "person-priest-001",
+        "role": "priest",
+        "date": "2026-06-29",
+        "scope": "terminology-and-pastoral-review"
+      }
+    ],
+    "allowedUse": ["education", "private-study", "parish-handout"],
+    "restrictedUse": ["altar-use", "sacramental-celebration"],
+    "requiresClergyReview": true,
+    "notes": {
+      "en": "For teaching and study only unless reviewed by competent ecclesial authority."
+    }
+  }
+}</code></pre>
+        <h3>Authority Status</h3>
+        <table>
+          <thead><tr><th>Status</th><th>Use</th></tr></thead>
+          <tbody>
+            <tr><td><code>draft</code></td><td>May contain errors. Not for public teaching without review.</td></tr>
+            <tr><td><code>needs-review</code></td><td>Awaiting clergy, liturgical, language, or scholarly review.</td></tr>
+            <tr><td><code>educational-only</code></td><td>Approved only as teaching material.</td></tr>
+            <tr><td><code>parish-reviewed</code></td><td>Reviewed for a specific parish context.</td></tr>
+            <tr><td><code>diocesan-approved</code></td><td>Approved by a diocesan authority.</td></tr>
+            <tr><td><code>synodal-approved</code></td><td>Approved by a synodal or official ecclesial body.</td></tr>
+            <tr><td><code>historical-only</code></td><td>Preserved for history; not current practice.</td></tr>
+            <tr><td><code>deprecated</code></td><td>Should not be used in new materials.</td></tr>
+          </tbody>
+        </table>
+        <div class="verse">“Hold fast the traditions which you were taught.” — <strong>2 Thessalonians 2:15</strong></div>
+      </section>
+
+      <section id="people" class="doc-section">
+        <h2><span>10</span>Persons &amp; Organizations</h2>
+        <p>People and organizations appear in sources, authority review, service instances, translations, and performance records.</p>
+        <h3>Person</h3>
+<pre><code>{
+  "id": "person-priest-001",
+  "type": "person",
+  "displayName": "Fr. ____",
+  "roles": ["priest", "reviewer"],
+  "affiliation": "org-parish-001",
+  "privacy": {
+    "visibility": "private-parish",
+    "publicName": "Fr. ____"
+  }
+}</code></pre>
+        <h3>Organization</h3>
+<pre><code>{
+  "id": "org-parish-001",
+  "type": "organization",
+  "kind": "parish",
+  "name": {
+    "en": "St. Mary Ethiopian Orthodox Tewahedo Church"
+  },
+  "jurisdiction": "eotc",
+  "location": {
+    "city": "Seattle",
+    "country": "US"
+  }
+}</code></pre>
+      </section>
+
+      <section id="roles" class="doc-section">
+        <h2><span>11</span>Roles &amp; RoleGroups</h2>
+        <p>A <code>Role</code> is a liturgical function. A <code>RoleGroup</code> is an addressable ensemble such as clergy, choir, congregation, or all present.</p>
+        <h3>Role</h3>
+<pre><code>{
+  "id": "role-deacon",
+  "type": "deacon",
+  "labels": {
+    "en": "Deacon",
+    "am-Ethi": "ዲያቆን",
+    "gez-Ethi": "ዲያቆን"
+  },
+  "abbreviation": {
+    "en": "D."
+  },
+  "traditions": {
+    "eotc": {
+      "nativeTitle": "Diyaqon",
+      "sanctuaryAccess": ["qene_mahlet", "qeddest"],
+      "canReadGospel": true,
+      "canHandleGospelBook": true
+    }
+  }
+}</code></pre>
+        <h3>Core Role Types</h3>
+        <table>
+          <thead><tr><th>Type</th><th>Meaning</th><th>Examples</th></tr></thead>
+          <tbody>
+            <tr><td><code>bishop</code></td><td>Presiding hierarch.</td><td>Abune, bishop.</td></tr>
+            <tr><td><code>celebrant</code></td><td>Presiding priest.</td><td>Priest serving Kidase.</td></tr>
+            <tr><td><code>concelebrant</code></td><td>Additional priest.</td><td>Priests serving together.</td></tr>
+            <tr><td><code>deacon</code></td><td>Deacon or liturgical assistant.</td><td>Deacon reading Gospel or assisting.</td></tr>
+            <tr><td><code>cantor</code></td><td>Chanter or trained singer.</td><td>Debtera, merigeta.</td></tr>
+            <tr><td><code>choir</code></td><td>Collective singers.</td><td>Mahlet choir.</td></tr>
+            <tr><td><code>reader</code></td><td>Scripture or text reader.</td><td>Epistle reader.</td></tr>
+            <tr><td><code>congregation</code></td><td>Faithful assembly.</td><td>All present faithful.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="role-inheritance" class="doc-section">
+        <h2><span>11A</span>Role Inheritance &amp; Substitution</h2>
+        <p>Liturgical roles are not flat. A bishop may serve in the place of a priest, a senior celebrant may fulfill a lower role, and local practice may allow substitutions.</p>
+<pre><code>{
+  "id": "role-bishop",
+  "type": "bishop",
+  "labels": { "en": "Bishop" },
+  "implements": ["role-priest", "role-celebrant"],
+  "substitutesFor": [
+    {
+      "role": "role-priest",
+      "scope": "eucharist",
+      "validWhen": {
+        "authorityStatusAtLeast": "parish-reviewed"
+      }
+    }
+  ]
+}</code></pre>
+      </section>
+
+      <section id="utterances" class="doc-section">
+        <h2><span>12</span>Utterances</h2>
+        <p>An <code>Utterance</code> is the atomic unit of liturgical speech: spoken, chanted, sung, whispered, silent, or interior.</p>
+<pre><code>{
+  "id": "ut-kyrie-deacon",
+  "roles": ["role-deacon"],
+  "mode": "chanted",
+  "delivery": "solemn",
+  "audience": "divine",
+  "text": {
+    "gez-Ethi": "ኪርያ ኤሌይሶን",
+    "gez-Latn": "Kyrie Eleison",
+    "en": "Lord, have mercy"
+  },
+  "chant": {
+    "system": "yared",
+    "mode": "geez"
+  }
+}</code></pre>
+        <h3>Mode Values</h3>
+        <div class="chips"><span>spoken</span><span>chanted</span><span>sung</span><span>whispered</span><span>silent</span><span>canticle</span><span>responsive</span><span>recited</span></div>
+      </section>
+
+      <section id="readings" class="doc-section">
+        <h2><span>13</span>Scripture &amp; Reading Entity</h2>
+        <p>Readings are first-class entities, not generic text blocks. This allows lectionaries, service books, teaching tools, and Bible references to interoperate.</p>
+<pre><code>{
+  "id": "reading-john-1-1-17",
+  "type": "gospel",
+  "role": "role-deacon",
+  "reference": {
+    "system": "osis",
+    "osisRef": "John.1.1-John.1.17",
+    "book": "John",
+    "chapterStart": 1,
+    "verseStart": 1,
+    "chapterEnd": 1,
+    "verseEnd": 17
+  },
+  "text": {
+    "en": "In the beginning was the Word..."
+  }
+}</code></pre>
+        <div class="verse">“Your word is a lamp to my feet and a light to my path.” — <strong>Psalm 119:105</strong></div>
+      </section>
+
+      <section id="chant" class="doc-section">
+        <h2><span>14</span>Chant &amp; Music</h2>
+        <p>OLS v1.0 separates text from chant metadata while allowing them to be linked.</p>
+<pre><code>{
+  "chant": {
+    "system": "yared",
+    "mode": "geez",
+    "zemaType": "deggwa",
+    "source": {
+      "book": "Deggwa",
+      "page": "234"
+    },
+    "performance": {
+      "tempo": "slow",
+      "antiphonalPattern": "cantor-congregation",
+      "instruments": ["kebero", "tsenatsil", "mequamia"],
+      "standingPosture": true
+    }
+  }
+}</code></pre>
+      </section>
+
+      <section id="inline-chant" class="doc-section">
+        <h2><span>14A</span>Sub-Utterance Chant Alignment</h2>
+        <p>Chant metadata cannot always attach only to a whole utterance. OLS v1.0 defines inline segmentation for alignment.</p>
+<pre><code>{
+  "id": "ut-segmented-zema",
+  "roles": ["role-cantor"],
+  "mode": "chanted",
+  "text": {
+    "gez-Ethi": "ቅዱስ እግዚአብሔር"
+  },
+  "segments": [
+    {
+      "id": "seg-001",
+      "range": { "language": "gez-Ethi", "startChar": 0, "endChar": 4 },
+      "text": "ቅዱስ",
+      "chant": { "system": "yared", "mode": "geez", "milikit": ["mark-001"] }
+    }
+  ]
+}</code></pre>
+      </section>
+
+      <section id="rubrics" class="doc-section">
+        <h2><span>15</span>Rubrics &amp; Actions</h2>
+        <p>A <code>Rubric</code> encodes what is done, by whom, where, with what force, and under what conditions.</p>
+<pre><code>{
+  "id": "rb-gospel-procession",
+  "category": "movement",
+  "subtype": "procession",
+  "force": "required",
+  "actors": ["role-deacon"],
+  "object": "gospel-book",
+  "from": "qeddest",
+  "to": "qene_mahlet",
+  "path": ["qeddest", "qene_mahlet"],
+  "description": {
+    "en": "The deacon processes with the Gospel book."
+  }
+}</code></pre>
+        <h3>Rubric Categories</h3>
+        <div class="chips"><span>action</span><span>posture</span><span>movement</span><span>sound</span><span>setting</span><span>instruction</span><span>permission</span></div>
+      </section>
+
+      <section id="space" class="doc-section">
+        <h2><span>16</span>Sacred Space &amp; Access Rules</h2>
+        <p>Each tradition profile defines its own zones and access rules to accurately model movement.</p>
+<pre><code>{
+  "sacredSpace": {
+    "id": "eotc-church-zones",
+    "zones": [
+      {
+        "id": "qeddest",
+        "label": { "en": "Holy Place", "am-Ethi": "ቅድስት" },
+        "access": ["deacon", "priest", "bishop"]
+      }
+    ]
+  }
+}</code></pre>
+      </section>
+
+      <section id="rubric-state" class="doc-section">
+        <h2><span>16A</span>Rubric State Machines</h2>
+        <p>Rubrics act as state transitions for validating performative continuity.</p>
+<pre><code>{
+  "id": "rb-deacon-enters-qeddest",
+  "category": "movement",
+  "subtype": "move",
+  "actors": ["role-deacon"],
+  "stateTransition": {
+    "requires": { "role-deacon.zone": "qene_mahlet" },
+    "sets": { "role-deacon.zone": "qeddest" }
+  }
+}</code></pre>
+      </section>
+
+      <section id="blocks" class="doc-section">
+        <h2><span>17</span>Blocks &amp; Elements</h2>
+        <p>A <code>Block</code> is a reusable unit. It can contain utterances, readings, rubrics, line groups, references, and teaching notes.</p>
+<pre><code>{
+  "id": "block-kyrie",
+  "type": "response",
+  "label": { "en": "Kyrie Eleison" },
+  "elements": [
+    {
+      "utterance": {
+        "roles": ["role-deacon"],
+        "text": { "en": "Lord, have mercy" }
+      }
+    }
+  ]
+}</code></pre>
+      </section>
+
+      <section id="verse-lines" class="doc-section">
+        <h2><span>18</span>Verse, Lines &amp; Poetry</h2>
+        <p>OLS v1.0 supports fine-grained verse structure for Psalms, Deggwa hymns, and antiphonal performance.</p>
+<pre><code>{
+  "type": "hemistich-pair",
+  "n": 1,
+  "lines": [
+    {
+      "n": "1a",
+      "hemistich": "a",
+      "roles": ["role-cantor"],
+      "text": { "en": "The Lord is my shepherd" }
+    },
+    {
+      "n": "1b",
+      "hemistich": "b",
+      "roles": ["role-congregation"],
+      "text": { "en": "I shall not want" }
+    }
+  ]
+}</code></pre>
+      </section>
+
+      <section id="sections" class="doc-section">
+        <h2><span>19</span>Sections &amp; Ordo</h2>
+        <p>A <code>Section</code> is a major division of a service. An <code>Ordo</code> is the complete template for a service type.</p>
+<pre><code>{
+  "id": "ordo-kidase",
+  "type": "eucharist",
+  "tradition": "eotc",
+  "label": { "en": "Divine Liturgy / Kidase" },
+  "sections": [
+    { "$ref": "sec-preparation" },
+    { "$ref": "sec-entrance-rites" },
+    { "$ref": "sec-liturgy-of-word" }
+  ],
+  "properSlots": [
+    "psalm-of-the-day",
+    "gospel-of-the-day"
+  ]
+}</code></pre>
+      </section>
+
+      <section id="propers" class="doc-section">
+        <h2><span>20</span>Propers &amp; Slots</h2>
+        <p>The ordinary is fixed service structure. The propers vary by day, feast, season, commemoration, or local usage.</p>
+<pre><code>{
+  "id": "proper-timkat",
+  "priority": 100,
+  "priorityClass": "major-feast",
+  "conditions": {
+    "calendarDate": {
+      "system": "ethiopian",
+      "month": 5,
+      "day": 11
+    }
+  },
+  "fills": {
+    "gospel-of-the-day": { "$ref": "reading-timkat-gospel" }
+  }
+}</code></pre>
+      </section>
+
+      <section id="proper-mutations" class="doc-section">
+        <h2><span>20A</span>Structural Proper Mutations</h2>
+        <p>Propers do not only fill slots. They may insert, omit, replace, or reorder parts of the Ordo.</p>
+<pre><code>{
+  "id": "proper-holy-friday",
+  "mutations": [
+    {
+      "op": "insertAfter",
+      "target": "sec-liturgy-of-word",
+      "value": { "$ref": "sec-holy-friday-veneration" }
+    },
+    {
+      "op": "omit",
+      "target": "block-festal-dismissal"
+    }
+  ]
+}</code></pre>
+      </section>
+
+      <section id="calendar" class="doc-section">
+        <h2><span>21</span>Calendar Model</h2>
+        <p>The calendar model must resolve a complete <code>LiturgicalDay</code>: date, season, feast, fast, commemorations, readings, propers, and conflicts.</p>
+<pre><code>{
+  "id": "calendar-eotc",
+  "system": "ethiopian",
+  "epoch": "amete-mihret",
+  "monthCount": 13,
+  "supports": [
+    "fixed-feasts",
+    "movable-feasts",
+    "fasting-periods",
+    "lectionary"
+  ]
+}</code></pre>
+      </section>
+
+      <section id="deterministic-calendar" class="doc-section">
+        <h2><span>21A</span>Deterministic Calendar Resolution</h2>
+        <p>Calendar resolution must be deterministic. OLS v1.0 MUST NOT rely on JSON object key order or file-loading order to resolve liturgical conflicts.</p>
+<pre><code>{
+  "conflictRules": [
+    {
+      "id": "cr-timkat-overrides-weekday-fast",
+      "winner": "proper-timkat",
+      "overrides": ["proper-wednesday-fast", "proper-friday-fast"]
+    }
+  ]
+}</code></pre>
+      </section>
+
+      <section id="service" class="doc-section">
+        <h2><span>22</span>ServiceInstance</h2>
+        <p>A <code>ServiceInstance</code> records a real or planned service. It references the Ordo and records what happened.</p>
+<pre><code>{
+  "id": "si-2026-01-19-timkat-seattle",
+  "type": "service-instance",
+  "ordo": "ordo-kidase",
+  "date": {
+    "gregorian": "2026-01-19"
+  },
+  "cast": [
+    {
+      "role": "role-priest",
+      "person": "person-priest-001"
+    }
+  ],
+  "activePropers": ["proper-timkat"],
+  "anaphora": "anaphora-st-gregory"
+}</code></pre>
+      </section>
+
+      <section id="execution-timeline" class="doc-section">
+        <h2><span>22A</span>Execution Timeline Binding</h2>
+        <p>Actual performance timestamps can bind to Sections, Blocks, Readings, Rubrics, and Utterances.</p>
+<pre><code>{
+  "executionTimeline": [
+    {
+      "target": "sec-anaphora",
+      "type": "section",
+      "start": "08:12:30",
+      "end": "09:05:10",
+      "duration": "PT52M40S",
+      "status": "completed"
+    }
+  ]
+}</code></pre>
+      </section>
+
+      <section id="assets" class="doc-section">
+        <h2><span>23</span>Assets &amp; Media</h2>
+        <p>Media files should be linked, not embedded. OLS supports audio, video, images, scans, PDFs, notation, and manuscript images.</p>
+<pre><code>{
+  "id": "asset-audio-kyrie-demo",
+  "type": "audio",
+  "uri": "assets/audio/kyrie-demo.mp3",
+  "linkedTo": "block-kyrie"
+}</code></pre>
+      </section>
+
+      <section id="variants" class="doc-section">
+        <h2><span>24</span>Variants &amp; Scholarly Apparatus</h2>
+        <p>OLS v1.0 supports textual variation without collapsing all traditions, editions, and local customs into one flattened text.</p>
+<pre><code>{
+  "variants": [
+    {
+      "id": "variant-local-custom",
+      "type": "local-custom",
+      "source": "src-parish-handout-001",
+      "text": {
+        "gez-Ethi": "..."
+      }
+    }
+  ]
+}</code></pre>
+      </section>
+
+      <section id="teaching" class="doc-section">
+        <h2><span>25</span>Teaching &amp; Commentary</h2>
+        <p>Teaching notes must be separate from liturgical text. This lets OLS serve Sunday school, youth group, catechesis, and adult formation without altering the service itself.</p>
+<pre><code>{
+  "teaching": {
+    "summary": {
+      "en": "This prayer asks for mercy before approaching the altar."
+    },
+    "bibleLinks": ["Heb.4.16", "Ps.50.1"],
+    "ageLevel": "youth"
+  }
+}</code></pre>
+      </section>
+
+      <section id="schemas" class="doc-section">
+        <h2><span>26</span>JSON Schema &amp; Validation</h2>
+        <p>OLS v1.0 is validatable. Every file must declare a schema, version, and type.</p>
+<pre><code>{
+  "$schema": "https://openliturgy.org/schema/v1.0/corpus.schema.json",
+  "ols_version": "1.0.0",
+  "type": "corpus"
+}</code></pre>
+      </section>
+
+      <section id="conformance" class="doc-section">
+        <h2><span>27</span>Conformance Levels</h2>
+        <p>Tools do not need to support every feature. OLS v1.0 defines conformance levels so apps can honestly state what they implement.</p>
+<pre><code>{
+  "conformance": {
+    "ols": "1.0.0",
+    "levels": ["L0", "L1", "L2", "L5", "L7"],
+    "profiles": ["eotc.v1"],
+    "unsupported": ["service-instance", "audio-assets"]
+  }
+}</code></pre>
+      </section>
+
+      <section id="governance" class="doc-section">
+        <h2><span>28</span>Governance &amp; Versioning</h2>
+        <p>OLS v1.0 separates technical evolution from ecclesial approval. A schema can be technically valid while still not approved for liturgical use.</p>
+        <div class="chips"><span>technical-validation</span><span>source-review</span><span>language-review</span><span>clergy-review</span><span>diocesan-approval</span></div>
+      </section>
+
+      <section id="eotc" class="doc-section">
+        <h2><span>29</span>EOTC Profile v1</h2>
+        <p>The EOTC profile defines Ethiopian Orthodox Tewahedo-specific vocabulary, calendar behavior, chant metadata, sanctuary zones, anaphoras, and review requirements.</p>
+<pre><code>{
+  "profile": {
+    "id": "eotc.v1",
+    "tradition": "eotc",
+    "primaryLiturgicalLanguage": "gez-Ethi",
+    "calendar": "ethiopian",
+    "chantSystem": "yared"
+  }
+}</code></pre>
+      </section>
+
+      <section id="oo-core" class="doc-section">
+        <h2><span>30</span>Oriental Orthodox Core</h2>
+        <p>The Oriental Orthodox layer provides shared modeling categories while preserving each church’s distinct rite, language, music, calendar, and governance.</p>
+        <div class="chips"><span>apostolic-tradition</span><span>liturgical-calendar</span><span>fasting-seasons</span><span>saints</span><span>sacramental-rubrics</span><span>chant</span></div>
+      </section>
+
+      <section id="testing" class="doc-section">
+        <h2><span>31</span>Test Fixtures</h2>
+        <p>OLS v1.0 packages SHOULD include valid and invalid examples so implementers can test validators and renderers.</p>
+<pre><code>{
+  "test": {
+    "id": "invalid-unresolved-ref",
+    "expected": "fail",
+    "errorCode": "OLS_REF_UNRESOLVED",
+    "description": "A section references a block that does not exist."
+  }
+}</code></pre>
+      </section>
+
+      <section id="example" class="doc-section">
+        <h2><span>32</span>Complete Minimal Corpus Example</h2>
+        <p>This minimal example shows the core v1.0 pattern: schema header, metadata, authority, roles, reading, block, section, ordo, proper, and teaching note.</p>
+<pre><code>{
+  "$schema": "https://openliturgy.org/schema/v1.0/corpus.schema.json",
+  "ols_version": "1.0.0",
+  "type": "corpus",
+  "id": "eotc-kidase-demo-v1",
+  "metadata": {
+    "title": { "en": "EOTC Kidase Demo Corpus" }
+  },
+  "roles": [
+    { "id": "role-deacon", "type": "deacon" }
+  ],
+  "blocks": [
+    {
+      "id": "block-kyrie",
+      "type": "response",
+      "elements": [
+        {
+          "utterance": { "roles": ["role-deacon"], "text": { "en": "Lord, have mercy" } }
+        }
+      ]
+    }
+  ]
+}</code></pre>
+      </section>
+
+      <section id="bibliography" class="doc-section">
+        <h2><span>33</span>Recommended Reference Sources</h2>
+        <p>OLS content packages SHOULD include their own exact citations. The following are recommended categories and commonly useful resources for building EOTC and Oriental Orthodox teaching material.</p>
+        <table>
+          <thead><tr><th>Source</th><th>Use</th></tr></thead>
+          <tbody>
+            <tr><td><em>Mäṣḥafä Qeddase</em></td><td>Primary source for the Divine Liturgy and anaphoras.</td></tr>
+            <tr><td><em>Deggwa</em></td><td>Saint Yared’s hymnody and chant tradition.</td></tr>
+            <tr><td><em>Mäṣḥafä Sä‘atat</em></td><td>Book of Hours and prayer structure.</td></tr>
+            <tr><td><em>Synaxarium of the Ethiopian Church</em></td><td>Saints, commemorations, and feast teaching.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    const navItems = Array.from(document.querySelectorAll('.nav-item'));
+    const sections = Array.from(document.querySelectorAll('.doc-section'));
+    const mainContent = document.getElementById('main-content');
+
+    function activate(id) {
+      // Toggle active states
+      sections.forEach(section => section.classList.toggle('active', section.id === id));
+      navItems.forEach(item => {
+        const isActive = item.dataset.target === id;
+        if (isActive) {
+          item.setAttribute('aria-current', 'page');
+        } else {
+          item.removeAttribute('aria-current');
+        }
+      });
+      
+      // Update URL without jumping
+      if (document.getElementById(id)) {
+        history.replaceState(null, '', '#' + id);
+        
+        // Reset scroll 
+        if (mainContent) mainContent.scrollTop = 0;
+        
+        // Accessibility: move focus to main content container for screen readers
+        mainContent.focus();
+      }
+    }
+
+    // Attach event listeners
+    navItems.forEach(item => {
+      item.addEventListener('click', (e) => {
+        e.preventDefault();
+        activate(item.dataset.target);
+      });
+    });
+
+    // Initialize state
+    const initial = location.hash ? location.hash.slice(1) : 'overview';
+    activate(document.getElementById(initial) ? initial : 'overview');
+  </script>
+</body>
+</html>
