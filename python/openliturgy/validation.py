@@ -94,7 +94,7 @@ def validate_document(
             )
         )
     version = loaded.raw.get("ols_version")
-    if not isinstance(version, str) or not version.startswith("1.0.") or not version[4:].isdigit():
+    if not isinstance(version, str) or not (version.startswith("1.0.") and version[4:].isdigit() or version.startswith("1.1.") and version[4:].isdigit()):
         diagnostics.append(
             Diagnostic(
                 layer="consistency",
@@ -102,7 +102,7 @@ def validate_document(
                 entityId=entity_id,
                 jsonPointer="/ols_version",
                 code="OLS_VERSION_UNSUPPORTED",
-                message="Only OLS 1.0.x is supported.",
+                message="Only OLS 1.0.x and 1.1.x are supported.",
                 severity="error",
             )
         )
@@ -159,6 +159,87 @@ def _walk(value: Any, source: str, pointer: str = "") -> tuple[list[dict[str, An
                 entities.extend(child_entities)
                 refs.extend(child_refs)
     return entities, refs
+
+
+def _validate_translation_variants(value: Any, source: str, pointer: str = "") -> list[Diagnostic]:
+    """Walk a document tree and validate all translation variant blocks."""
+    diagnostics: list[Diagnostic] = []
+    if isinstance(value, list):
+        for index, item in enumerate(value):
+            diagnostics.extend(_validate_translation_variants(item, source, f"{pointer}/{index}"))
+    elif isinstance(value, dict):
+        text_map = value.get("text")
+        variants_map = value.get("variants")
+        if isinstance(text_map, dict) and isinstance(variants_map, dict):
+            entity_id = value.get("id") if isinstance(value.get("id"), str) else None
+            for lang, variant_list in variants_map.items():
+                lang_pointer = f"{pointer}/variants/{lang.replace('~', '~0').replace('/', '~1')}"
+                if lang not in text_map:
+                    diagnostics.append(Diagnostic(
+                        layer="consistency", source=source, entityId=entity_id,
+                        jsonPointer=lang_pointer, code="OLS_VARIANT_LANG_MISMATCH",
+                        message=f"Variant language '{lang}' is not present in the text map.", severity="error",
+                    ))
+                if not isinstance(variant_list, list) or len(variant_list) == 0:
+                    diagnostics.append(Diagnostic(
+                        layer="consistency", source=source, entityId=entity_id,
+                        jsonPointer=lang_pointer, code="OLS_VARIANT_EMPTY_ARRAY",
+                        message=f"Variant array for '{lang}' must contain at least one entry.", severity="error",
+                    ))
+                    continue
+                default_count = 0
+                seen_values: list[str] = []
+                for idx, variant in enumerate(variant_list):
+                    v_pointer = f"{lang_pointer}/{idx}"
+                    if not isinstance(variant, dict):
+                        continue
+                    v_value = variant.get("value")
+                    if not isinstance(v_value, str) or not v_value:
+                        diagnostics.append(Diagnostic(
+                            layer="consistency", source=source, entityId=entity_id,
+                            jsonPointer=f"{v_pointer}/value", code="OLS_VARIANT_VALUE_REQUIRED",
+                            message="Variant object must have a non-empty 'value' field.", severity="error",
+                        ))
+                    else:
+                        if v_value in seen_values:
+                            diagnostics.append(Diagnostic(
+                                layer="consistency", source=source, entityId=entity_id,
+                                jsonPointer=f"{v_pointer}/value", code="OLS_VARIANT_NO_DUPLICATES",
+                                message=f"Duplicate variant value in language '{lang}'.", severity="warning",
+                            ))
+                        seen_values.append(v_value)
+                    if variant.get("default") is True:
+                        default_count += 1
+                        if default_count > 1:
+                            diagnostics.append(Diagnostic(
+                                layer="consistency", source=source, entityId=entity_id,
+                                jsonPointer=f"{v_pointer}/default", code="OLS_VARIANT_MULTI_DEFAULT",
+                                message=f"Multiple defaults declared for language '{lang}'.", severity="error",
+                            ))
+                        if isinstance(v_value, str) and lang in text_map and v_value != text_map[lang]:
+                            diagnostics.append(Diagnostic(
+                                layer="consistency", source=source, entityId=entity_id,
+                                jsonPointer=f"{v_pointer}/value", code="OLS_VARIANT_DEFAULT_SYNC",
+                                message="Default variant value does not match the text map entry.", severity="error",
+                            ))
+                    if not variant.get("label"):
+                        diagnostics.append(Diagnostic(
+                            layer="consistency", source=source, entityId=entity_id,
+                            jsonPointer=v_pointer, code="OLS_VARIANT_LABEL_RECOMMENDED",
+                            message="Variant should include a 'label' for display.", severity="info",
+                        ))
+                    if not variant.get("source"):
+                        diagnostics.append(Diagnostic(
+                            layer="consistency", source=source, entityId=entity_id,
+                            jsonPointer=v_pointer, code="OLS_VARIANT_SOURCE_RECOMMENDED",
+                            message="Variant should include a 'source' for provenance.", severity="info",
+                        ))
+        for key, child in value.items():
+            if key not in ("text", "variants", "textMeta"):
+                diagnostics.extend(_validate_translation_variants(
+                    child, source, f"{pointer}/{key.replace('~', '~0').replace('/', '~1')}"
+                ))
+    return diagnostics
 
 
 def validate_package(root: Union[str, Path], registry: Optional[SchemaRegistry] = None) -> ValidationReport:
@@ -445,7 +526,15 @@ def validate_package(root: Union[str, Path], registry: Optional[SchemaRegistry] 
                         severity="warning",
                     )
                 )
+    for document in documents:
+        if isinstance(document.raw, dict):
+            diagnostics.extend(_validate_translation_variants(document.raw, document.source))
     return _report(diagnostics, [document.source for document in documents], versions)
+
+
+def validate_translation_variants(data: dict[str, Any], source: str = "<inline>") -> list[Diagnostic]:
+    """Validate translation variants in a data structure. Public API wrapper."""
+    return _validate_translation_variants(data, source)
 
 
 def run_self_tests(root: Union[str, Path]) -> ValidationReport:

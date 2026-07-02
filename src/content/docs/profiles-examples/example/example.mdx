@@ -3,15 +3,15 @@ title: 'Complete Minimal Corpus Example'
 description: 'Complete minimal valid liturgical corpus JSON example.'
 category: 'profiles-examples'
 order: 39
-updatedAt: 2026-07-01
+updatedAt: 2026-07-02
 ---
 
-This minimal example shows the core v1.0 pattern: schema header, metadata, authority, roles, reading, block, section, ordo, proper, and teaching note.
+This minimal example shows the core v1.0 pattern: schema header, metadata, authority, roles, reading, block, section, ordo, proper, and teaching note. It includes translation variants (v1.1) to demonstrate multi-rendering support.
 
 ```json
 {
-  "$schema": "https://ols.otyg.org/schema/v1.0/corpus.schema.json",
-  "ols_version": "1.0.0",
+  "$schema": "https://ols.otyg.org/schema/v1.1/corpus.schema.json",
+  "ols_version": "1.1.0",
   "type": "corpus",
   "id": "eotc-kidase-demo-v1",
   "metadata": {
@@ -56,7 +56,17 @@ This minimal example shows the core v1.0 pattern: schema header, metadata, autho
             "id": "ut-kyrie-call",
             "roles": ["role-deacon"],
             "mode": "chanted",
-            "text": { "en": "Lord, have mercy." }
+            "text": {
+              "gez-Ethi": "ኪርያ ኤሌይሶን",
+              "en": "Lord, have mercy."
+            },
+            "variants": {
+              "en": [
+                { "value": "Lord, have mercy.", "label": "EOTC Official", "source": "EOTC English Missal 2019", "default": true },
+                { "value": "O Lord, show mercy.", "label": "Diaspora Prayer Book", "source": "St. Mary Cathedral, LA, 2021" },
+                { "value": "Lord, be merciful to us.", "label": "Scholarly Literal", "source": "Getatchew Haile, CSCO vol. 542", "register": "scholarly" }
+              ]
+            }
           }
         },
         {

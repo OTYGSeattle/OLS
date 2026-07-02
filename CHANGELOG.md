@@ -6,6 +6,21 @@ The format is based on Keep a Changelog, and this project follows semantic versi
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-07-02
+
+### Added
+
+- Translation Variants: support for multiple translation variants of the same text within a single language, with provenance, labels, and default selection rules.
+- New `data-model/translation-variants` specification article documenting schema pattern, variant object fields, resolution rules, and SDK implementation guide.
+- Full JSON Schema definition for `LocalizedText` including `TranslationVariantsMap` and `TranslationVariant` types.
+- Eight formal validation rules (`OLS_VARIANT_*`) with error/warning/info severities for translation variant integrity.
+- Five Utterance validation rules (`OLS_UTT_*`) for structural correctness.
+- Seven test fixtures (valid and invalid) for translation variant validation.
+- Conformance level requirements (L0–L5) for translation variant support.
+- Cross-reference callout in `LocalizedText` article linking to the new variants documentation.
+- Distinction callout in Scholarly Variants article clarifying manuscript variants vs. translation variants.
+- Updated complete corpus example to demonstrate translation variants with provenance.
+
 ## [1.0.1] - 2026-07-01
 
 ### Added

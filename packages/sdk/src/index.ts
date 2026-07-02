@@ -121,7 +121,7 @@ export async function validateDocument(input: string | LoadedDocument, registry?
   diagnostics.push(...structuralDiagnostics(validator?.errors, loaded.source, loaded.data.id));
   const expectedType = schemaId.split('/').at(-1)?.replace('.schema.json', '');
   if (loaded.data.type !== expectedType) diagnostics.push({ layer: 'consistency', source: loaded.source, entityId: loaded.data.id, jsonPointer: '/type', code: 'OLS_TYPE_MISMATCH', message: `Expected type ${expectedType}.`, severity: 'error' });
-  if (!/^1\.0\.\d+$/.test(loaded.data.ols_version ?? '')) diagnostics.push({ layer: 'consistency', source: loaded.source, entityId: loaded.data.id, jsonPointer: '/ols_version', code: 'OLS_VERSION_UNSUPPORTED', message: 'Only OLS 1.0.x is supported.', severity: 'error' });
+  if (!/^1\.[01]\.\d+$/.test(loaded.data.ols_version ?? '')) diagnostics.push({ layer: 'consistency', source: loaded.source, entityId: loaded.data.id, jsonPointer: '/ols_version', code: 'OLS_VERSION_UNSUPPORTED', message: 'Only OLS 1.0.x and 1.1.x are supported.', severity: 'error' });
   if (schema['x-ols-schema-source'] === 'synthesized') diagnostics.push({ layer: 'schema-selection', source: loaded.source, entityId: loaded.data.id, jsonPointer: '/$schema', code: 'OLS_SCHEMA_PROVISIONAL', message: 'This per-entity schema is provisional.', severity: 'warning' });
   if (loaded.data.status === 'deprecated') diagnostics.push({ layer: 'consistency', source: loaded.source, entityId: loaded.data.id, jsonPointer: '/status', code: 'OLS_SCHEMA_DEPRECATED', message: 'This document is deprecated.', severity: 'warning' });
   return report(diagnostics, [loaded.source], [String(schema['x-ols-revision'] ?? '1.0.0')], validator?.errors?.length ? ['references', 'semantic'] : []);
@@ -150,6 +150,67 @@ export function resolveReference(reference: string, index: Map<string, EntityLoc
     if (!rel.startsWith('..') && !isAbsolute(rel)) return [...index.values()].find((item) => resolve(item.source) === candidate);
   }
   return undefined;
+}
+
+export function validateTranslationVariants(value: unknown, source: string, pointer: string, diagnostics: Diagnostic[]): void {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    if (Array.isArray(value)) value.forEach((item, i) => validateTranslationVariants(item, source, `${pointer}/${i}`, diagnostics));
+    return;
+  }
+  const obj = value as Record<string, unknown>;
+  const textMap = obj.text;
+  const variantsMap = obj.variants;
+  if (textMap && typeof textMap === 'object' && !Array.isArray(textMap) && variantsMap && typeof variantsMap === 'object' && !Array.isArray(variantsMap)) {
+    const text = textMap as Record<string, unknown>;
+    const variants = variantsMap as Record<string, unknown>;
+    const entityId = typeof obj.id === 'string' ? obj.id : undefined;
+    for (const [lang, variantList] of Object.entries(variants)) {
+      const langPointer = `${pointer}/variants/${lang.replaceAll('~', '~0').replaceAll('/', '~1')}`;
+      if (!(lang in text)) {
+        diagnostics.push({ layer: 'consistency', source, entityId, jsonPointer: langPointer, code: 'OLS_VARIANT_LANG_MISMATCH', message: `Variant language '${lang}' is not present in the text map.`, severity: 'error' });
+      }
+      if (!Array.isArray(variantList) || variantList.length === 0) {
+        diagnostics.push({ layer: 'consistency', source, entityId, jsonPointer: langPointer, code: 'OLS_VARIANT_EMPTY_ARRAY', message: `Variant array for '${lang}' must contain at least one entry.`, severity: 'error' });
+        continue;
+      }
+      let defaultCount = 0;
+      const seenValues: string[] = [];
+      for (let idx = 0; idx < variantList.length; idx++) {
+        const variant = variantList[idx] as Record<string, unknown> | undefined;
+        if (!variant || typeof variant !== 'object') continue;
+        const vPointer = `${langPointer}/${idx}`;
+        const vValue = variant.value;
+        if (typeof vValue !== 'string' || !vValue) {
+          diagnostics.push({ layer: 'consistency', source, entityId, jsonPointer: `${vPointer}/value`, code: 'OLS_VARIANT_VALUE_REQUIRED', message: "Variant object must have a non-empty 'value' field.", severity: 'error' });
+        } else {
+          if (seenValues.includes(vValue)) {
+            diagnostics.push({ layer: 'consistency', source, entityId, jsonPointer: `${vPointer}/value`, code: 'OLS_VARIANT_NO_DUPLICATES', message: `Duplicate variant value in language '${lang}'.`, severity: 'warning' });
+          }
+          seenValues.push(vValue);
+        }
+        if (variant.default === true) {
+          defaultCount++;
+          if (defaultCount > 1) {
+            diagnostics.push({ layer: 'consistency', source, entityId, jsonPointer: `${vPointer}/default`, code: 'OLS_VARIANT_MULTI_DEFAULT', message: `Multiple defaults declared for language '${lang}'.`, severity: 'error' });
+          }
+          if (typeof vValue === 'string' && lang in text && vValue !== text[lang]) {
+            diagnostics.push({ layer: 'consistency', source, entityId, jsonPointer: `${vPointer}/value`, code: 'OLS_VARIANT_DEFAULT_SYNC', message: 'Default variant value does not match the text map entry.', severity: 'error' });
+          }
+        }
+        if (!variant.label) {
+          diagnostics.push({ layer: 'consistency', source, entityId, jsonPointer: vPointer, code: 'OLS_VARIANT_LABEL_RECOMMENDED', message: "Variant should include a 'label' for display.", severity: 'info' });
+        }
+        if (!variant.source) {
+          diagnostics.push({ layer: 'consistency', source, entityId, jsonPointer: vPointer, code: 'OLS_VARIANT_SOURCE_RECOMMENDED', message: "Variant should include a 'source' for provenance.", severity: 'info' });
+        }
+      }
+    }
+  }
+  for (const [key, child] of Object.entries(obj)) {
+    if (key !== 'text' && key !== 'variants' && key !== 'textMeta') {
+      validateTranslationVariants(child, source, `${pointer}/${key.replaceAll('~', '~0').replaceAll('/', '~1')}`, diagnostics);
+    }
+  }
 }
 
 export async function validatePackage(root: string, registry?: SchemaRegistry): Promise<ValidationReport> {
@@ -277,6 +338,7 @@ export async function validatePackage(root: string, registry?: SchemaRegistry): 
     const overlap = Object.keys(a.fills as object ?? {}).some((slot) => slot in (b.fills as object ?? {}));
     if (overlap && a.priority === b.priority && a.priorityClass === b.priorityClass) diagnostics.push({ layer: 'semantic', source: propers[right]!.source, entityId: String(b.id), jsonPointer: propers[right]!.pointer, code: 'OLS_CALENDAR_DETERMINISM_UNPROVEN', message: `Proper ${a.id} ties with ${b.id}; an explicit conflict rule or fixture is required.`, severity: 'warning' });
   }
+  for (const document of documents) if (document.data) validateTranslationVariants(document.data as Record<string, unknown>, document.source, '', diagnostics);
   return report(diagnostics, documents.map((item) => item.source), versions);
 }
 

@@ -3,7 +3,7 @@ title: 'Test Fixtures'
 description: 'Specification test fixtures validation examples (valid and invalid).'
 category: 'conformance-schemas'
 order: 38
-updatedAt: 2026-07-01
+updatedAt: 2026-07-02
 ---
 
 OLS v1.0 packages SHOULD include valid and invalid examples so implementers can test validators and renderers.
@@ -34,3 +34,154 @@ tests/
 For each fixture, record the expected result and a stable error code. Tests should assert the code rather than an entire human-readable message, which may be localized or improved without changing behavior.
 
 Include fixtures for more than schema shape: duplicate IDs, unresolved references, forbidden role substitutions, inaccessible sacred-space transitions, calendar ties, contradictory timeline durations, and unsupported profile extensions all require semantic tests.
+
+
+## Translation Variant Test Fixtures
+
+The following test cases cover the `variants` extension. Implementers SHOULD validate against all of these.
+
+#### Valid: Single default variant
+
+```json
+{
+  "test": {
+    "id": "valid-variant-single-default",
+    "expected": "pass",
+    "description": "A LocalizedText with one default variant per language."
+  },
+  "input": {
+    "text": { "en": "Lord, have mercy" },
+    "variants": {
+      "en": [
+        { "value": "Lord, have mercy", "label": "EOTC Official", "default": true },
+        { "value": "O Lord, show mercy", "label": "Diaspora" }
+      ]
+    }
+  }
+}
+```
+
+#### Valid: No default marked (first is implied)
+
+```json
+{
+  "test": {
+    "id": "valid-variant-no-explicit-default",
+    "expected": "pass",
+    "description": "When no variant is marked default, the first item is implied default and must match text."
+  },
+  "input": {
+    "text": { "en": "Lord, have mercy" },
+    "variants": {
+      "en": [
+        { "value": "Lord, have mercy", "label": "Official" },
+        { "value": "O Lord, show mercy", "label": "Alternative" }
+      ]
+    }
+  }
+}
+```
+
+#### Invalid: Multiple defaults in same language
+
+```json
+{
+  "test": {
+    "id": "invalid-variant-multi-default",
+    "expected": "fail",
+    "errorCode": "OLS_VARIANT_MULTI_DEFAULT",
+    "description": "Two variants in the same language both marked as default."
+  },
+  "input": {
+    "text": { "en": "Lord, have mercy" },
+    "variants": {
+      "en": [
+        { "value": "Lord, have mercy", "default": true },
+        { "value": "O Lord, show mercy", "default": true }
+      ]
+    }
+  }
+}
+```
+
+#### Invalid: Default value does not match text entry
+
+```json
+{
+  "test": {
+    "id": "invalid-variant-default-sync",
+    "expected": "fail",
+    "errorCode": "OLS_VARIANT_DEFAULT_SYNC",
+    "description": "The default variant value differs from the text map entry."
+  },
+  "input": {
+    "text": { "en": "Lord, have mercy" },
+    "variants": {
+      "en": [
+        { "value": "O Lord, show mercy", "default": true }
+      ]
+    }
+  }
+}
+```
+
+#### Invalid: Variant language not in text map
+
+```json
+{
+  "test": {
+    "id": "invalid-variant-lang-mismatch",
+    "expected": "fail",
+    "errorCode": "OLS_VARIANT_LANG_MISMATCH",
+    "description": "A variants key references a language not present in the text map."
+  },
+  "input": {
+    "text": { "en": "Lord, have mercy" },
+    "variants": {
+      "fr": [
+        { "value": "Seigneur, aie pitié", "default": true }
+      ]
+    }
+  }
+}
+```
+
+#### Invalid: Empty variant array
+
+```json
+{
+  "test": {
+    "id": "invalid-variant-empty-array",
+    "expected": "fail",
+    "errorCode": "OLS_VARIANT_EMPTY_ARRAY",
+    "description": "A language in variants has an empty array."
+  },
+  "input": {
+    "text": { "en": "Lord, have mercy" },
+    "variants": {
+      "en": []
+    }
+  }
+}
+```
+
+#### Invalid: Missing value field
+
+```json
+{
+  "test": {
+    "id": "invalid-variant-no-value",
+    "expected": "fail",
+    "errorCode": "OLS_VARIANT_VALUE_REQUIRED",
+    "description": "A variant object is missing the required value field."
+  },
+  "input": {
+    "text": { "en": "Lord, have mercy" },
+    "variants": {
+      "en": [
+        { "label": "Unnamed translation" }
+      ]
+    }
+  }
+}
+```
