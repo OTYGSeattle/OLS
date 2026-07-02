@@ -6,9 +6,7 @@ order: 36
 updatedAt: 2026-07-01
 ---
 
-
 The EOTC profile defines Ethiopian Orthodox Tewahedo-specific vocabulary, calendar behavior, chant metadata, sanctuary zones, anaphoras, and review requirements.
-
 
 ```json
 {
@@ -22,3 +20,16 @@ The EOTC profile defines Ethiopian Orthodox Tewahedo-specific vocabulary, calend
 }
 ```
 
+## Profile Boundaries
+
+The profile extends OLS core; it does not redefine every core entity. Keep reusable fields such as IDs, localized labels, references, and authority records in their core locations. Put EOTC-specific vocabulary and behavior under the `eotc` namespace or in profile-owned calendar, chant, and sacred-space definitions.
+
+An EOTC-aware processor should validate at least:
+
+- Ge’ez transliteration metadata when `gez-Latn` is present.
+- Ethiopian calendar rules and deterministic feast conflicts.
+- Yaredic chant vocabulary and source metadata.
+- EOTC sacred-space zones and role access.
+- Review and permitted-use requirements for liturgical content.
+
+Do not generalize an EOTC term or custom to every Oriental Orthodox church. Shared concepts belong in the Oriental Orthodox core only after their semantics are genuinely common.

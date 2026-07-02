@@ -6,12 +6,9 @@ order: 9
 updatedAt: 2026-07-01
 ---
 
-
 OLS v1.0 requires serious liturgical content to identify its source. This protects against confusion between official texts, study translations, parish handouts, and drafts.
 
-        
-### Citation
-
+## Citation
 
 ```json
 {
@@ -33,9 +30,7 @@ OLS v1.0 requires serious liturgical content to identify its source. This protec
 }
 ```
 
-        
-### Provenance
-
+## Provenance
 
 ```json
 {
@@ -52,10 +47,8 @@ OLS v1.0 requires serious liturgical content to identify its source. This protec
 }
 ```
 
-        
-### Source Types
+## Source Types
 
-        
 <div className="flex flex-wrap gap-2 my-4">
   <Badge>printed-book</Badge>
   <Badge>manuscript</Badge>
@@ -69,3 +62,23 @@ OLS v1.0 requires serious liturgical content to identify its source. This protec
   <Badge>field-notes</Badge>
 </div>
 
+## Citation and Provenance Work Together
+
+A citation identifies the evidence; provenance records what happened between that evidence and the encoded entity. Keep them separate so a correction to a transcription does not rewrite the source record.
+
+```json
+{
+  "source": "src-mesHafe-qeddase-ed1-p42",
+  "provenance": {
+    "sourceStatus": "transcribed",
+    "transcriber": "person-transcriber-001",
+    "translator": "person-translator-001",
+    "confidence": "medium",
+    "lastReviewed": "2026-06-29"
+  }
+}
+```
+
+Use `null` for an explicitly unknown bibliographic value and omit a field only when it is not applicable or not collected. Notes such as “exact edition requires verification” are useful, but they do not substitute for structured edition, page, line, license, and confidence fields.
+
+For recordings and field notes, identify the recording date, location, participants or privacy constraints in the applicable source metadata. A performer’s rendition is evidence of a practice; it should not automatically be labeled an official text.

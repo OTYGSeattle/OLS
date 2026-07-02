@@ -6,12 +6,9 @@ order: 7
 updatedAt: 2026-07-01
 ---
 
-
 `LocalizedText` is the basic human-readable text type. It supports multiple languages, scripts, transliteration, and text metadata.
 
-        
-### Schema Pattern
-
+## Schema Pattern
 
 ```json
 {
@@ -34,18 +31,34 @@ updatedAt: 2026-07-01
 }
 ```
 
-        
-### Recommended Language Tags
+## Recommended Language Tags
 
-        
-| Tag | Meaning | Use |
-| --- | --- | --- |
-| `gez-Ethi` | Ge’ez in Ethiopic script | Primary liturgical text. |
-| `gez-Latn` | Ge’ez transliteration | Diaspora teaching and chant practice. |
-| `am-Ethi` | Amharic in Ethiopic script | Vernacular explanation or translation. |
-| `ti-Ethi` | Tigrinya in Ethiopic script | Eritrean/Tigrinya communities. |
-| `om-Latn` | Oromo in Latin script | Oromo-language materials. |
-| `en` | English | Diaspora teaching and translation. |
-| `ar` | Arabic | Arabic-speaking communities; RTL. |
+| Tag        | Meaning                     | Use                                    |
+| ---------- | --------------------------- | -------------------------------------- |
+| `gez-Ethi` | Ge’ez in Ethiopic script    | Primary liturgical text.               |
+| `gez-Latn` | Ge’ez transliteration       | Diaspora teaching and chant practice.  |
+| `am-Ethi`  | Amharic in Ethiopic script  | Vernacular explanation or translation. |
+| `ti-Ethi`  | Tigrinya in Ethiopic script | Eritrean/Tigrinya communities.         |
+| `om-Latn`  | Oromo in Latin script       | Oromo-language materials.              |
+| `en`       | English                     | Diaspora teaching and translation.     |
+| `ar`       | Arabic                      | Arabic-speaking communities; RTL.      |
 
+## Language Selection
 
+Language keys are BCP 47-style tags. Script subtags matter when one language appears in more than one writing system, as with `gez-Ethi` and `gez-Latn`.
+
+Consumers must not treat object order as a fallback order. A renderer should choose languages from an explicit preference list and then use a documented application fallback, for example:
+
+```text
+requested: [am-Ethi, en]
+available: [gez-Ethi, gez-Latn, en]
+result: en
+```
+
+If no acceptable language is available, display a clear unavailable state rather than silently presenting a different language as a translation.
+
+## Keep Translation and Transliteration Distinct
+
+`gez-Latn` is a transliteration of Ge’ez; `en` is a translation. Both may be useful to the same reader, but they carry different claims. Whenever Latin-script Ge’ez is present, include the transliteration metadata described in `Transliteration Systems`.
+
+`textMeta.direction` describes presentation direction for the represented text. Mixed-direction interfaces should still derive layout from the selected language and script instead of applying one direction to every available value.

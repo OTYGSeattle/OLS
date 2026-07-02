@@ -6,12 +6,9 @@ order: 5
 updatedAt: 2026-07-01
 ---
 
-
 OLS v1.0 uses stable identifiers so content can be reused across apps, service books, teaching tools, and archives.
 
-        
-### ID Format
-
+## ID Format
 
 ```json
 {
@@ -19,28 +16,41 @@ OLS v1.0 uses stable identifiers so content can be reused across apps, service b
 }
 ```
 
-        
-### Reference Forms
+## Reference Forms
 
-        
-| Form | Example | Use |
-| --- | --- | --- |
-| Local ID | `block-kyrie` | Same file or same package context. |
-| Qualified ID | `eotc.kidase.common.block.kyrie` | Stable package-level reference. |
-| URN | `urn:ols:eotc:kidase:block:kyrie` | Long-lived archival reference. |
-| JSON Reference | `{ "$ref": "blocks/kyrie.ols.json" }` | File-level composition. |
+| Form           | Example                               | Use                                |
+| -------------- | ------------------------------------- | ---------------------------------- |
+| Local ID       | `block-kyrie`                         | Same file or same package context. |
+| Qualified ID   | `eotc.kidase.common.block.kyrie`      | Stable package-level reference.    |
+| URN            | `urn:ols:eotc:kidase:block:kyrie`     | Long-lived archival reference.     |
+| JSON Reference | `{ "$ref": "blocks/kyrie.ols.json" }` | File-level composition.            |
 
+## ID Rules
 
-        
-### ID Rules
+| Rule              | Requirement                                                                                    |
+| ----------------- | ---------------------------------------------------------------------------------------------- |
+| Uniqueness        | IDs MUST be unique within a package.                                                           |
+| Stability         | IDs SHOULD NOT change when text is translated.                                                 |
+| Versioning        | Breaking textual or structural changes SHOULD create a new version field, not a new random ID. |
+| Human readability | IDs SHOULD be descriptive and lowercase.                                                       |
+| No spaces         | IDs MUST NOT contain spaces.                                                                   |
 
-        
-| Rule | Requirement |
-| --- | --- |
-| Uniqueness | IDs MUST be unique within a package. |
-| Stability | IDs SHOULD NOT change when text is translated. |
-| Versioning | Breaking textual or structural changes SHOULD create a new version field, not a new random ID. |
-| Human readability | IDs SHOULD be descriptive and lowercase. |
-| No spaces | IDs MUST NOT contain spaces. |
+## Choosing a Reference Form
 
+Use the least ambiguous form that survives the expected lifetime of the content:
 
+- Use a local ID for tightly coupled files distributed in one package.
+- Use a qualified ID when another package may import or cache the entity.
+- Use a URN for archival catalogs and external systems that must not depend on a file path.
+- Use `$ref` when composing JSON documents and the target is identified by a file or package resolver.
+
+```json
+{
+  "id": "sec-entrance",
+  "blocks": [{ "$ref": "block-kyrie" }, { "$ref": "org.openliturgy.eotc.core:block-trisagion" }]
+}
+```
+
+## Renames and Versions
+
+Changing a label, translation, or file location does not require a new ID. When an ID itself must change, publishers should retain a redirect or alias in package metadata so old references can be diagnosed or migrated. A breaking structural revision should update the entity or package version while preserving the stable identity whenever it still represents the same liturgical object.

@@ -6,9 +6,7 @@ order: 31
 updatedAt: 2026-07-01
 ---
 
-
 OLS v1.0 supports textual variation without collapsing all traditions, editions, and local customs into one flattened text.
-
 
 ```json
 {
@@ -25,3 +23,10 @@ OLS v1.0 supports textual variation without collapsing all traditions, editions,
 }
 ```
 
+## Keep the Base Reading Stable
+
+A variant supplements an identified base entity; it should not silently overwrite that entity during import. Consumers may select or display a variant according to edition, manuscript, parish, date, or profile, but the selection rule must be explicit.
+
+Use one variant record per materially distinct reading or custom, and attach the source that supports it. Differences caused only by typography, line wrapping, or Unicode normalization do not need scholarly variants.
+
+When several witnesses support the same reading, reference each witness instead of copying the same variant text several times. When a local custom changes service structure rather than wording, model it as a proper mutation and cite the custom there.

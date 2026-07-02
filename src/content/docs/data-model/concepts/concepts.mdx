@@ -6,32 +6,54 @@ order: 6
 updatedAt: 2026-07-01
 ---
 
-
 OLS v1.0 is built from reusable entities. These entities can be used independently or composed into complete services.
 
-        
-| Entity | Purpose | Required In |
-| --- | --- | --- |
-| `LocalizedText` | Multilingual and transliterated text container. | All human-readable text. |
-| `Citation` | Bibliographic or source reference. | Source-aware content. |
-| `Provenance` | Who transcribed, translated, reviewed, and when. | All serious corpora. |
-| `Authority` | Ecclesial review and permitted use. | Liturgical and teaching corpora. |
-| `Person` | Priest, deacon, cantor, translator, reviewer, or performer. | ServiceInstance, review, provenance. |
-| `Organization` | Parish, diocese, monastery, publisher, school. | Authority and source context. |
-| `Role` | Liturgical function such as priest, deacon, cantor, congregation. | Utterance, Rubric, ServiceInstance. |
-| `RoleGroup` | Addressable ensemble of roles. | Unison, antiphony, collective actions. |
-| `Utterance` | Atomic spoken, chanted, sung, silent, or whispered text. | Blocks and service content. |
-| `Reading` | Scriptural or synaxarial reading. | Lectionary and service books. |
-| `Chant` | Musical metadata and performance notes. | Chanted/sung elements. |
-| `Rubric` | Action, posture, movement, setting, sound, or instruction. | Performable service content. |
-| `Block` | Reusable group of utterances, readings, rubrics, and line groups. | Sections and propers. |
-| `Section` | Major division of a service. | Ordo. |
-| `ProperSlot` | Placeholder for calendar-variable content. | Ordo and sections. |
-| `Proper` | Calendar-activated content filling slots. | Calendar-aware services. |
-| `Calendar` | Feasts, fasts, seasons, readings, commemorations. | Propers and planning. |
-| `Ordo` | Template for a complete service. | Service books. |
-| `ServiceInstance` | Record of a real service occurrence. | Parish logs, research, planning. |
-| `TeachingNote` | Catechetical explanation, Bible links, discussion questions. | Teaching tools. |
-| `Variant` | Alternate text, local custom, manuscript reading. | Scholarly and parish editions. |
+| Entity            | Purpose                                                           | Required In                            |
+| ----------------- | ----------------------------------------------------------------- | -------------------------------------- |
+| `LocalizedText`   | Multilingual and transliterated text container.                   | All human-readable text.               |
+| `Citation`        | Bibliographic or source reference.                                | Source-aware content.                  |
+| `Provenance`      | Who transcribed, translated, reviewed, and when.                  | All serious corpora.                   |
+| `Authority`       | Ecclesial review and permitted use.                               | Liturgical and teaching corpora.       |
+| `Person`          | Priest, deacon, cantor, translator, reviewer, or performer.       | ServiceInstance, review, provenance.   |
+| `Organization`    | Parish, diocese, monastery, publisher, school.                    | Authority and source context.          |
+| `Role`            | Liturgical function such as priest, deacon, cantor, congregation. | Utterance, Rubric, ServiceInstance.    |
+| `RoleGroup`       | Addressable ensemble of roles.                                    | Unison, antiphony, collective actions. |
+| `Utterance`       | Atomic spoken, chanted, sung, silent, or whispered text.          | Blocks and service content.            |
+| `Reading`         | Scriptural or synaxarial reading.                                 | Lectionary and service books.          |
+| `Chant`           | Musical metadata and performance notes.                           | Chanted/sung elements.                 |
+| `Rubric`          | Action, posture, movement, setting, sound, or instruction.        | Performable service content.           |
+| `Block`           | Reusable group of utterances, readings, rubrics, and line groups. | Sections and propers.                  |
+| `Section`         | Major division of a service.                                      | Ordo.                                  |
+| `ProperSlot`      | Placeholder for calendar-variable content.                        | Ordo and sections.                     |
+| `Proper`          | Calendar-activated content filling slots.                         | Calendar-aware services.               |
+| `Calendar`        | Feasts, fasts, seasons, readings, commemorations.                 | Propers and planning.                  |
+| `Ordo`            | Template for a complete service.                                  | Service books.                         |
+| `ServiceInstance` | Record of a real service occurrence.                              | Parish logs, research, planning.       |
+| `TeachingNote`    | Catechetical explanation, Bible links, discussion questions.      | Teaching tools.                        |
+| `Variant`         | Alternate text, local custom, manuscript reading.                 | Scholarly and parish editions.         |
 
+## Composition Boundaries
 
+The entities fall into four practical layers:
+
+| Layer                 | Entities                                                        | Responsibility                                                           |
+| --------------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| Identity and trust    | `Citation`, `Provenance`, `Authority`, `Person`, `Organization` | Explain where content came from, who handled it, and how it may be used. |
+| Performable content   | `Role`, `Utterance`, `Reading`, `Chant`, `Rubric`               | Describe text, performers, music, and actions.                           |
+| Service structure     | `Block`, `Section`, `ProperSlot`, `Proper`, `Ordo`              | Compose reusable content and calendar-variable structure.                |
+| Resolution and record | `Calendar`, `ServiceInstance`                                   | Resolve a service for a date and record a planned or actual occurrence.  |
+
+Prefer references between reusable entities instead of copying them. A reading reused on several feast days should have one stable ID; each proper can reference that ID.
+
+## Suggested Authoring Sequence
+
+1. Define package metadata and stable IDs.
+2. Add source, provenance, and authority records.
+3. Define roles and role groups.
+4. Encode utterances, readings, chants, and rubrics.
+5. Compose content into blocks and sections.
+6. Assemble an Ordo and its proper slots.
+7. Add propers and calendar rules.
+8. Validate references, profile rules, and test fixtures.
+
+This order is not a serialization requirement. It is an authoring workflow that exposes missing references early.

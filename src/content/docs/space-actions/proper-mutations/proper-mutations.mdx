@@ -6,9 +6,7 @@ order: 25
 updatedAt: 2026-07-01
 ---
 
-
 Propers do not only fill slots. They may insert, omit, replace, or reorder parts of the Ordo.
-
 
 ```json
 {
@@ -27,3 +25,42 @@ Propers do not only fill slots. They may insert, omit, replace, or reorder parts
 }
 ```
 
+## Mutation Operations
+
+| Operation                      | Use                                                      |
+| ------------------------------ | -------------------------------------------------------- |
+| `fill`                         | Supply content for a declared proper slot.               |
+| `insertBefore` / `insertAfter` | Add content adjacent to a stable target.                 |
+| `replace`                      | Substitute one target while retaining its position.      |
+| `omit`                         | Remove a target from the resolved service.               |
+| `move`                         | Relocate an existing target without duplicating it.      |
+| `wrap`                         | Place a target inside additional structure.              |
+| `setAttribute`                 | Change an allowed property without replacing the entity. |
+
+Use slot filling for ordinary calendar variation. Use structural mutations only when the service shape genuinely changes.
+
+## Apply Mutations Deterministically
+
+Resolve active propers first, order them using calendar conflict rules, and then apply mutations in declared order. Every target must resolve to exactly one entity unless the operation explicitly supports multiple targets.
+
+If one active proper omits a target and another attempts to insert relative to it, the profile or conflict rules must determine the winner. A processor must not use file load order to decide.
+
+## Mutation Operations
+
+| Operation                      | Use                                                      |
+| ------------------------------ | -------------------------------------------------------- |
+| `fill`                         | Supply content for a declared proper slot.               |
+| `insertBefore` / `insertAfter` | Add content adjacent to a stable target.                 |
+| `replace`                      | Substitute one target while retaining its position.      |
+| `omit`                         | Remove a target from the resolved service.               |
+| `move`                         | Relocate an existing target without duplicating it.      |
+| `wrap`                         | Place a target inside additional structure.              |
+| `setAttribute`                 | Change an allowed property without replacing the entity. |
+
+Use slot filling for ordinary calendar variation. Use structural mutations only when the service shape genuinely changes.
+
+## Apply Mutations Deterministically
+
+Resolve active propers first, order them using calendar conflict rules, and then apply mutations in declared order. Every target must resolve to exactly one entity unless the operation explicitly supports multiple targets.
+
+If one active proper omits a target and another attempts to insert relative to it, the profile or conflict rules must determine the winner. A processor must not use file load order to decide.

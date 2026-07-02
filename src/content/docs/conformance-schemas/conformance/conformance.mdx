@@ -6,9 +6,7 @@ order: 34
 updatedAt: 2026-07-01
 ---
 
-
 Tools do not need to support every feature. OLS v1.0 defines conformance levels so apps can honestly state what they implement.
-
 
 ```json
 {
@@ -21,3 +19,16 @@ Tools do not need to support every feature. OLS v1.0 defines conformance levels 
 }
 ```
 
+## Make Claims Auditable
+
+A conformance declaration describes implemented capabilities, not the completeness or authority of a particular corpus. Tools should publish the declaration with their version and test results.
+
+The `unsupported` list is important even when levels are declared. It prevents a consumer from assuming that a validator, editor, or renderer supports every optional entity associated with a profile.
+
+<Callout tone="warning" title="Do not infer level meanings">
+  This documentation names L0 through L7 but does not yet publish a normative feature matrix for those identifiers.
+  Until that matrix is versioned with the schema, implementations should treat `levels` as declared capability labels,
+  list unsupported features explicitly, and avoid assuming that a higher number includes every lower level.
+</Callout>
+
+Conformance testing should include schema validation, reference resolution, deterministic calendar fixtures, and round-trip tests for every claimed profile feature.

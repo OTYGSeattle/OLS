@@ -6,9 +6,7 @@ order: 38
 updatedAt: 2026-07-01
 ---
 
-
 OLS v1.0 packages SHOULD include valid and invalid examples so implementers can test validators and renderers.
-
 
 ```json
 {
@@ -21,3 +19,18 @@ OLS v1.0 packages SHOULD include valid and invalid examples so implementers can 
 }
 ```
 
+## Pair Valid and Invalid Fixtures
+
+An invalid fixture is useful only when it fails for the intended reason. Keep it as small as possible and pair it with a nearby valid case.
+
+```text
+tests/
+  valid/
+    section-with-resolved-block.ols.json
+  invalid/
+    section-with-missing-block.ols.json
+```
+
+For each fixture, record the expected result and a stable error code. Tests should assert the code rather than an entire human-readable message, which may be localized or improved without changing behavior.
+
+Include fixtures for more than schema shape: duplicate IDs, unresolved references, forbidden role substitutions, inaccessible sacred-space transitions, calendar ties, contradictory timeline durations, and unsupported profile extensions all require semantic tests.

@@ -6,11 +6,9 @@ order: 3
 updatedAt: 2026-07-01
 ---
 
-
 OLS is layered. The core standard avoids forcing one tradition’s structure onto another. Tradition-specific details belong in profiles.
 
-
-```json
+```text
 OLS Core
   └── Christian Liturgical Core
         └── Oriental Orthodox Core
@@ -22,9 +20,7 @@ OLS Core
               └── Malankara Orthodox Profile
 ```
 
-        
-### Scope Object
-
+## Scope Object
 
 ```json
 {
@@ -45,16 +41,34 @@ OLS Core
 }
 ```
 
-        
-### Scope Rules
+## Scope Rules
 
-        
-| Rule | Requirement |
-| --- | --- |
-| Core fields | MUST remain usable across Christian liturgical traditions. |
-| Profile fields | MUST live under `traditions.<namespace>`. |
-| EOTC-specific terms | MUST NOT be treated as universal Oriental Orthodox terms. |
-| Local parish customs | SHOULD be encoded as variants or local custom overlays. |
-| Teaching content | MUST distinguish explanation from liturgical text. |
+| Rule                 | Requirement                                                |
+| -------------------- | ---------------------------------------------------------- |
+| Core fields          | MUST remain usable across Christian liturgical traditions. |
+| Profile fields       | MUST live under `traditions.<namespace>`.                  |
+| EOTC-specific terms  | MUST NOT be treated as universal Oriental Orthodox terms.  |
+| Local parish customs | SHOULD be encoded as variants or local custom overlays.    |
+| Teaching content     | MUST distinguish explanation from liturgical text.         |
 
+## Put Extensions at the Narrowest Scope
 
+Keep portable fields at the entity root and place tradition-specific facts under the matching namespace. For example, the role type remains reusable while sanctuary access belongs to the EOTC profile:
+
+```json
+{
+  "id": "role-deacon",
+  "type": "deacon",
+  "labels": { "en": "Deacon" },
+  "traditions": {
+    "eotc": {
+      "nativeTitle": "Diyaqon",
+      "sanctuaryAccess": ["qene_mahlet", "qeddest"]
+    }
+  }
+}
+```
+
+Consumers that do not implement `traditions.eotc` can still understand the core role. Profile-aware consumers can apply the additional access rules.
+
+Do not duplicate or redefine a core field inside a profile namespace. If a profile needs different semantics, define a new namespaced field and document the relationship explicitly.

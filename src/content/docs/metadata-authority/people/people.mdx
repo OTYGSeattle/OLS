@@ -6,12 +6,9 @@ order: 11
 updatedAt: 2026-07-01
 ---
 
-
 People and organizations appear in sources, authority review, service instances, translations, and performance records.
 
-        
-### Person
-
+## Person
 
 ```json
 {
@@ -27,9 +24,7 @@ People and organizations appear in sources, authority review, service instances,
 }
 ```
 
-        
-### Organization
-
+## Organization
 
 ```json
 {
@@ -47,3 +42,21 @@ People and organizations appear in sources, authority review, service instances,
 }
 ```
 
+## Privacy and Attribution
+
+Use stable person IDs in provenance, review, and service records. A public renderer should use `privacy.publicName` when the full identity is not public and should omit private affiliation or location details unless release is explicitly permitted.
+
+```json
+{
+  "reviewedBy": [
+    {
+      "person": "person-priest-001",
+      "role": "priest",
+      "date": "2026-06-29",
+      "scope": "pastoral-review"
+    }
+  ]
+}
+```
+
+The role in a review record describes the person’s responsibility for that review. It does not replace the person’s reusable `roles` list or a liturgical cast assignment in `ServiceInstance`.

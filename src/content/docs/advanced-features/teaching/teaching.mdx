@@ -6,9 +6,7 @@ order: 32
 updatedAt: 2026-07-01
 ---
 
-
 Teaching notes must be separate from liturgical text. This lets OLS serve Sunday school, youth group, catechesis, and adult formation without altering the service itself.
-
 
 ```json
 {
@@ -22,3 +20,10 @@ Teaching notes must be separate from liturgical text. This lets OLS serve Sunday
 }
 ```
 
+## Attach Without Altering
+
+Teaching content should reference the liturgical entity it explains. A worship view can omit teaching notes; a study view can place them beside the same source text without modifying it.
+
+Use `summary` for a concise explanation, `bibleLinks` for canonical references, and `ageLevel` to help applications choose an appropriate presentation. If separate youth and adult explanations are needed, create separately addressable notes rather than combining audiences in one paragraph.
+
+Commentary should identify its author and source when it makes historical, theological, or linguistic claims. An explanatory note inherits neither the authority nor the license of the liturgical text it discusses.

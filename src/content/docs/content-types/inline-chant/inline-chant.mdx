@@ -6,9 +6,7 @@ order: 17
 updatedAt: 2026-07-01
 ---
 
-
 Chant metadata cannot always attach only to a whole utterance. OLS v1.0 defines inline segmentation for alignment.
-
 
 ```json
 {
@@ -29,3 +27,18 @@ Chant metadata cannot always attach only to a whole utterance. OLS v1.0 defines 
 }
 ```
 
+## Range Integrity
+
+Character ranges are interpreted against the exact string identified by `range.language`. Implementers should validate that:
+
+1. `startChar` is less than `endChar`.
+2. The range falls within the selected language value.
+3. The copied segment text matches that range.
+4. Segments do not overlap unless the active profile explicitly permits overlap.
+
+Do not reuse Ge’ez character offsets for a transliteration or translation. Each writing system may have different token and character boundaries, so aligned languages need their own ranges.
+
+<Callout tone="warning" title="Normalize before indexing">
+  Publishers and consumers must agree on Unicode normalization before calculating character offsets. Re-normalizing text
+  after ranges are authored can invalidate every segment boundary.
+</Callout>

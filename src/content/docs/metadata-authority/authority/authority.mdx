@@ -6,12 +6,9 @@ order: 10
 updatedAt: 2026-07-01
 ---
 
-
 OLS does not make software the authority over the liturgy. It records who reviewed content, what it may be used for, and what remains restricted.
 
-        
-### Authority Object
-
+## Authority Object
 
 ```json
 {
@@ -37,24 +34,29 @@ OLS does not make software the authority over the liturgy. It records who review
 }
 ```
 
-        
-### Authority Status
+## Authority Status
 
-        
-| Status | Use |
-| --- | --- |
-| `draft` | May contain errors. Not for public teaching without review. |
-| `needs-review` | Awaiting clergy, liturgical, language, or scholarly review. |
-| `educational-only` | Approved only as teaching material. |
-| `parish-reviewed` | Reviewed for a specific parish context. |
-| `diocesan-approved` | Approved by a diocesan authority. |
-| `synodal-approved` | Approved by a synodal or official ecclesial body. |
-| `historical-only` | Preserved for history; not current practice. |
-| `deprecated` | Should not be used in new materials. |
+| Status              | Use                                                         |
+| ------------------- | ----------------------------------------------------------- |
+| `draft`             | May contain errors. Not for public teaching without review. |
+| `needs-review`      | Awaiting clergy, liturgical, language, or scholarly review. |
+| `educational-only`  | Approved only as teaching material.                         |
+| `parish-reviewed`   | Reviewed for a specific parish context.                     |
+| `diocesan-approved` | Approved by a diocesan authority.                           |
+| `synodal-approved`  | Approved by a synodal or official ecclesial body.           |
+| `historical-only`   | Preserved for history; not current practice.                |
+| `deprecated`        | Should not be used in new materials.                        |
 
+## Evaluate Use, Not Just Status
 
-        
-<QuoteBlock author="**2 Thessalonians 2:15**">
-  "Hold fast the traditions which you were taught."
-</QuoteBlock>
+`status` summarizes review maturity. `allowedUse` and `restrictedUse` answer the separate question of what a consumer may do with the content. Applications should evaluate all three controls:
 
+1. Confirm that the intended use appears in `allowedUse`.
+2. Reject the use if it appears in `restrictedUse`.
+3. Require the declared review when `requiresClergyReview` is `true`.
+
+An `educational-only` item may be technically valid and suitable for a classroom while remaining prohibited for altar use. Schema validation must never be presented as ecclesial approval.
+
+Package-level authority acts as a default. Entity-level authority may narrow that default or record a more specific approval, but implementations should preserve the review trail and never infer approval from a missing field.
+
+<QuoteBlock author="2 Thessalonians 2:15">"Hold fast the traditions which you were taught."</QuoteBlock>
