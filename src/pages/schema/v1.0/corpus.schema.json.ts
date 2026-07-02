@@ -1,4 +1,5 @@
 import { supportedValueGroups } from '../../../data/supported-values';
+import { commonDefinitions, entitySchemas } from '../../../data/ols-schemas';
 
 export function GET() {
   const definitions = Object.fromEntries(
@@ -11,15 +12,17 @@ export function GET() {
       },
     ]),
   );
+  const entities = Object.fromEntries(Object.values(entitySchemas).map((entity) => [entity.title, entity.schema]));
 
   return new Response(
     JSON.stringify(
       {
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         $id: 'https://ols.otyg.org/schema/v1.0/corpus.schema.json',
-        title: 'OpenLiturgy Standard v1.0 supported vocabularies',
-        description: 'Normative closed vocabularies and documented open recommendations used by OLS v1.0.',
-        $defs: definitions,
+        title: 'OpenLiturgy Standard v1.0 corpus schema',
+        description: 'OLS v1.0 entity models and supported vocabularies.',
+        oneOf: Object.keys(entities).map((name) => ({ $ref: `#/$defs/${name}` })),
+        $defs: { ...commonDefinitions, ...definitions, ...entities },
       },
       null,
       2,

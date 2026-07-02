@@ -13,6 +13,7 @@ The format is based on Keep a Changelog, and this project follows semantic versi
 - Corrected repository links from `OTYGSeattle/OSL` to `OTYGSeattle/OLS`.
 - Prevented the development server from requesting the production-only Pagefind module, eliminating the disallowed MIME-type browser error.
 - Added visible supported-value lists to relevant specification articles and generated an OLS v1.0 JSON Schema vocabulary endpoint with direct definition links.
+- Added standalone Draft 2020-12 JSON Schema validators for 35 modeled OLS entities, including localized text, utterances, readings, rubrics, blocks, sections, roles, citations, calendars, and service instances.
 - Expanded all OLS specification articles with practical usage guidance, connected JSON samples, validation notes, edge cases, and a complete minimal corpus walkthrough.
 - Fixed scripture citation labels that displayed Markdown emphasis markers as literal text.
 - Migrated OpenLiturgy Standard (OLS) v1.0 single-page specification from `base.html` into a full documentation repository using Astro, React, and Tailwind CSS.

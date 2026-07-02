@@ -170,3 +170,35 @@ export const supportedValuesBySlug: Record<string, SupportedValueGroup[]> = {
 };
 
 export const schemaDefinitionUrl = (definition: string) => `/schema/v1.0/corpus.schema.json#/$defs/${definition}`;
+
+export const documentSchemasBySlug: Record<string, string[]> = {
+  architecture: ['scope'],
+  package: ['manifest'],
+  localized: ['localized-text'],
+  'transliteration-systems': ['transliteration'],
+  roles: ['role', 'role-group'],
+  authority: ['authority'],
+  source: ['citation', 'provenance'],
+  people: ['person', 'organization'],
+  utterances: ['utterance'],
+  readings: ['reading'],
+  chant: ['chant'],
+  'inline-chant': ['inline-chant'],
+  rubrics: ['rubric'],
+  blocks: ['block'],
+  'verse-lines': ['verse-line-group'],
+  sections: ['section', 'ordo'],
+  propers: ['proper-slot', 'proper'],
+  'proper-mutations': ['mutation'],
+  calendar: ['calendar', 'liturgical-day'],
+  'deterministic-calendar': ['conflict-rule'],
+  service: ['service-instance'],
+  'execution-timeline': ['execution-timeline'],
+  space: ['sacred-space'],
+  'rubric-state': ['rubric-state-transition'],
+  assets: ['asset'],
+  variants: ['variant'],
+  teaching: ['teaching-note'],
+  conformance: ['conformance'],
+  testing: ['test-fixture'],
+};
