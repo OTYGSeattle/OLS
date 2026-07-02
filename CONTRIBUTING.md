@@ -41,11 +41,15 @@ npm run clean
 - Use nested docs links such as `/getting-started/start-here`; one-segment sub-category URLs such as `/start-here` are not generated.
 - Prefer small, focused pull requests.
 - Preserve the existing Astro, Tailwind, and MDX patterns unless there is a strong reason to change them.
+- Treat `packages/schemas/schemas/v1.0` as canonical. After schema changes, refresh provenance and run `node tools/sync-python-schemas.mjs`.
+- Update schemas, generated models, documentation examples, and valid/invalid fixtures together.
+- Keep `@ols/*` and `ols-sdk` versions aligned with `compatibility.json`.
 
 ## Before Opening a PR
 
 - Run `npm run check`.
 - Run `npm run format:check`.
+- Run workspace tests, Python tests, and `npm run test:parity` for SDK changes.
 - Run `npm run build` if your change affects search, routes, metadata, or generated output.
 - Verify keyboard behavior and basic accessibility for any interactive UI changes.
 - Update `README.md` and `CHANGELOG.md` when the change affects setup, usage, or end-user behavior.

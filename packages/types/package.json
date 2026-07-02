@@ -1,0 +1,14 @@
+{
+  "name": "@ols/types",
+  "version": "1.0.0",
+  "description": "TypeScript and Zod models for OLS v1.0",
+  "type": "module",
+  "license": "Apache-2.0",
+  "files": ["dist/index.js", "dist/index.d.ts"],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": { "build": "tsc -p tsconfig.json", "check": "tsc -p tsconfig.json --noEmit", "test": "vitest run" },
+  "dependencies": { "zod": "^3.25.76" },
+  "devDependencies": { "typescript": "^5.9.3", "vitest": "^3.2.4" },
+  "engines": { "node": ">=20" }
+}

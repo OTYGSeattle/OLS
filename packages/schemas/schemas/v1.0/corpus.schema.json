@@ -1,0 +1,1624 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ols.otyg.org/schema/v1.0/corpus.schema.json",
+  "title": "OpenLiturgy Standard v1.0 corpus schema",
+  "description": "OLS v1.0 entity models and supported vocabularies.",
+  "$defs": {
+    "Id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "LocalizedText": {
+      "type": "object",
+      "minProperties": 1,
+      "patternProperties": {
+        "^[a-z]{2,3}(?:-[A-Z][a-z]{3})?$": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "DocumentStatus": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "review",
+        "candidate",
+        "stable",
+        "deprecated"
+      ],
+      "description": "Technical maturity of an OLS document."
+    },
+    "AuthorityStatus": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "needs-review",
+        "educational-only",
+        "parish-reviewed",
+        "diocesan-approved",
+        "synodal-approved",
+        "historical-only",
+        "deprecated"
+      ],
+      "description": "Ecclesial review and permitted-use status."
+    },
+    "SourceType": {
+      "type": "string",
+      "enum": [
+        "printed-book",
+        "manuscript",
+        "oral-tradition",
+        "parish-handout",
+        "scholarly-edition",
+        "translation",
+        "audio-recording",
+        "video-recording",
+        "web-source",
+        "field-notes"
+      ],
+      "description": "Kind of evidence represented by a citation."
+    },
+    "RoleType": {
+      "type": "string",
+      "enum": [
+        "bishop",
+        "celebrant",
+        "concelebrant",
+        "deacon",
+        "cantor",
+        "choir",
+        "reader",
+        "congregation"
+      ],
+      "description": "Core cross-tradition liturgical roles."
+    },
+    "TransliterationSystem": {
+      "type": "string",
+      "enum": [
+        "scholarly-ies",
+        "bgn-pcgn",
+        "phonetic-amharic",
+        "phonetic-english",
+        "parish-custom",
+        "custom"
+      ],
+      "description": "Declared transliteration conventions."
+    },
+    "LanguageTag": {
+      "type": "string",
+      "examples": [
+        "gez-Ethi",
+        "gez-Latn",
+        "am-Ethi",
+        "ti-Ethi",
+        "om-Latn",
+        "en",
+        "ar"
+      ],
+      "description": "Recommended BCP 47 tags; other valid tags remain allowed."
+    },
+    "UtteranceMode": {
+      "type": "string",
+      "enum": [
+        "spoken",
+        "chanted",
+        "sung",
+        "whispered",
+        "silent",
+        "canticle",
+        "responsive",
+        "recited"
+      ],
+      "description": "How an utterance is delivered."
+    },
+    "RubricCategory": {
+      "type": "string",
+      "enum": [
+        "action",
+        "posture",
+        "movement",
+        "sound",
+        "setting",
+        "instruction",
+        "permission"
+      ],
+      "description": "Machine-readable class of liturgical action."
+    },
+    "RubricForce": {
+      "type": "string",
+      "enum": [
+        "required",
+        "recommended",
+        "optional"
+      ],
+      "description": "Required behavior when executing a rubric."
+    },
+    "MutationOperation": {
+      "type": "string",
+      "enum": [
+        "fill",
+        "insertBefore",
+        "insertAfter",
+        "replace",
+        "omit",
+        "move",
+        "wrap",
+        "setAttribute"
+      ],
+      "description": "Deterministic structural mutation operation."
+    },
+    "TimelineTargetType": {
+      "type": "string",
+      "enum": [
+        "section",
+        "block",
+        "reading",
+        "rubric",
+        "utterance"
+      ],
+      "description": "Entity kinds that may receive execution timing."
+    },
+    "TimelineStatus": {
+      "type": "string",
+      "enum": [
+        "completed",
+        "skipped",
+        "interrupted"
+      ],
+      "description": "Recorded execution outcome explicitly named by OLS v1.0."
+    },
+    "AssetType": {
+      "type": "string",
+      "enum": [
+        "audio",
+        "video",
+        "image",
+        "scan",
+        "pdf",
+        "notation",
+        "manuscript-image"
+      ],
+      "description": "External media kinds supported by asset records."
+    },
+    "CalendarCapability": {
+      "type": "string",
+      "enum": [
+        "fixed-feasts",
+        "movable-feasts",
+        "fasting-periods",
+        "lectionary"
+      ],
+      "description": "Capabilities declared by a calendar definition."
+    },
+    "ConformanceLevel": {
+      "type": "string",
+      "enum": [
+        "L0",
+        "L1",
+        "L2",
+        "L3",
+        "L4",
+        "L5",
+        "L6",
+        "L7"
+      ],
+      "description": "Versioned capability labels; no hierarchy is implied."
+    },
+    "ChangeClass": {
+      "type": "string",
+      "enum": [
+        "patch",
+        "minor",
+        "major"
+      ],
+      "description": "Semantic-version impact of a specification change."
+    },
+    "Transliteration": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "target": {
+          "type": "string",
+          "minLength": 1
+        },
+        "system": {
+          "$ref": "#/$defs/TransliterationSystem"
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reviewedBy": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "source",
+        "target",
+        "system",
+        "value"
+      ],
+      "additionalProperties": true
+    },
+    "Utterance": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "mode": {
+          "$ref": "#/$defs/UtteranceMode"
+        },
+        "delivery": {
+          "type": "string",
+          "minLength": 1
+        },
+        "audience": {
+          "type": "string",
+          "minLength": 1
+        },
+        "text": {
+          "$ref": "#/$defs/LocalizedText"
+        },
+        "chant": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "roles",
+        "mode",
+        "text"
+      ],
+      "additionalProperties": true
+    },
+    "Reading": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "role": {
+          "$ref": "#/$defs/Id"
+        },
+        "reference": {
+          "type": "object",
+          "properties": {
+            "system": {
+              "type": "string",
+              "minLength": 1
+            },
+            "osisRef": {
+              "type": "string",
+              "minLength": 1
+            },
+            "book": {
+              "type": "string",
+              "minLength": 1
+            },
+            "chapterStart": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "verseStart": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "chapterEnd": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "verseEnd": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "system"
+          ],
+          "additionalProperties": true
+        },
+        "text": {
+          "$ref": "#/$defs/LocalizedText"
+        },
+        "citation": {
+          "$ref": "#/$defs/Id"
+        },
+        "kind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "const": "reading"
+        }
+      },
+      "required": [
+        "type",
+        "id",
+        "kind",
+        "role",
+        "reference"
+      ],
+      "additionalProperties": true
+    },
+    "Chant": {
+      "type": "object",
+      "properties": {
+        "system": {
+          "type": "string",
+          "minLength": 1
+        },
+        "mode": {
+          "type": "string",
+          "minLength": 1
+        },
+        "zemaType": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source": {
+          "type": "object"
+        },
+        "performance": {
+          "type": "object"
+        },
+        "type": {
+          "const": "chant"
+        }
+      },
+      "required": [
+        "type",
+        "system",
+        "mode"
+      ],
+      "additionalProperties": true
+    },
+    "Rubric": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "category": {
+          "$ref": "#/$defs/RubricCategory"
+        },
+        "subtype": {
+          "type": "string",
+          "minLength": 1
+        },
+        "force": {
+          "$ref": "#/$defs/RubricForce"
+        },
+        "actors": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "object": {
+          "$ref": "#/$defs/Id"
+        },
+        "from": {
+          "$ref": "#/$defs/Id"
+        },
+        "to": {
+          "$ref": "#/$defs/Id"
+        },
+        "path": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "description": {
+          "$ref": "#/$defs/LocalizedText"
+        },
+        "stateTransition": {
+          "type": "object"
+        },
+        "type": {
+          "const": "rubric"
+        }
+      },
+      "required": [
+        "type",
+        "id",
+        "category",
+        "actors"
+      ],
+      "additionalProperties": true
+    },
+    "Block": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "label": {
+          "$ref": "#/$defs/LocalizedText"
+        },
+        "elements": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "oneOf": [
+              {
+                "required": [
+                  "$ref"
+                ]
+              },
+              {
+                "required": [
+                  "utterance"
+                ]
+              },
+              {
+                "required": [
+                  "reading"
+                ]
+              },
+              {
+                "required": [
+                  "rubric"
+                ]
+              },
+              {
+                "required": [
+                  "teaching"
+                ]
+              }
+            ]
+          }
+        },
+        "kind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "const": "block"
+        }
+      },
+      "required": [
+        "type",
+        "id",
+        "kind",
+        "elements"
+      ],
+      "additionalProperties": true
+    },
+    "Section": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "type": {
+          "const": "section"
+        },
+        "label": {
+          "$ref": "#/$defs/LocalizedText"
+        },
+        "blocks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "properSlots": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "type",
+        "id",
+        "label"
+      ],
+      "additionalProperties": true
+    },
+    "ProperSlot": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "accepts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "required": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "accepts"
+      ],
+      "additionalProperties": true
+    },
+    "Proper": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "conditions": {
+          "type": "object"
+        },
+        "mutations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Mutation"
+          }
+        },
+        "priorityClass": {
+          "type": "string",
+          "minLength": 1
+        },
+        "priority": {
+          "type": "number"
+        },
+        "type": {
+          "const": "proper"
+        },
+        "ordos": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Id"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "fills": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "required": [
+        "type",
+        "id",
+        "conditions",
+        "mutations",
+        "ordos"
+      ],
+      "additionalProperties": true
+    },
+    "Structural Mutation": {
+      "type": "object",
+      "properties": {
+        "operation": {
+          "$ref": "#/$defs/MutationOperation"
+        },
+        "target": {
+          "$ref": "#/$defs/Id"
+        },
+        "content": {},
+        "value": {}
+      },
+      "required": [
+        "operation",
+        "target"
+      ],
+      "additionalProperties": true
+    },
+    "Role": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "label": {
+          "$ref": "#/$defs/LocalizedText"
+        },
+        "inherits": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "kind": {
+          "$ref": "#/$defs/RoleType"
+        },
+        "type": {
+          "const": "role"
+        }
+      },
+      "required": [
+        "type",
+        "id",
+        "kind"
+      ],
+      "additionalProperties": true
+    },
+    "RoleGroup": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "label": {
+          "$ref": "#/$defs/LocalizedText"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "type": {
+          "const": "role-group"
+        }
+      },
+      "required": [
+        "type",
+        "id",
+        "roles"
+      ],
+      "additionalProperties": true
+    },
+    "Citation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "type": {
+          "$ref": "#/$defs/SourceType"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "language": {
+          "type": "string",
+          "minLength": 1
+        },
+        "edition": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "publisher": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "year": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "page": {
+          "type": "string",
+          "minLength": 1
+        },
+        "line": {
+          "type": "string",
+          "minLength": 1
+        },
+        "license": {
+          "type": "string",
+          "minLength": 1
+        },
+        "notes": {
+          "$ref": "#/$defs/LocalizedText"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "title"
+      ],
+      "additionalProperties": true
+    },
+    "Provenance": {
+      "type": "object",
+      "properties": {
+        "sourceStatus": {
+          "type": "string",
+          "minLength": 1
+        },
+        "transcriber": {
+          "$ref": "#/$defs/Id"
+        },
+        "translator": {
+          "$ref": "#/$defs/Id"
+        },
+        "editors": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "reviewers": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "confidence": {
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        "lastReviewed": {
+          "type": "string",
+          "format": "date"
+        },
+        "changeReason": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "sourceStatus"
+      ],
+      "additionalProperties": true
+    },
+    "Authority": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/AuthorityStatus"
+        },
+        "allowedUse": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "restrictedUse": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "reviewedBy": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "type": {
+          "const": "authority"
+        }
+      },
+      "required": [
+        "type",
+        "status"
+      ],
+      "additionalProperties": true
+    },
+    "Person": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "type": {
+          "const": "person"
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "affiliation": {
+          "$ref": "#/$defs/Id"
+        },
+        "privacy": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "type",
+        "id",
+        "displayName"
+      ],
+      "additionalProperties": true
+    },
+    "Organization": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "type": {
+          "const": "organization"
+        },
+        "kind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "$ref": "#/$defs/LocalizedText"
+        },
+        "jurisdiction": {
+          "type": "string",
+          "minLength": 1
+        },
+        "location": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "type",
+        "id",
+        "kind",
+        "name"
+      ],
+      "additionalProperties": true
+    },
+    "Asset": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "uri": {
+          "type": "string",
+          "format": "uri-reference"
+        },
+        "linkedTo": {
+          "$ref": "#/$defs/Id"
+        },
+        "license": {
+          "type": "string",
+          "minLength": 1
+        },
+        "provenance": {
+          "$ref": "#/$defs/Id"
+        },
+        "kind": {
+          "$ref": "#/$defs/AssetType"
+        },
+        "type": {
+          "const": "asset"
+        }
+      },
+      "required": [
+        "type",
+        "id",
+        "kind",
+        "uri",
+        "linkedTo"
+      ],
+      "additionalProperties": true
+    },
+    "Variant": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source": {
+          "$ref": "#/$defs/Id"
+        },
+        "base": {
+          "$ref": "#/$defs/Id"
+        },
+        "text": {
+          "$ref": "#/$defs/LocalizedText"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "source"
+      ],
+      "additionalProperties": true
+    },
+    "TeachingNote": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "target": {
+          "$ref": "#/$defs/Id"
+        },
+        "summary": {
+          "$ref": "#/$defs/LocalizedText"
+        },
+        "bibleLinks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "ageLevel": {
+          "type": "string",
+          "minLength": 1
+        },
+        "author": {
+          "$ref": "#/$defs/Id"
+        },
+        "source": {
+          "$ref": "#/$defs/Id"
+        },
+        "type": {
+          "const": "teaching-note"
+        }
+      },
+      "required": [
+        "type",
+        "id",
+        "target",
+        "summary"
+      ],
+      "additionalProperties": true
+    },
+    "Calendar": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "system": {
+          "type": "string",
+          "minLength": 1
+        },
+        "epoch": {
+          "type": "string",
+          "minLength": 1
+        },
+        "monthCount": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "supports": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CalendarCapability"
+          },
+          "uniqueItems": true
+        },
+        "type": {
+          "const": "calendar"
+        }
+      },
+      "required": [
+        "type",
+        "id",
+        "system"
+      ],
+      "additionalProperties": true
+    },
+    "Ordo": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "label": {
+          "$ref": "#/$defs/LocalizedText"
+        },
+        "sections": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "type": {
+          "const": "ordo"
+        }
+      },
+      "required": [
+        "type",
+        "id",
+        "sections"
+      ],
+      "additionalProperties": true
+    },
+    "ServiceInstance": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "type": {
+          "const": "service-instance"
+        },
+        "ordo": {
+          "$ref": "#/$defs/Id"
+        },
+        "date": {
+          "type": "object"
+        },
+        "status": {
+          "type": "string",
+          "minLength": 1
+        },
+        "cast": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "role": {
+                "$ref": "#/$defs/Id"
+              },
+              "person": {
+                "$ref": "#/$defs/Id"
+              }
+            },
+            "required": [
+              "role",
+              "person"
+            ],
+            "additionalProperties": true
+          }
+        },
+        "activePropers": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "executionTimeline": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ExecutionTimelineEntry"
+          }
+        },
+        "privacy": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "ordo",
+        "date"
+      ],
+      "additionalProperties": true
+    },
+    "ExecutionTimelineEntry": {
+      "type": "object",
+      "properties": {
+        "target": {
+          "$ref": "#/$defs/Id"
+        },
+        "type": {
+          "$ref": "#/$defs/TimelineTargetType"
+        },
+        "start": {
+          "type": "string",
+          "minLength": 1
+        },
+        "end": {
+          "type": "string",
+          "minLength": 1
+        },
+        "duration": {
+          "type": "string",
+          "pattern": "^P"
+        },
+        "status": {
+          "$ref": "#/$defs/TimelineStatus"
+        }
+      },
+      "required": [
+        "target",
+        "type",
+        "status"
+      ],
+      "additionalProperties": true
+    },
+    "SacredSpace": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "zones": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/Id"
+              },
+              "label": {
+                "$ref": "#/$defs/LocalizedText"
+              },
+              "access": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            "required": [
+              "id",
+              "label",
+              "access"
+            ],
+            "additionalProperties": true
+          }
+        }
+      },
+      "required": [
+        "id",
+        "zones"
+      ],
+      "additionalProperties": true
+    },
+    "InlineChantAlignment": {
+      "type": "object",
+      "properties": {
+        "start": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "end": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "chant": {
+          "$ref": "#/$defs/Chant"
+        }
+      },
+      "required": [
+        "start",
+        "end",
+        "chant"
+      ],
+      "additionalProperties": true
+    },
+    "VerseLineGroup": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "enum": [
+            "verse",
+            "line-group",
+            "hemistich-pair"
+          ]
+        },
+        "n": {
+          "type": [
+            "string",
+            "integer"
+          ]
+        },
+        "lines": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "properties": {
+              "n": {
+                "type": [
+                  "string",
+                  "integer"
+                ]
+              },
+              "hemistich": {
+                "enum": [
+                  "a",
+                  "b"
+                ]
+              },
+              "roles": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "minItems": 1,
+                "uniqueItems": true
+              },
+              "text": {
+                "$ref": "#/$defs/LocalizedText"
+              }
+            },
+            "required": [
+              "n",
+              "text"
+            ],
+            "additionalProperties": true
+          }
+        }
+      },
+      "required": [
+        "type",
+        "lines"
+      ],
+      "additionalProperties": true
+    },
+    "RubricStateTransition": {
+      "type": "object",
+      "properties": {
+        "requires": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "sets": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "required": [
+        "requires",
+        "sets"
+      ],
+      "additionalProperties": true
+    },
+    "LiturgicalDay": {
+      "type": "object",
+      "properties": {
+        "date": {
+          "type": "object"
+        },
+        "season": {
+          "type": "string",
+          "minLength": 1
+        },
+        "feasts": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "fasts": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "commemorations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "readings": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "activePropers": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "conflicts": {
+          "type": "array"
+        }
+      },
+      "required": [
+        "date"
+      ],
+      "additionalProperties": true
+    },
+    "CalendarConflictRule": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "winner": {
+          "$ref": "#/$defs/Id"
+        },
+        "overrides": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "priorityClass": {
+          "type": "string",
+          "minLength": 1
+        },
+        "priority": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "id",
+        "winner",
+        "overrides"
+      ],
+      "additionalProperties": true
+    },
+    "ConformanceDeclaration": {
+      "type": "object",
+      "properties": {
+        "ols": {
+          "type": "string",
+          "minLength": 1
+        },
+        "levels": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ConformanceLevel"
+          },
+          "uniqueItems": true
+        },
+        "profiles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "unsupported": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "ols",
+        "levels"
+      ],
+      "additionalProperties": true
+    },
+    "Scope": {
+      "type": "object",
+      "properties": {
+        "core": {
+          "type": "boolean"
+        },
+        "traditions": {
+          "type": "object"
+        },
+        "status": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": true
+    },
+    "TestFixture": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "schema": {
+          "type": "string",
+          "format": "uri-reference"
+        },
+        "valid": {
+          "type": "boolean"
+        },
+        "instance": {},
+        "expectedErrors": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "id",
+        "schema",
+        "valid",
+        "instance"
+      ],
+      "additionalProperties": true
+    },
+    "OLS Package Manifest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "name": {
+          "$ref": "#/$defs/LocalizedText"
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ols": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "$ref": "#/$defs/DocumentStatus"
+        },
+        "license": {
+          "type": "string",
+          "minLength": 1
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "id",
+        "version",
+        "ols",
+        "status"
+      ],
+      "additionalProperties": true
+    }
+  },
+  "x-ols-schema-source": "normative",
+  "x-ols-specification": "https://ols.otyg.org/schema/v1.0/corpus.schema.json",
+  "x-ols-revision": "1.0.0",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "const": "https://ols.otyg.org/schema/v1.0/corpus.schema.json"
+    },
+    "ols_version": {
+      "type": "string",
+      "pattern": "^1\\.0\\.[0-9]+$"
+    },
+    "type": {
+      "const": "corpus"
+    },
+    "id": {
+      "$ref": "#/$defs/Id"
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "authority": {
+      "$ref": "#/$defs/Authority"
+    },
+    "roles": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Role"
+      }
+    },
+    "readings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Reading"
+      }
+    },
+    "blocks": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Block"
+      }
+    },
+    "sections": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Section"
+      }
+    },
+    "ordos": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Ordo"
+      }
+    },
+    "propers": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Proper"
+      }
+    },
+    "calendars": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Calendar"
+      }
+    },
+    "rubrics": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Rubric"
+      }
+    },
+    "assets": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Asset"
+      }
+    },
+    "teachingNotes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/TeachingNote"
+      }
+    }
+  },
+  "required": [
+    "$schema",
+    "ols_version",
+    "type",
+    "id"
+  ],
+  "additionalProperties": true
+}

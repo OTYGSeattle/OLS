@@ -1,0 +1,258 @@
+import { createHash } from 'node:crypto';
+import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
+import { dirname, isAbsolute, relative, resolve } from 'node:path';
+import Ajv2020Import, { type ErrorObject, type ValidateFunction } from 'ajv/dist/2020.js';
+import addFormatsImport from 'ajv-formats';
+import { listSchemas, loadSchema } from '@ols/schemas';
+import type { Diagnostic, JsonValue, LoadedDocument, OlsDocument, ValidationLayer, ValidationReport } from '@ols/types';
+export type { Diagnostic, LoadedDocument, OlsDocument, ValidationReport } from '@ols/types';
+type AjvLike = { addSchema(schema: object, id: string): void; getSchema(id: string): ValidateFunction | undefined };
+
+const layerOrder: ValidationLayer[] = ['parse', 'schema-selection', 'structural', 'consistency', 'references', 'semantic'];
+const normalizePath = (value: string) => value.replaceAll('\\', '/');
+const diagnosticSort = (a: Diagnostic, b: Diagnostic) =>
+  layerOrder.indexOf(a.layer) - layerOrder.indexOf(b.layer) || a.source.localeCompare(b.source) ||
+  a.jsonPointer.localeCompare(b.jsonPointer) || a.code.localeCompare(b.code);
+
+export class SchemaRegistry {
+  readonly schemas = new Map<string, Record<string, unknown>>();
+  readonly validators = new Map<string, ValidateFunction>();
+  private ajv: AjvLike;
+
+  constructor() {
+    const AjvConstructor = (Ajv2020Import as unknown as { default?: new (options: object) => AjvLike }).default ?? Ajv2020Import as unknown as new (options: object) => AjvLike;
+    this.ajv = new AjvConstructor({ allErrors: true, strict: false });
+  }
+
+  static async bundled(): Promise<SchemaRegistry> {
+    const registry = new SchemaRegistry();
+    const addFormats = (addFormatsImport as unknown as { default?: (ajv: unknown) => void }).default ?? addFormatsImport as unknown as (ajv: unknown) => void;
+    addFormats(registry.ajv);
+    for (const filename of await listSchemas()) registry.add(await loadSchema(filename));
+    return registry;
+  }
+
+  add(schema: Record<string, unknown>): void {
+    const id = String(schema.$id ?? '');
+    if (!id) throw new Error('Schema is missing $id');
+    this.schemas.set(id, schema);
+    this.ajv.addSchema(schema, id);
+  }
+
+  get(id: string): Record<string, unknown> | undefined { return this.schemas.get(id); }
+  validate(id: string, value: unknown): ValidateFunction | undefined {
+    const validator = this.ajv.getSchema(id);
+    if (validator) validator(value);
+    return validator;
+  }
+
+  async refresh(cacheDirectory: string, baseUrl = 'https://ols.otyg.org/schema/v1.0/'): Promise<void> {
+    await mkdir(cacheDirectory, { recursive: true });
+    for (const filename of await listSchemas()) {
+      const metadataPath = resolve(cacheDirectory, `${filename}.metadata.json`);
+      let metadata: Record<string, string> = {};
+      try { metadata = JSON.parse(await readFile(metadataPath, 'utf8')); } catch { /* first refresh */ }
+      const response = await fetch(new URL(filename, baseUrl), { headers: metadata.etag ? { 'If-None-Match': metadata.etag } : {} });
+      if (response.status === 304) continue;
+      if (!response.ok) throw new Error(`Unable to refresh ${filename}: HTTP ${response.status}`);
+      const body = await response.text();
+      const schema = JSON.parse(body);
+      if (schema.$id !== new URL(filename, baseUrl).href) throw new Error(`${filename}: unexpected $id`);
+      await writeFile(resolve(cacheDirectory, filename), `${JSON.stringify(schema, null, 2)}\n`);
+      await writeFile(metadataPath, `${JSON.stringify({ url: response.url, etag: response.headers.get('etag') ?? '', sha256: createHash('sha256').update(body).digest('hex'), retrievedAt: new Date().toISOString() }, null, 2)}\n`);
+    }
+  }
+}
+
+export async function loadDocument(source: string): Promise<LoadedDocument> {
+  const rawText = await readFile(source, 'utf8');
+  try {
+    const raw = JSON.parse(rawText) as JsonValue;
+    const data = raw && typeof raw === 'object' && !Array.isArray(raw) ? raw as OlsDocument : undefined;
+    return { source: normalizePath(source), rawText, raw, data };
+  } catch {
+    return { source: normalizePath(source), rawText, raw: null };
+  }
+}
+
+async function jsonFiles(root: string): Promise<string[]> {
+  const files: string[] = [];
+  for (const entry of await readdir(root, { withFileTypes: true })) {
+    if (entry.isDirectory() && entry.name === 'tests') continue;
+    const path = resolve(root, entry.name);
+    if (entry.isDirectory()) files.push(...await jsonFiles(path));
+    else if (entry.isFile() && entry.name.endsWith('.json') && !entry.name.endsWith('.expected.json')) files.push(path);
+  }
+  return files.sort();
+}
+
+export async function loadPackage(root: string): Promise<LoadedDocument[]> {
+  const absolute = resolve(root);
+  const files = await jsonFiles(absolute);
+  const manifest = resolve(absolute, 'manifest.ols.json');
+  files.sort((a, b) => Number(b === manifest) - Number(a === manifest) || a.localeCompare(b));
+  return Promise.all(files.map(loadDocument));
+}
+
+function report(diagnostics: Diagnostic[], filesChecked: string[], schemaVersions: string[], skippedLayers: ValidationLayer[] = []): ValidationReport {
+  diagnostics.sort(diagnosticSort);
+  return { valid: !diagnostics.some((item) => item.severity === 'error'), diagnostics, filesChecked: filesChecked.map(normalizePath).sort(), schemaVersions: [...new Set(schemaVersions)].sort(), skippedLayers };
+}
+
+function structuralDiagnostics(errors: ErrorObject[] | null | undefined, source: string, entityId?: string): Diagnostic[] {
+  return (errors ?? []).map((error) => ({ layer: 'structural', source, entityId, jsonPointer: error.instancePath || '', code: `OLS_SCHEMA_${error.keyword.toUpperCase().replaceAll('-', '_')}`, message: error.message ?? 'Schema validation failed', severity: 'error', details: error.params as Record<string, JsonValue> }));
+}
+
+export async function validateDocument(input: string | LoadedDocument, registry?: SchemaRegistry): Promise<ValidationReport> {
+  const loaded = typeof input === 'string' ? await loadDocument(input) : input;
+  const diagnostics: Diagnostic[] = [];
+  if (!loaded.data) {
+    diagnostics.push({ layer: 'parse', source: loaded.source, jsonPointer: '', code: 'OLS_JSON_PARSE', message: 'File is not valid JSON object syntax.', severity: 'error' });
+    return report(diagnostics, [loaded.source], [], ['schema-selection', 'structural', 'consistency', 'references', 'semantic']);
+  }
+  const schemas = registry ?? await SchemaRegistry.bundled();
+  const schemaId = loaded.data.$schema;
+  const schema = typeof schemaId === 'string' ? schemas.get(schemaId) : undefined;
+  if (!schema) {
+    diagnostics.push({ layer: 'schema-selection', source: loaded.source, entityId: loaded.data.id, jsonPointer: '/$schema', code: 'OLS_SCHEMA_UNSUPPORTED', message: 'The declared schema is missing or unsupported.', severity: 'error' });
+    return report(diagnostics, [loaded.source], [], ['structural', 'consistency', 'references', 'semantic']);
+  }
+  const validator = schemas.validate(schemaId, loaded.data);
+  diagnostics.push(...structuralDiagnostics(validator?.errors, loaded.source, loaded.data.id));
+  const expectedType = schemaId.split('/').at(-1)?.replace('.schema.json', '');
+  if (loaded.data.type !== expectedType) diagnostics.push({ layer: 'consistency', source: loaded.source, entityId: loaded.data.id, jsonPointer: '/type', code: 'OLS_TYPE_MISMATCH', message: `Expected type ${expectedType}.`, severity: 'error' });
+  if (!/^1\.0\.\d+$/.test(loaded.data.ols_version ?? '')) diagnostics.push({ layer: 'consistency', source: loaded.source, entityId: loaded.data.id, jsonPointer: '/ols_version', code: 'OLS_VERSION_UNSUPPORTED', message: 'Only OLS 1.0.x is supported.', severity: 'error' });
+  if (schema['x-ols-schema-source'] === 'synthesized') diagnostics.push({ layer: 'schema-selection', source: loaded.source, entityId: loaded.data.id, jsonPointer: '/$schema', code: 'OLS_SCHEMA_PROVISIONAL', message: 'This per-entity schema is provisional.', severity: 'warning' });
+  if (loaded.data.status === 'deprecated') diagnostics.push({ layer: 'consistency', source: loaded.source, entityId: loaded.data.id, jsonPointer: '/status', code: 'OLS_SCHEMA_DEPRECATED', message: 'This document is deprecated.', severity: 'warning' });
+  return report(diagnostics, [loaded.source], [String(schema['x-ols-revision'] ?? '1.0.0')], validator?.errors?.length ? ['references', 'semantic'] : []);
+}
+
+type EntityLocation = { value: Record<string, unknown>; source: string; pointer: string };
+function walk(value: unknown, source: string, pointer = '', entities: EntityLocation[] = [], refs: EntityLocation[] = []): { entities: EntityLocation[]; refs: EntityLocation[] } {
+  if (!value || typeof value !== 'object') return { entities, refs };
+  if (Array.isArray(value)) value.forEach((item, index) => walk(item, source, `${pointer}/${index}`, entities, refs));
+  else {
+    const object = value as Record<string, unknown>;
+    if (typeof object.id === 'string') entities.push({ value: object, source, pointer });
+    if (typeof object.$ref === 'string') refs.push({ value: object, source, pointer });
+    for (const [key, child] of Object.entries(object)) if (key !== '$ref') walk(child, source, `${pointer}/${key.replaceAll('~', '~0').replaceAll('/', '~1')}`, entities, refs);
+  }
+  return { entities, refs };
+}
+
+export function resolveReference(reference: string, index: Map<string, EntityLocation>, packageRoot?: string, source?: string): EntityLocation | undefined {
+  const local = reference.startsWith('urn:ols:') ? reference.slice(8).replaceAll(':', '.') : reference.includes(':') && !reference.includes('/') ? reference.split(':').at(-1)! : reference;
+  if (index.has(reference)) return index.get(reference);
+  if (index.has(local)) return index.get(local);
+  if ((reference.includes('/') || reference.endsWith('.json')) && packageRoot && source) {
+    const candidate = resolve(dirname(source), reference);
+    const rel = relative(packageRoot, candidate);
+    if (!rel.startsWith('..') && !isAbsolute(rel)) return [...index.values()].find((item) => resolve(item.source) === candidate);
+  }
+  return undefined;
+}
+
+export async function validatePackage(root: string, registry?: SchemaRegistry): Promise<ValidationReport> {
+  const schemas = registry ?? await SchemaRegistry.bundled();
+  const documents = await loadPackage(root);
+  const diagnostics: Diagnostic[] = [];
+  const versions: string[] = [];
+  for (const document of documents) {
+    const result = await validateDocument(document, schemas);
+    diagnostics.push(...result.diagnostics); versions.push(...result.schemaVersions);
+  }
+  const entities: EntityLocation[] = []; const refs: EntityLocation[] = [];
+  for (const document of documents) if (document.data) walk(document.data, document.source, '', entities, refs);
+  const index = new Map<string, EntityLocation>();
+  for (const entity of entities) {
+    const id = String(entity.value.id);
+    if (index.has(id)) diagnostics.push({ layer: 'references', source: entity.source, entityId: id, jsonPointer: `${entity.pointer}/id`, code: 'OLS_ID_DUPLICATE', message: `Duplicate ID ${id}.`, severity: 'error' });
+    else index.set(id, entity);
+  }
+  const absoluteRoot = resolve(root);
+  for (const ref of refs) {
+    const value = String(ref.value.$ref);
+    if (!resolveReference(value, index, absoluteRoot, ref.source)) diagnostics.push({ layer: 'references', source: ref.source, jsonPointer: `${ref.pointer}/$ref`, code: value.includes('..') ? 'OLS_REF_PATH_ESCAPE' : 'OLS_REF_UNRESOLVED', message: `Reference ${value} could not be resolved.`, severity: 'error' });
+  }
+  const ordos = new Map(entities.filter((e) => e.value.type === 'ordo').map((e) => [String(e.value.id), e.value]));
+  for (const proper of entities.filter((e) => e.value.type === 'proper')) {
+    for (const ordoId of (proper.value.ordos as string[] ?? [])) {
+      const ordo = ordos.get(ordoId); const slots = new Set(ordo?.properSlots as string[] ?? []);
+      if (!ordo) continue;
+      for (const slot of Object.keys(proper.value.fills as Record<string, unknown> ?? {})) if (!slots.has(slot)) diagnostics.push({ layer: 'semantic', source: proper.source, entityId: String(proper.value.id), jsonPointer: `${proper.pointer}/fills/${slot}`, code: 'OLS_PROPER_SLOT_UNKNOWN', message: `Ordo ${ordoId} does not declare slot ${slot}.`, severity: 'error' });
+    }
+  }
+  const manifest = documents.find((d) => d.data?.type === 'manifest')?.data;
+  if (!manifest) diagnostics.push({ layer: 'consistency', source: normalizePath(resolve(root, 'manifest.ols.json')), jsonPointer: '', code: 'OLS_MANIFEST_MISSING', message: 'Package is missing manifest.ols.json.', severity: 'error' });
+  else {
+    const packageName = String(manifest.package ?? '');
+    const dependencies = manifest.dependencies as string[] ?? [];
+    for (const ref of refs) {
+      const value = String(ref.value.$ref);
+      if (!value.startsWith('urn:') && value.includes(':')) {
+        const dependency = value.split(':', 1)[0]!;
+        if (dependency !== packageName && !dependencies.some((item) => item.split('@', 1)[0] === dependency)) diagnostics.push({ layer: 'references', source: ref.source, jsonPointer: `${ref.pointer}/$ref`, code: 'OLS_DEPENDENCY_UNDECLARED', message: `Reference uses undeclared dependency ${dependency}.`, severity: 'error' });
+      }
+    }
+    const packageAuthority = manifest.authority as Record<string, unknown> | undefined;
+    const packageAllowed = new Set(packageAuthority?.allowedUse as string[] ?? []);
+    const packageRestricted = new Set(packageAuthority?.restrictedUse as string[] ?? []);
+    const packageLicense = typeof manifest.license === 'string' ? manifest.license : undefined;
+    const allowedLicenses = new Set(manifest.allowedLicenseOverrides as string[] ?? []);
+    for (const entity of entities) {
+      const authority = entity.value.authority as Record<string, unknown> | undefined;
+      const allowed = authority?.allowedUse as string[] | undefined;
+      const restricted = authority?.restrictedUse as string[] | undefined;
+      if (packageAllowed.size && allowed?.some((use) => !packageAllowed.has(use))) diagnostics.push({ layer: 'semantic', source: entity.source, entityId: String(entity.value.id), jsonPointer: `${entity.pointer}/authority/allowedUse`, code: 'OLS_AUTHORITY_BROADENED', message: 'Entity allowedUse broadens the package authority.', severity: 'error' });
+      if (packageRestricted.size && restricted && [...packageRestricted].some((use) => !restricted.includes(use))) diagnostics.push({ layer: 'semantic', source: entity.source, entityId: String(entity.value.id), jsonPointer: `${entity.pointer}/authority/restrictedUse`, code: 'OLS_AUTHORITY_BROADENED', message: 'Entity restrictedUse removes a package restriction.', severity: 'error' });
+      const license = entity.value.license;
+      if (packageLicense && typeof license === 'string' && license !== packageLicense && !allowedLicenses.has(license)) diagnostics.push({ layer: 'semantic', source: entity.source, entityId: String(entity.value.id), jsonPointer: `${entity.pointer}/license`, code: 'OLS_LICENSE_BROADENED', message: `License override ${license} is not permitted by the manifest.`, severity: 'error' });
+    }
+  }
+  const graph = new Map<string, string[]>();
+  for (const entity of entities) {
+    const nested = walk(entity.value, entity.source).refs.map((item) => String(item.value.$ref)).filter((item) => index.has(item));
+    graph.set(String(entity.value.id), nested);
+  }
+  const visiting = new Set<string>(); const visited = new Set<string>();
+  const visit = (id: string): void => {
+    if (visiting.has(id)) { const item = index.get(id)!; diagnostics.push({ layer: 'references', source: item.source, entityId: id, jsonPointer: item.pointer, code: 'OLS_REF_CYCLE', message: `Reference cycle includes ${id}.`, severity: 'error' }); return; }
+    if (visited.has(id)) return;
+    visiting.add(id); for (const target of graph.get(id) ?? []) visit(target); visiting.delete(id); visited.add(id);
+  };
+  for (const id of graph.keys()) visit(id);
+  const setStateKeys = new Set<string>();
+  for (const entity of entities.filter((item) => item.value.type === 'rubric')) for (const key of Object.keys((entity.value.stateTransition as Record<string, Record<string, unknown>> | undefined)?.sets ?? {})) setStateKeys.add(key);
+  for (const entity of entities.filter((item) => item.value.type === 'rubric')) for (const key of Object.keys((entity.value.stateTransition as Record<string, Record<string, unknown>> | undefined)?.requires ?? {})) if (!setStateKeys.has(key)) diagnostics.push({ layer: 'semantic', source: entity.source, entityId: String(entity.value.id), jsonPointer: `${entity.pointer}/stateTransition/requires/${key}`, code: 'OLS_RUBRIC_STATE_UNREACHABLE', message: `No rubric establishes required state ${key}.`, severity: 'error' });
+  for (const entity of entities.filter((item) => item.value.type === 'proper')) {
+    for (const mutation of entity.value.mutations as Array<Record<string, unknown>> ?? []) if (typeof mutation.target === 'string' && !index.has(mutation.target)) diagnostics.push({ layer: 'semantic', source: entity.source, entityId: String(entity.value.id), jsonPointer: entity.pointer, code: 'OLS_MUTATION_TARGET_UNRESOLVED', message: `Mutation target ${mutation.target} does not resolve.`, severity: 'error' });
+  }
+  const propers = entities.filter((item) => item.value.type === 'proper');
+  for (let left = 0; left < propers.length; left++) for (let right = left + 1; right < propers.length; right++) {
+    const a = propers[left]!.value; const b = propers[right]!.value;
+    const overlap = Object.keys(a.fills as object ?? {}).some((slot) => slot in (b.fills as object ?? {}));
+    if (overlap && a.priority === b.priority && a.priorityClass === b.priorityClass) diagnostics.push({ layer: 'semantic', source: propers[right]!.source, entityId: String(b.id), jsonPointer: propers[right]!.pointer, code: 'OLS_CALENDAR_DETERMINISM_UNPROVEN', message: `Proper ${a.id} ties with ${b.id}; an explicit conflict rule or fixture is required.`, severity: 'warning' });
+  }
+  return report(diagnostics, documents.map((item) => item.source), versions);
+}
+
+export async function runSelfTests(root: string): Promise<ValidationReport> {
+  const diagnostics: Diagnostic[] = [];
+  for (const expectedValid of [true, false]) {
+    const folder = resolve(root, 'tests', expectedValid ? 'valid' : 'invalid');
+    let files: string[] = [];
+    try { files = (await readdir(folder)).filter((name) => name.endsWith('.json') && !name.endsWith('.expected.json')).sort(); } catch { continue; }
+    for (const filename of files) {
+      const result = await validateDocument(resolve(folder, filename));
+      let passed = result.valid === expectedValid;
+      if (!expectedValid) {
+        try {
+          const expectation = JSON.parse(await readFile(resolve(folder, filename.replace(/\.json$/, '.expected.json')), 'utf8'));
+          passed &&= result.diagnostics.some((item) => item.layer === expectation.layer && item.code === expectation.code);
+        } catch { passed = false; }
+      }
+      if (!passed) diagnostics.push({ layer: 'semantic', source: normalizePath(resolve(folder, filename)), jsonPointer: '', code: 'OLS_SELF_TEST_FAILED', message: `Fixture did not produce the expected ${expectedValid ? 'valid' : 'invalid'} result.`, severity: 'error' });
+    }
+  }
+  return report(diagnostics, [], ['1.0.0']);
+}

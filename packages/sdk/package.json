@@ -1,0 +1,14 @@
+{
+  "name": "@ols/sdk",
+  "version": "1.0.0",
+  "description": "Offline-first OLS package loader, resolver, and validator",
+  "type": "module",
+  "license": "Apache-2.0",
+  "files": ["dist/index.js", "dist/index.d.ts"],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": { "build": "tsc -p tsconfig.json", "check": "tsc -p tsconfig.json --noEmit", "test": "vitest run" },
+  "dependencies": { "@ols/schemas": "1.0.0", "@ols/types": "1.0.0", "ajv": "^8.17.1", "ajv-formats": "^3.0.1" },
+  "devDependencies": { "typescript": "^5.9.3", "vitest": "^3.2.4" },
+  "engines": { "node": ">=20" }
+}

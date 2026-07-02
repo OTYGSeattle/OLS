@@ -1,11 +1,18 @@
-import { buildEntitySchema, entitySchemas } from '../../../data/ols-schemas';
+import { readFile, readdir } from 'node:fs/promises';
+import { resolve } from 'node:path';
 
-export function getStaticPaths() {
-  return Object.keys(entitySchemas).map((name) => ({ params: { name } }));
+const schemaDirectory = resolve(process.cwd(), 'packages', 'schemas', 'schemas', 'v1.0');
+const listSchemas = async () => (await readdir(schemaDirectory)).filter((name) => name.endsWith('.schema.json')).sort();
+const loadSchema = async (name: string) => JSON.parse(await readFile(resolve(schemaDirectory, `${name}.schema.json`), 'utf8'));
+
+export async function getStaticPaths() {
+  return (await listSchemas())
+    .filter((filename) => filename !== 'corpus.schema.json')
+    .map((filename) => ({ params: { name: filename.replace('.schema.json', '') } }));
 }
 
-export function GET({ params }: { params: { name?: string } }) {
-  const schema = params.name ? buildEntitySchema(params.name) : undefined;
+export async function GET({ params }: { params: { name?: string } }) {
+  const schema = params.name ? await loadSchema(params.name) : undefined;
   return schema
     ? new Response(JSON.stringify(schema, null, 2), {
         headers: { 'Content-Type': 'application/schema+json; charset=utf-8' },

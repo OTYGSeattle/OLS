@@ -1,0 +1,44 @@
+{
+  "$schema": "https://ols.otyg.org/schema/v1.0/corpus.schema.json",
+  "ols_version": "1.0.0",
+  "type": "corpus",
+  "id": "eotc-kidase-demo-v1",
+  "authority": {
+    "type": "authority",
+    "status": "educational-only",
+    "allowedUse": ["education", "private-study"],
+    "restrictedUse": ["altar-use"]
+  },
+  "roles": [
+    { "type": "role", "id": "role-deacon", "kind": "deacon" },
+    { "type": "role", "id": "role-congregation", "kind": "congregation" }
+  ],
+  "readings": [
+    {
+      "type": "reading", "kind": "gospel", "id": "reading-john-1-1-5", "role": "role-deacon",
+      "reference": { "system": "osis", "osisRef": "John.1.1-John.1.5" }
+    }
+  ],
+  "blocks": [
+    {
+      "type": "block", "kind": "response", "id": "block-kyrie",
+      "elements": [
+        { "utterance": { "id": "ut-kyrie-call", "roles": ["role-deacon"], "mode": "chanted", "text": { "en": "Lord, have mercy." } } },
+        { "utterance": { "id": "ut-kyrie-response", "roles": ["role-congregation"], "mode": "responsive", "text": { "en": "Lord, have mercy." } } }
+      ]
+    }
+  ],
+  "sections": [
+    { "type": "section", "id": "sec-word", "label": { "en": "Liturgy of the Word" }, "blocks": ["block-kyrie"] }
+  ],
+  "ordos": [
+    { "type": "ordo", "kind": "eucharist", "id": "ordo-kidase", "label": { "en": "Kidase" }, "sections": ["sec-word"], "properSlots": ["gospel-of-the-day"] }
+  ],
+  "propers": [
+    {
+      "type": "proper", "id": "proper-timkat", "ordos": ["ordo-kidase"], "priority": 100,
+      "priorityClass": "major-feast", "conditions": { "month": 5, "day": 11 },
+      "fills": { "gospel-of-the-day": { "$ref": "reading-john-1-1-5" } }, "mutations": []
+    }
+  ]
+}

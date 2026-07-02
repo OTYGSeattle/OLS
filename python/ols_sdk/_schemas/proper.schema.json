@@ -1,0 +1,360 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ols.otyg.org/schema/v1.0/proper.schema.json",
+  "title": "Proper",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "const": "https://ols.otyg.org/schema/v1.0/proper.schema.json"
+    },
+    "ols_version": {
+      "type": "string",
+      "pattern": "^1\\.0\\.[0-9]+$"
+    },
+    "type": {
+      "const": "proper"
+    },
+    "id": {
+      "$ref": "#/$defs/Id"
+    },
+    "conditions": {
+      "type": "object"
+    },
+    "mutations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Mutation"
+      }
+    },
+    "priorityClass": {
+      "type": "string",
+      "minLength": 1
+    },
+    "priority": {
+      "type": "number"
+    },
+    "ordos": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Id"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "fills": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "required": [
+    "$schema",
+    "ols_version",
+    "type",
+    "id",
+    "conditions",
+    "mutations",
+    "ordos"
+  ],
+  "additionalProperties": true,
+  "$defs": {
+    "Id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "LocalizedText": {
+      "type": "object",
+      "minProperties": 1,
+      "patternProperties": {
+        "^[a-z]{2,3}(?:-[A-Z][a-z]{3})?$": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "DocumentStatus": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "review",
+        "candidate",
+        "stable",
+        "deprecated"
+      ],
+      "description": "Technical maturity of an OLS document."
+    },
+    "AuthorityStatus": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "needs-review",
+        "educational-only",
+        "parish-reviewed",
+        "diocesan-approved",
+        "synodal-approved",
+        "historical-only",
+        "deprecated"
+      ],
+      "description": "Ecclesial review and permitted-use status."
+    },
+    "SourceType": {
+      "type": "string",
+      "enum": [
+        "printed-book",
+        "manuscript",
+        "oral-tradition",
+        "parish-handout",
+        "scholarly-edition",
+        "translation",
+        "audio-recording",
+        "video-recording",
+        "web-source",
+        "field-notes"
+      ],
+      "description": "Kind of evidence represented by a citation."
+    },
+    "RoleType": {
+      "type": "string",
+      "enum": [
+        "bishop",
+        "celebrant",
+        "concelebrant",
+        "deacon",
+        "cantor",
+        "choir",
+        "reader",
+        "congregation"
+      ],
+      "description": "Core cross-tradition liturgical roles."
+    },
+    "TransliterationSystem": {
+      "type": "string",
+      "enum": [
+        "scholarly-ies",
+        "bgn-pcgn",
+        "phonetic-amharic",
+        "phonetic-english",
+        "parish-custom",
+        "custom"
+      ],
+      "description": "Declared transliteration conventions."
+    },
+    "LanguageTag": {
+      "type": "string",
+      "examples": [
+        "gez-Ethi",
+        "gez-Latn",
+        "am-Ethi",
+        "ti-Ethi",
+        "om-Latn",
+        "en",
+        "ar"
+      ],
+      "description": "Recommended BCP 47 tags; other valid tags remain allowed."
+    },
+    "UtteranceMode": {
+      "type": "string",
+      "enum": [
+        "spoken",
+        "chanted",
+        "sung",
+        "whispered",
+        "silent",
+        "canticle",
+        "responsive",
+        "recited"
+      ],
+      "description": "How an utterance is delivered."
+    },
+    "RubricCategory": {
+      "type": "string",
+      "enum": [
+        "action",
+        "posture",
+        "movement",
+        "sound",
+        "setting",
+        "instruction",
+        "permission"
+      ],
+      "description": "Machine-readable class of liturgical action."
+    },
+    "RubricForce": {
+      "type": "string",
+      "enum": [
+        "required",
+        "recommended",
+        "optional"
+      ],
+      "description": "Required behavior when executing a rubric."
+    },
+    "MutationOperation": {
+      "type": "string",
+      "enum": [
+        "fill",
+        "insertBefore",
+        "insertAfter",
+        "replace",
+        "omit",
+        "move",
+        "wrap",
+        "setAttribute"
+      ],
+      "description": "Deterministic structural mutation operation."
+    },
+    "TimelineTargetType": {
+      "type": "string",
+      "enum": [
+        "section",
+        "block",
+        "reading",
+        "rubric",
+        "utterance"
+      ],
+      "description": "Entity kinds that may receive execution timing."
+    },
+    "TimelineStatus": {
+      "type": "string",
+      "enum": [
+        "completed",
+        "skipped",
+        "interrupted"
+      ],
+      "description": "Recorded execution outcome explicitly named by OLS v1.0."
+    },
+    "AssetType": {
+      "type": "string",
+      "enum": [
+        "audio",
+        "video",
+        "image",
+        "scan",
+        "pdf",
+        "notation",
+        "manuscript-image"
+      ],
+      "description": "External media kinds supported by asset records."
+    },
+    "CalendarCapability": {
+      "type": "string",
+      "enum": [
+        "fixed-feasts",
+        "movable-feasts",
+        "fasting-periods",
+        "lectionary"
+      ],
+      "description": "Capabilities declared by a calendar definition."
+    },
+    "ConformanceLevel": {
+      "type": "string",
+      "enum": [
+        "L0",
+        "L1",
+        "L2",
+        "L3",
+        "L4",
+        "L5",
+        "L6",
+        "L7"
+      ],
+      "description": "Versioned capability labels; no hierarchy is implied."
+    },
+    "ChangeClass": {
+      "type": "string",
+      "enum": [
+        "patch",
+        "minor",
+        "major"
+      ],
+      "description": "Semantic-version impact of a specification change."
+    },
+    "Chant": {
+      "type": "object",
+      "properties": {
+        "system": {
+          "type": "string",
+          "minLength": 1
+        },
+        "mode": {
+          "type": "string",
+          "minLength": 1
+        },
+        "zemaType": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source": {
+          "type": "object"
+        },
+        "performance": {
+          "type": "object"
+        },
+        "type": {
+          "const": "chant"
+        }
+      },
+      "required": [
+        "type",
+        "system",
+        "mode"
+      ],
+      "additionalProperties": true
+    },
+    "Mutation": {
+      "type": "object",
+      "properties": {
+        "operation": {
+          "$ref": "#/$defs/MutationOperation"
+        },
+        "target": {
+          "$ref": "#/$defs/Id"
+        },
+        "content": {},
+        "value": {},
+        "type": {
+          "const": "mutation"
+        }
+      },
+      "required": [
+        "type",
+        "operation",
+        "target"
+      ],
+      "additionalProperties": true
+    },
+    "ExecutionTimelineEntry": {
+      "type": "object",
+      "properties": {
+        "target": {
+          "$ref": "#/$defs/Id"
+        },
+        "type": {
+          "$ref": "#/$defs/TimelineTargetType"
+        },
+        "start": {
+          "type": "string",
+          "minLength": 1
+        },
+        "end": {
+          "type": "string",
+          "minLength": 1
+        },
+        "duration": {
+          "type": "string",
+          "pattern": "^P"
+        },
+        "status": {
+          "$ref": "#/$defs/TimelineStatus"
+        }
+      },
+      "required": [
+        "target",
+        "type",
+        "status"
+      ],
+      "additionalProperties": true
+    }
+  },
+  "x-ols-schema-source": "synthesized",
+  "x-ols-specification": "https://ols.otyg.org/schema/v1.0/proper.schema.json",
+  "x-ols-revision": "1.0.0"
+}

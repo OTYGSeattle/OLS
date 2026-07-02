@@ -1,0 +1,8 @@
+{
+  "$schema": "https://ols.otyg.org/schema/v1.0/reading.schema.json",
+  "ols_version": "1.0.0",
+  "type": "reading",
+  "id": "reading-invalid",
+  "role": "role-reader",
+  "reference": { "system": "osis" }
+}
