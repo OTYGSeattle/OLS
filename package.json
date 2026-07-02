@@ -71,9 +71,7 @@
     "vitest": "^3.2.4"
   },
   "overrides": {
-    "astro": {
-      "esbuild": "^0.28.1"
-    },
+    "esbuild": "^0.28.1",
     "yaml-language-server": {
       "yaml": "2.9.0"
     }

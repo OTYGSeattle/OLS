@@ -12,6 +12,10 @@ The format is based on Keep a Changelog, and this project follows semantic versi
 - Added offline package loading, reference resolution, six-layer validation, stable diagnostics, self-test runners, matching `ols` CLIs, schema refresh caches, and cross-language parity checks.
 - Added multi-platform SDK CI and manually triggered npm/PyPI release dry-run workflows.
 
+### Fixed
+
+- Fixed Node 24 compatibility by making the `esbuild` override global, preventing peer dependency mismatch on Linux runners.
+
 ### Changed
 
 - Reserved `type` for OLS entity identity and introduced `kind` for domain subtypes.
