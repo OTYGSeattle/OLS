@@ -21,7 +21,16 @@ const suggestedArticles = getSuggestedSearchArticles(publicDocs);
 const searchPreviews = getSearchPreviewLookup(publicDocs);
 ---
 
-<Layout title={`${site.title} - Open Source Specification`} description={site.description}>
+<Layout
+  title={`${site.title} - Open Source Specification`}
+  description={site.description}
+  structuredData={{
+    type: 'CollectionPage',
+    name: site.title,
+    breadcrumbs: [{ name: 'Home', path: '/' }],
+    items: docsParentCategories.map((parent) => ({ name: parent.name, path: `/${parent.slug}` })),
+  }}
+>
   <SearchPreviews previews={searchPreviews} />
   <SearchHero suggestions={suggestedArticles} />
 

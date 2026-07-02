@@ -42,6 +42,20 @@ const searchPreviews = getSearchPreviewLookup(publicDocs);
 <Layout
   title={`${subcategory?.name ?? category} | ${parent?.name ?? 'OpenLiturgy'}`}
   description={subcategory?.description}
+  structuredData={{
+    type: 'CollectionPage',
+    name: subcategory?.name ?? category,
+    breadcrumbs: [
+      { name: 'Home', path: '/' },
+      { name: parent?.name ?? parentSlug ?? 'Documentation', path: `/${parentSlug}` },
+      { name: subcategory?.name ?? category ?? 'Category', path: `/${parentSlug}/${category}` },
+    ],
+    items: categoryDocs.map((doc) => ({
+      name: doc.data.title,
+      path: getArticleHref(doc.data.category, getCleanDocSlug(doc.id)),
+    })),
+    parentPath: `/${parentSlug}`,
+  }}
 >
   <SearchPreviews previews={searchPreviews} />
 

@@ -1,0 +1,60 @@
+---
+import { schemaDefinitionUrl, type SupportedValueGroup } from '../../data/supported-values';
+
+interface Props {
+  groups: SupportedValueGroup[];
+}
+const { groups } = Astro.props;
+---
+
+{
+  groups.length > 0 && (
+    <section
+      class="docs-supported-values mt-12 border-t border-[var(--color-border)] pt-8"
+      aria-labelledby="supported-values-heading"
+    >
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <h2 id="supported-values-heading" class="text-2xl font-semibold text-[var(--color-text-strong)]">
+          Supported values
+        </h2>
+        <a
+          href="/schema/v1.0/corpus.schema.json"
+          target="_blank"
+          rel="noreferrer"
+          class="text-sm font-medium text-[var(--color-accent)] hover:underline"
+        >
+          Open full OLS JSON Schema ↗
+        </a>
+      </div>
+      <div class="mt-6 space-y-6">
+        {groups.map((group) => (
+          <div>
+            <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <h3 class="text-lg font-semibold text-[var(--color-text-strong)]">{group.label}</h3>
+              <code class="text-sm">{group.field}</code>
+              <a
+                href={schemaDefinitionUrl(group.definition)}
+                target="_blank"
+                rel="noreferrer"
+                class="text-xs font-medium text-[var(--color-accent)] hover:underline"
+              >
+                JSON Schema ↗
+              </a>
+            </div>
+            <p class="mt-1 text-sm text-[var(--color-text-muted)]">
+              {group.description}{' '}
+              {group.closed === false
+                ? 'This is an open recommendation list.'
+                : 'Values outside this closed list are invalid.'}
+            </p>
+            <div class="mt-3 flex flex-wrap gap-2">
+              {group.values.map((value) => (
+                <code class="rounded-md bg-[var(--color-surface-muted)] px-2 py-1 text-sm">{value}</code>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}

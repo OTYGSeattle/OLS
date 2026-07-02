@@ -33,7 +33,20 @@ const suggestedArticles = getSuggestedSearchArticles(publicDocs, {
 const searchPreviews = getSearchPreviewLookup(publicDocs);
 ---
 
-<Layout title={`${parentData?.name ?? category} | OpenLiturgy`} description={parentData?.description}>
+<Layout
+  title={`${parentData?.name ?? category} | OpenLiturgy`}
+  description={parentData?.description}
+  structuredData={{
+    type: 'CollectionPage',
+    name: parentData?.name ?? category,
+    breadcrumbs: [
+      { name: 'Home', path: '/' },
+      { name: parentData?.name ?? category ?? 'Documentation', path: `/${category}` },
+    ],
+    items: sections.map((section) => ({ name: section.name, path: section.href })),
+    parentPath: '/',
+  }}
+>
   <SearchPreviews previews={searchPreviews} />
 
   <div class="mx-auto flex max-w-[1280px] flex-col gap-10 px-4 py-10 lg:flex-row lg:px-8">

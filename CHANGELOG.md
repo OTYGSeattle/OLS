@@ -8,6 +8,11 @@ The format is based on Keep a Changelog, and this project follows semantic versi
 
 ### Added
 
+- Added a complete Schema.org JSON-LD graph at `/schema.json` and page-specific structured data for every public landing page, category, and specification article.
+- Set `https://ols.otyg.org` as the canonical domain and added a visible footer link that opens the OLS JSON Schema in a new tab.
+- Corrected repository links from `OTYGSeattle/OSL` to `OTYGSeattle/OLS`.
+- Prevented the development server from requesting the production-only Pagefind module, eliminating the disallowed MIME-type browser error.
+- Added visible supported-value lists to relevant specification articles and generated an OLS v1.0 JSON Schema vocabulary endpoint with direct definition links.
 - Expanded all OLS specification articles with practical usage guidance, connected JSON samples, validation notes, edge cases, and a complete minimal corpus walkthrough.
 - Fixed scripture citation labels that displayed Markdown emphasis markers as literal text.
 - Migrated OpenLiturgy Standard (OLS) v1.0 single-page specification from `base.html` into a full documentation repository using Astro, React, and Tailwind CSS.
