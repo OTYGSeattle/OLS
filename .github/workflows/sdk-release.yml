@@ -32,9 +32,20 @@ jobs:
       # Ensure using a recent version of npm supporting trusted publishing
       - run: npm install -g npm@latest
       
-      # Publish TS workspaces to npm using OIDC trusted publishing
+      # Publish TS workspaces to npm using OIDC trusted publishing (idempotent loop)
       - name: Publish to npm
-        run: npm publish --workspaces --provenance --access public
+        run: |
+          for dir in packages/schemas packages/types packages/sdk packages/cli; do
+            name=$(node -p "require('./$dir/package.json').name")
+            version=$(node -p "require('./$dir/package.json').version")
+            echo "Checking if $name@$version is already published..."
+            if npm view "$name@$version" version >/dev/null 2>&1; then
+              echo "$name@$version is already published on npm. Skipping."
+            else
+              echo "$name@$version is not published. Publishing..."
+              npm publish "./$dir" --provenance --access public
+            fi
+          done
 
   release-pypi:
     runs-on: ubuntu-latest

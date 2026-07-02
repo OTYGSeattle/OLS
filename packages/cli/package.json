@@ -4,6 +4,11 @@
   "description": "Command-line validator for OpenLiturgy Standard packages",
   "type": "module",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OTYGSeattle/OLS.git",
+    "directory": "packages/cli"
+  },
   "files": ["dist"],
   "bin": { "ols": "./dist/cli.js" },
   "scripts": { "build": "tsc -p tsconfig.json", "check": "tsc -p tsconfig.json --noEmit", "test": "vitest run --passWithNoTests" },

@@ -4,6 +4,11 @@
   "description": "Canonical OpenLiturgy Standard JSON Schemas",
   "type": "module",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OTYGSeattle/OLS.git",
+    "directory": "packages/schemas"
+  },
   "files": ["schemas", "provenance.json", "index.js", "index.d.ts"],
   "exports": {
     ".": { "types": "./index.d.ts", "default": "./index.js" },
