@@ -65,6 +65,22 @@ Use the following npm commands for linting, format checks, building, and preview
 
 Pagefind's generated full-text index is intentionally not loaded by `npm run dev`; local search suggestions remain available without requesting a missing module. Use `npm run build` followed by `npm run preview` to test complete search results.
 
+### TypeScript and Python SDKs
+
+This repository is also the OLS SDK monorepo. The npm workspaces publish `@ols/schemas`, `@ols/types`, `@ols/sdk`, and `@ols/cli`; `python/` publishes the unified `ols-sdk` distribution. Both SDKs use the same checked-in Draft 2020-12 schemas and golden fixtures.
+
+```bash
+npm install
+npm run check
+npm run test --workspaces --if-present
+
+python -m venv .venv
+python -m pip install -e "python[dev]"
+python -m pytest python/tests
+```
+
+Both distributions expose `ols validate PATH`, `ols validate PATH --self-test`, and `ols schemas refresh`. Validation is offline by default. Node.js 20+ and Python 3.10+ are supported.
+
 ### Structured Data
 
 Every public page embeds page-specific [Schema.org](https://schema.org/) JSON-LD, including its canonical URL and breadcrumb hierarchy. The generated [schema.json](https://ols.otyg.org/schema.json) endpoint provides the complete site graph for the organization, website, OLS standard, parent sections, categories, and all published technical articles. Because it is generated from the Astro content collection, it stays synchronized as documentation pages are added, archived, or reorganized.

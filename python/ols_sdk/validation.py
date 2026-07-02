@@ -1,0 +1,433 @@
+from __future__ import annotations
+
+import json
+from pathlib import Path
+from typing import Any, Iterable, Optional, Union
+
+from .loading import LoadedDocument, load_document, load_package
+from .models import Diagnostic, Layer, ValidationReport
+from .references import resolve_reference
+from .schemas import SchemaRegistry
+
+LAYERS: list[Layer] = ["parse", "schema-selection", "structural", "consistency", "references", "semantic"]
+
+
+def _report(
+    diagnostics: list[Diagnostic], files: Iterable[str], versions: Iterable[str], skipped: Optional[list[Layer]] = None
+) -> ValidationReport:
+    diagnostics.sort(key=lambda item: (LAYERS.index(item.layer), item.source, item.jsonPointer, item.code))
+    return ValidationReport(
+        valid=not any(item.severity == "error" for item in diagnostics),
+        diagnostics=diagnostics,
+        filesChecked=sorted(set(files)),
+        schemaVersions=sorted(set(versions)),
+        skippedLayers=skipped or [],
+    )
+
+
+def validate_document(
+    value: Union[str, Path, LoadedDocument], registry: Optional[SchemaRegistry] = None
+) -> ValidationReport:
+    loaded = load_document(value) if isinstance(value, (str, Path)) else value
+    diagnostics: list[Diagnostic] = []
+    if not isinstance(loaded.raw, dict):
+        diagnostics.append(
+            Diagnostic(
+                layer="parse",
+                source=loaded.source,
+                code="OLS_JSON_PARSE",
+                message="File is not valid JSON object syntax.",
+                severity="error",
+            )
+        )
+        return _report(diagnostics, [loaded.source], [], LAYERS[1:])
+    schemas = registry or SchemaRegistry.bundled()
+    schema_id = loaded.raw.get("$schema")
+    schema = schemas.get(schema_id) if isinstance(schema_id, str) else None
+    entity_id = loaded.raw.get("id") if isinstance(loaded.raw.get("id"), str) else None
+    if schema is None:
+        diagnostics.append(
+            Diagnostic(
+                layer="schema-selection",
+                source=loaded.source,
+                entityId=entity_id,
+                jsonPointer="/$schema",
+                code="OLS_SCHEMA_UNSUPPORTED",
+                message="The declared schema is missing or unsupported.",
+                severity="error",
+            )
+        )
+        return _report(diagnostics, [loaded.source], [], LAYERS[2:])
+    assert isinstance(schema_id, str)
+    validator = schemas.validator(schema_id)
+    errors = sorted(validator.iter_errors(loaded.raw), key=lambda error: list(error.absolute_path)) if validator else []
+    for error in errors:
+        pointer = "".join(f"/{str(part).replace('~', '~0').replace('/', '~1')}" for part in error.absolute_path)
+        details = (
+            {"validatorValue": error.validator_value}
+            if isinstance(error.validator_value, (str, int, float, bool))
+            else None
+        )
+        diagnostics.append(
+            Diagnostic(
+                layer="structural",
+                source=loaded.source,
+                entityId=entity_id,
+                jsonPointer=pointer,
+                code=f"OLS_SCHEMA_{error.validator.upper().replace('-', '_')}",
+                message=error.message,
+                severity="error",
+                details=details,
+            )
+        )
+    expected_type = schema_id.rsplit("/", 1)[-1].replace(".schema.json", "")
+    if loaded.raw.get("type") != expected_type:
+        diagnostics.append(
+            Diagnostic(
+                layer="consistency",
+                source=loaded.source,
+                entityId=entity_id,
+                jsonPointer="/type",
+                code="OLS_TYPE_MISMATCH",
+                message=f"Expected type {expected_type}.",
+                severity="error",
+            )
+        )
+    version = loaded.raw.get("ols_version")
+    if not isinstance(version, str) or not version.startswith("1.0.") or not version[4:].isdigit():
+        diagnostics.append(
+            Diagnostic(
+                layer="consistency",
+                source=loaded.source,
+                entityId=entity_id,
+                jsonPointer="/ols_version",
+                code="OLS_VERSION_UNSUPPORTED",
+                message="Only OLS 1.0.x is supported.",
+                severity="error",
+            )
+        )
+    if schema.get("x-ols-schema-source") == "synthesized":
+        diagnostics.append(
+            Diagnostic(
+                layer="schema-selection",
+                source=loaded.source,
+                entityId=entity_id,
+                jsonPointer="/$schema",
+                code="OLS_SCHEMA_PROVISIONAL",
+                message="This per-entity schema is provisional.",
+                severity="warning",
+            )
+        )
+    if loaded.raw.get("status") == "deprecated":
+        diagnostics.append(
+            Diagnostic(
+                layer="consistency",
+                source=loaded.source,
+                entityId=entity_id,
+                jsonPointer="/status",
+                code="OLS_SCHEMA_DEPRECATED",
+                message="This document is deprecated.",
+                severity="warning",
+            )
+        )
+    return _report(
+        diagnostics,
+        [loaded.source],
+        [str(schema.get("x-ols-revision", "1.0.0"))],
+        ["references", "semantic"] if errors else [],
+    )
+
+
+def _walk(value: Any, source: str, pointer: str = "") -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    entities: list[dict[str, Any]] = []
+    refs: list[dict[str, Any]] = []
+    if isinstance(value, list):
+        for index, item in enumerate(value):
+            child_entities, child_refs = _walk(item, source, f"{pointer}/{index}")
+            entities.extend(child_entities)
+            refs.extend(child_refs)
+    elif isinstance(value, dict):
+        if isinstance(value.get("id"), str):
+            entities.append({"value": value, "source": source, "pointer": pointer})
+        if isinstance(value.get("$ref"), str):
+            refs.append({"value": value, "source": source, "pointer": pointer})
+        for key, child in value.items():
+            if key != "$ref":
+                child_entities, child_refs = _walk(
+                    child, source, f"{pointer}/{key.replace('~', '~0').replace('/', '~1')}"
+                )
+                entities.extend(child_entities)
+                refs.extend(child_refs)
+    return entities, refs
+
+
+def validate_package(root: Union[str, Path], registry: Optional[SchemaRegistry] = None) -> ValidationReport:
+    directory = Path(root).resolve()
+    schemas = registry or SchemaRegistry.bundled()
+    documents = load_package(directory)
+    diagnostics: list[Diagnostic] = []
+    versions: list[str] = []
+    entities: list[dict[str, Any]] = []
+    refs: list[dict[str, Any]] = []
+    for document in documents:
+        result = validate_document(document, schemas)
+        diagnostics.extend(result.diagnostics)
+        versions.extend(result.schemaVersions)
+        child_entities, child_refs = _walk(document.raw, document.source)
+        entities.extend(child_entities)
+        refs.extend(child_refs)
+    index: dict[str, dict[str, Any]] = {}
+    for entity in entities:
+        identifier = entity["value"]["id"]
+        if identifier in index:
+            diagnostics.append(
+                Diagnostic(
+                    layer="references",
+                    source=entity["source"],
+                    entityId=identifier,
+                    jsonPointer=entity["pointer"] + "/id",
+                    code="OLS_ID_DUPLICATE",
+                    message=f"Duplicate ID {identifier}.",
+                    severity="error",
+                )
+            )
+        else:
+            entity["value"]["__source"] = entity["source"]
+            index[identifier] = entity["value"]
+    for reference in refs:
+        target = reference["value"]["$ref"]
+        if resolve_reference(target, index, directory, reference["source"]) is None:
+            diagnostics.append(
+                Diagnostic(
+                    layer="references",
+                    source=reference["source"],
+                    jsonPointer=reference["pointer"] + "/$ref",
+                    code="OLS_REF_PATH_ESCAPE" if ".." in target else "OLS_REF_UNRESOLVED",
+                    message=f"Reference {target} could not be resolved.",
+                    severity="error",
+                )
+            )
+    ordos = {item["value"]["id"]: item["value"] for item in entities if item["value"].get("type") == "ordo"}
+    for proper in (item for item in entities if item["value"].get("type") == "proper"):
+        for ordo_id in proper["value"].get("ordos", []):
+            if ordo_id not in ordos:
+                continue
+            slots = set(ordos[ordo_id].get("properSlots", []))
+            for slot in proper["value"].get("fills", {}):
+                if slot not in slots:
+                    diagnostics.append(
+                        Diagnostic(
+                            layer="semantic",
+                            source=proper["source"],
+                            entityId=proper["value"]["id"],
+                            jsonPointer=proper["pointer"] + "/fills/" + slot,
+                            code="OLS_PROPER_SLOT_UNKNOWN",
+                            message=f"Ordo {ordo_id} does not declare slot {slot}.",
+                            severity="error",
+                        )
+                    )
+    if not any(isinstance(doc.raw, dict) and doc.raw.get("type") == "manifest" for doc in documents):
+        diagnostics.append(
+            Diagnostic(
+                layer="consistency",
+                source=(directory / "manifest.ols.json").as_posix(),
+                code="OLS_MANIFEST_MISSING",
+                message="Package is missing manifest.ols.json.",
+                severity="error",
+            )
+        )
+    manifest = next(
+        (doc.raw for doc in documents if isinstance(doc.raw, dict) and doc.raw.get("type") == "manifest"), None
+    )
+    if isinstance(manifest, dict):
+        package_name = manifest.get("package", "")
+        dependencies = manifest.get("dependencies", [])
+        for reference in refs:
+            target = reference["value"]["$ref"]
+            if not target.startswith("urn:") and ":" in target:
+                dependency = target.split(":", 1)[0]
+                if dependency != package_name and not any(item.split("@", 1)[0] == dependency for item in dependencies):
+                    diagnostics.append(
+                        Diagnostic(
+                            layer="references",
+                            source=reference["source"],
+                            jsonPointer=reference["pointer"] + "/$ref",
+                            code="OLS_DEPENDENCY_UNDECLARED",
+                            message=f"Reference uses undeclared dependency {dependency}.",
+                            severity="error",
+                        )
+                    )
+        package_authority = manifest.get("authority", {})
+        package_allowed = set(package_authority.get("allowedUse", []))
+        package_restricted = set(package_authority.get("restrictedUse", []))
+        package_license = manifest.get("license") if isinstance(manifest.get("license"), str) else None
+        allowed_licenses = set(manifest.get("allowedLicenseOverrides", []))
+        for entity in entities:
+            authority = entity["value"].get("authority", {})
+            allowed = authority.get("allowedUse")
+            restricted = authority.get("restrictedUse")
+            if package_allowed and allowed and any(use not in package_allowed for use in allowed):
+                diagnostics.append(
+                    Diagnostic(
+                        layer="semantic",
+                        source=entity["source"],
+                        entityId=entity["value"]["id"],
+                        jsonPointer=entity["pointer"] + "/authority/allowedUse",
+                        code="OLS_AUTHORITY_BROADENED",
+                        message="Entity allowedUse broadens the package authority.",
+                        severity="error",
+                    )
+                )
+            if package_restricted and restricted and any(use not in restricted for use in package_restricted):
+                diagnostics.append(
+                    Diagnostic(
+                        layer="semantic",
+                        source=entity["source"],
+                        entityId=entity["value"]["id"],
+                        jsonPointer=entity["pointer"] + "/authority/restrictedUse",
+                        code="OLS_AUTHORITY_BROADENED",
+                        message="Entity restrictedUse removes a package restriction.",
+                        severity="error",
+                    )
+                )
+            license_value = entity["value"].get("license")
+            if (
+                package_license
+                and isinstance(license_value, str)
+                and license_value != package_license
+                and license_value not in allowed_licenses
+            ):
+                diagnostics.append(
+                    Diagnostic(
+                        layer="semantic",
+                        source=entity["source"],
+                        entityId=entity["value"]["id"],
+                        jsonPointer=entity["pointer"] + "/license",
+                        code="OLS_LICENSE_BROADENED",
+                        message=f"License override {license_value} is not permitted by the manifest.",
+                        severity="error",
+                    )
+                )
+    graph = {
+        item["value"]["id"]: [
+            ref["value"]["$ref"] for ref in _walk(item["value"], item["source"])[1] if ref["value"]["$ref"] in index
+        ]
+        for item in entities
+    }
+    visiting: set[str] = set()
+    visited: set[str] = set()
+
+    def visit(identifier: str) -> None:
+        if identifier in visiting:
+            item = next(entity for entity in entities if entity["value"]["id"] == identifier)
+            diagnostics.append(
+                Diagnostic(
+                    layer="references",
+                    source=item["source"],
+                    entityId=identifier,
+                    jsonPointer=item["pointer"],
+                    code="OLS_REF_CYCLE",
+                    message=f"Reference cycle includes {identifier}.",
+                    severity="error",
+                )
+            )
+            return
+        if identifier in visited:
+            return
+        visiting.add(identifier)
+        for target in graph.get(identifier, []):
+            visit(target)
+        visiting.remove(identifier)
+        visited.add(identifier)
+
+    for identifier in graph:
+        visit(identifier)
+    state_keys = {
+        key
+        for item in entities
+        if item["value"].get("type") == "rubric"
+        for key in item["value"].get("stateTransition", {}).get("sets", {})
+    }
+    for item in (entity for entity in entities if entity["value"].get("type") == "rubric"):
+        for key in item["value"].get("stateTransition", {}).get("requires", {}):
+            if key not in state_keys:
+                diagnostics.append(
+                    Diagnostic(
+                        layer="semantic",
+                        source=item["source"],
+                        entityId=item["value"]["id"],
+                        jsonPointer=item["pointer"] + "/stateTransition/requires/" + key,
+                        code="OLS_RUBRIC_STATE_UNREACHABLE",
+                        message=f"No rubric establishes required state {key}.",
+                        severity="error",
+                    )
+                )
+    propers = [item for item in entities if item["value"].get("type") == "proper"]
+    for proper in propers:
+        for mutation in proper["value"].get("mutations", []):
+            if isinstance(mutation.get("target"), str) and mutation["target"] not in index:
+                diagnostics.append(
+                    Diagnostic(
+                        layer="semantic",
+                        source=proper["source"],
+                        entityId=proper["value"]["id"],
+                        jsonPointer=proper["pointer"],
+                        code="OLS_MUTATION_TARGET_UNRESOLVED",
+                        message=f"Mutation target {mutation['target']} does not resolve.",
+                        severity="error",
+                    )
+                )
+    for left, first in enumerate(propers):
+        for second in propers[left + 1 :]:
+            a = first["value"]
+            b = second["value"]
+            if (
+                set(a.get("fills", {})) & set(b.get("fills", {}))
+                and a.get("priority") == b.get("priority")
+                and a.get("priorityClass") == b.get("priorityClass")
+            ):
+                diagnostics.append(
+                    Diagnostic(
+                        layer="semantic",
+                        source=second["source"],
+                        entityId=b["id"],
+                        jsonPointer=second["pointer"],
+                        code="OLS_CALENDAR_DETERMINISM_UNPROVEN",
+                        message=f"Proper {a['id']} ties with {b['id']}; an explicit conflict rule or fixture is required.",
+                        severity="warning",
+                    )
+                )
+    return _report(diagnostics, [document.source for document in documents], versions)
+
+
+def run_self_tests(root: Union[str, Path]) -> ValidationReport:
+    diagnostics: list[Diagnostic] = []
+    directory = Path(root).resolve()
+    for expected_valid, name in ((True, "valid"), (False, "invalid")):
+        folder = directory / "tests" / name
+        if not folder.exists():
+            continue
+        for source in sorted(path for path in folder.glob("*.json") if not path.name.endswith(".expected.json")):
+            result = validate_document(source)
+            passed = result.valid == expected_valid
+            if not expected_valid:
+                expectation_path = source.with_name(source.name.replace(".json", ".expected.json"))
+                if not expectation_path.exists():
+                    passed = False
+                else:
+                    expectation = json.loads(expectation_path.read_text())
+                    passed = passed and any(
+                        item.layer == expectation["layer"] and item.code == expectation["code"]
+                        for item in result.diagnostics
+                    )
+            if not passed:
+                diagnostics.append(
+                    Diagnostic(
+                        layer="semantic",
+                        source=source.as_posix(),
+                        code="OLS_SELF_TEST_FAILED",
+                        message=f"Fixture did not produce the expected {name} result.",
+                        severity="error",
+                    )
+                )
+    return _report(diagnostics, [], ["1.0.0"])

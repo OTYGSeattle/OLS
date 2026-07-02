@@ -1,0 +1,14 @@
+{
+  "name": "@ols/schemas",
+  "version": "1.0.0",
+  "description": "Canonical OpenLiturgy Standard JSON Schemas",
+  "type": "module",
+  "license": "Apache-2.0",
+  "files": ["schemas", "provenance.json", "index.js", "index.d.ts"],
+  "exports": {
+    ".": { "types": "./index.d.ts", "default": "./index.js" },
+    "./v1.0/*": "./schemas/v1.0/*"
+  },
+  "scripts": { "check": "node ../../tools/check-schemas.mjs", "test": "node ../../tools/check-schemas.mjs" },
+  "engines": { "node": ">=20" }
+}

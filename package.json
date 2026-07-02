@@ -5,10 +5,13 @@
   "type": "module",
   "license": "Apache-2.0",
   "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "author": "OpenLiturgy Contributors",
   "homepage": "https://ols.otyg.org",
   "engines": {
-    "node": ">=18.17.0"
+    "node": ">=22.12.0"
   },
   "repository": {
     "type": "git",
@@ -31,7 +34,10 @@
     "start": "astro dev --host 0.0.0.0 --port 3000",
     "build": "astro build && pagefind --site dist",
     "preview": "astro preview --host 0.0.0.0 --port 3000",
-    "check": "astro check",
+    "check": "npm run schemas:check && npm run build --workspace @ols/types && npm run build --workspace @ols/sdk && astro check && npm run check --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present && python -m pytest python/tests",
+    "test:parity": "node tools/parity-test.mjs",
+    "schemas:check": "node tools/check-schemas.mjs",
     "lint": "astro check",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
@@ -61,12 +67,11 @@
     "pagefind": "^1.5.2",
     "prettier": "^3.8.4",
     "prettier-plugin-astro": "^0.14.1",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
   },
   "overrides": {
-    "astro": {
-      "esbuild": "^0.28.1"
-    },
+    "esbuild": "^0.28.1",
     "yaml-language-server": {
       "yaml": "2.9.0"
     }

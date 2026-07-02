@@ -1,0 +1,35 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ols-sdk"
+version = "1.0.0"
+description = "Python loader, resolver, and validator for the OpenLiturgy Standard"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+dependencies = ["jsonschema>=4.23", "referencing>=0.35", "pydantic>=2.10"]
+
+[project.optional-dependencies]
+dev = ["build>=1.2", "mypy>=1.14", "pytest>=8.3", "ruff>=0.9"]
+
+[project.scripts]
+ols = "ols_sdk.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["ols_sdk"]
+
+[tool.hatch.build]
+include = ["ols_sdk/**/*.py", "ols_sdk/_schemas/*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 120
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+ignore_missing_imports = true

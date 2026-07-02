@@ -1,0 +1,218 @@
+{
+  "asset.schema.json": {
+    "source": "synthesized",
+    "specification": "https://ols.otyg.org/schema/v1.0/asset.schema.json",
+    "revision": "1.0.0",
+    "sha256": "fd28a1682e352656e30d4148ddf53dc4cb2a8cf921954a19bcebd53a007dbaa3"
+  },
+  "authority.schema.json": {
+    "source": "synthesized",
+    "specification": "https://ols.otyg.org/schema/v1.0/authority.schema.json",
+    "revision": "1.0.0",
+    "sha256": "acfe77a3c87142cfdd1133b9f65ff893fed5046f38b50768b43c852cf8c445ee"
+  },
+  "block.schema.json": {
+    "source": "synthesized",
+    "specification": "https://ols.otyg.org/schema/v1.0/block.schema.json",
+    "revision": "1.0.0",
+    "sha256": "03049f3855a2626d66a73d51e9b83a428a787ac087e6fe348e7ee90f8ace5b84"
+  },
+  "calendar.schema.json": {
+    "source": "synthesized",
+    "specification": "https://ols.otyg.org/schema/v1.0/calendar.schema.json",
+    "revision": "1.0.0",
+    "sha256": "aed1a6a8709dd0c36cb12d85eb38d1323b510d26ba36a139184e68b148137be8"
+  },
+  "chant.schema.json": {
+    "source": "synthesized",
+    "specification": "https://ols.otyg.org/schema/v1.0/chant.schema.json",
+    "revision": "1.0.0",
+    "sha256": "118dd784eee972aa351842e5f90b63c18a3f85139df2ac7efa578cbb6f6e62f6"
+  },
+  "citation.schema.json": {
+    "source": "synthesized",
+    "specification": "https://ols.otyg.org/schema/v1.0/citation.schema.json",
+    "revision": "1.0.0",
+    "sha256": "8b8f3c3c7197546a9c91427ad9ea9f2e6f42738f2db6d89c1cb6910d0a53d475"
+  },
+  "conflict-rule.schema.json": {
+    "source": "synthesized",
+    "specification": "https://ols.otyg.org/schema/v1.0/conflict-rule.schema.json",
+    "revision": "1.0.0",
+    "sha256": "41cd89a542bb2299d54788a2da8becd61cb92e83b998118aec161a57531829a9"
+  },
+  "conformance.schema.json": {
+    "source": "synthesized",
+    "specification": "https://ols.otyg.org/schema/v1.0/conformance.schema.json",
+    "revision": "1.0.0",
+    "sha256": "eb811bf865e95c17d72c866c73d091bdee4ccb852893846925208afda75a60ee"
+  },
+  "corpus.schema.json": {
+    "source": "normative",
+    "specification": "https://ols.otyg.org/schema/v1.0/corpus.schema.json",
+    "revision": "1.0.0",
+    "sha256": "c5cade2c235279e9bc43dd491063ba5fb90e1afa9aeadf66d8031aef5f4efff7"
+  },
+  "execution-timeline.schema.json": {
+    "source": "synthesized",
+    "specification": "https://ols.otyg.org/schema/v1.0/execution-timeline.schema.json",
+    "revision": "1.0.0",
+    "sha256": "821c8d199c41cc838c427fdd269138799491cb373e994430c88c02e7c71fa346"
+  },
+  "inline-chant.schema.json": {
+    "source": "synthesized",
+    "specification": "https://ols.otyg.org/schema/v1.0/inline-chant.schema.json",
+    "revision": "1.0.0",
+    "sha256": "72a1fd3f998419c9191880798a680ea5eb987b187049940561668a229ad61300"
+  },
+  "liturgical-day.schema.json": {
+    "source": "synthesized",
+    "specification": "https://ols.otyg.org/schema/v1.0/liturgical-day.schema.json",
+    "revision": "1.0.0",
+    "sha256": "5a5d3b7580725c21bafea4899beb9b22bef8e7e714cb56f81b12e23faffbf3bf"
+  },
+  "localized-text.schema.json": {
+    "source": "synthesized",
+    "specification": "https://ols.otyg.org/schema/v1.0/localized-text.schema.json",
+    "revision": "1.0.0",
+    "sha256": "41b999f87fe001164c1fde26bcfdc28900bd091201a602e52f0c93ad60708be4"
+  },
+  "manifest.schema.json": {
+    "source": "synthesized",
+    "specification": "https://ols.otyg.org/schema/v1.0/manifest.schema.json",
+    "revision": "1.0.0",
+    "sha256": "fcf7b3f2865161ef07a6512ba6057f38841a60cc0c4465d0799a7d148b72e4d9"
+  },
+  "mutation.schema.json": {
+    "source": "synthesized",
+    "specification": "https://ols.otyg.org/schema/v1.0/mutation.schema.json",
+    "revision": "1.0.0",
+    "sha256": "207b9f931a862164e06ff2a93acea958ba768b8900bb55325f17ab222d907177"
+  },
+  "ordo.schema.json": {
+    "source": "synthesized",
+    "specification": "https://ols.otyg.org/schema/v1.0/ordo.schema.json",
+    "revision": "1.0.0",
+    "sha256": "ea0df82e8e0497bfbae58b6bfbb93f7e982c13129c52266f0363e943c8e8dc60"
+  },
+  "organization.schema.json": {
+    "source": "synthesized",
+    "specification": "https://ols.otyg.org/schema/v1.0/organization.schema.json",
+    "revision": "1.0.0",
+    "sha256": "30b0ad6960a39d41ba922e3e0a6fd96716c05f8e901afa28dfd88d5018ae5e17"
+  },
+  "person.schema.json": {
+    "source": "synthesized",
+    "specification": "https://ols.otyg.org/schema/v1.0/person.schema.json",
+    "revision": "1.0.0",
+    "sha256": "4f66be8ee5c3a946d9cc307ba9bb4e800e2944615cc4df974bf0faba0c525701"
+  },
+  "proper-slot.schema.json": {
+    "source": "synthesized",
+    "specification": "https://ols.otyg.org/schema/v1.0/proper-slot.schema.json",
+    "revision": "1.0.0",
+    "sha256": "c8c00e1cec98d55298cb1ba0225b8c634119c7053d2e7cdf3e8ab69f94a5c19d"
+  },
+  "proper.schema.json": {
+    "source": "synthesized",
+    "specification": "https://ols.otyg.org/schema/v1.0/proper.schema.json",
+    "revision": "1.0.0",
+    "sha256": "5ba5e1c98c76952ce09704ce91413eb21edb457b19401b4f6a452fd65c31e068"
+  },
+  "provenance.schema.json": {
+    "source": "synthesized",
+    "specification": "https://ols.otyg.org/schema/v1.0/provenance.schema.json",
+    "revision": "1.0.0",
+    "sha256": "61bf36394647b64cf5800357748e4afdba07a7a6d5e4f2956e7e72e27cc31ad6"
+  },
+  "reading.schema.json": {
+    "source": "synthesized",
+    "specification": "https://ols.otyg.org/schema/v1.0/reading.schema.json",
+    "revision": "1.0.0",
+    "sha256": "b39c497b3940044833b734e7664a4569fc79a0c1207ef16045f85c23942fbccc"
+  },
+  "role-group.schema.json": {
+    "source": "synthesized",
+    "specification": "https://ols.otyg.org/schema/v1.0/role-group.schema.json",
+    "revision": "1.0.0",
+    "sha256": "8eb92f771307b72d1d721637bc1b309d50b9ee1907a8f667e8f1c8afcb2a9558"
+  },
+  "role.schema.json": {
+    "source": "synthesized",
+    "specification": "https://ols.otyg.org/schema/v1.0/role.schema.json",
+    "revision": "1.0.0",
+    "sha256": "4e0c2191e5b67fc6f6e5b50852286fb80164fa850a03957b770f497362abb188"
+  },
+  "rubric-state-transition.schema.json": {
+    "source": "synthesized",
+    "specification": "https://ols.otyg.org/schema/v1.0/rubric-state-transition.schema.json",
+    "revision": "1.0.0",
+    "sha256": "912a8bf39286952fef30ac35184a3c672fe2600b3026af4d9a000ecfae13b6af"
+  },
+  "rubric.schema.json": {
+    "source": "synthesized",
+    "specification": "https://ols.otyg.org/schema/v1.0/rubric.schema.json",
+    "revision": "1.0.0",
+    "sha256": "a116980a99a231992ec79c7a70d946c1f54c1bae31b98a944a77bb8556c90d5e"
+  },
+  "sacred-space.schema.json": {
+    "source": "synthesized",
+    "specification": "https://ols.otyg.org/schema/v1.0/sacred-space.schema.json",
+    "revision": "1.0.0",
+    "sha256": "3007b27f7db0c4d8a723ab9006288871fbe59745cbb92dc14d3077adece9cf53"
+  },
+  "scope.schema.json": {
+    "source": "synthesized",
+    "specification": "https://ols.otyg.org/schema/v1.0/scope.schema.json",
+    "revision": "1.0.0",
+    "sha256": "31c64284cc14832bbcaf01aa1077b190fffb93d9ed6776ca42c4649f36530475"
+  },
+  "section.schema.json": {
+    "source": "synthesized",
+    "specification": "https://ols.otyg.org/schema/v1.0/section.schema.json",
+    "revision": "1.0.0",
+    "sha256": "00587cde90ce5f5152b33f9bb650c23b39e38f802c8ebd5f96a23ad656a78cea"
+  },
+  "service-instance.schema.json": {
+    "source": "synthesized",
+    "specification": "https://ols.otyg.org/schema/v1.0/service-instance.schema.json",
+    "revision": "1.0.0",
+    "sha256": "001f553104b92021e3e4b3f51a14e27e4f11e240ecfed81ce963f6f17856d9df"
+  },
+  "teaching-note.schema.json": {
+    "source": "synthesized",
+    "specification": "https://ols.otyg.org/schema/v1.0/teaching-note.schema.json",
+    "revision": "1.0.0",
+    "sha256": "35c0c07549ada95d858eedbd90f61d14b90d4135ee9a6ff3024c77254331be09"
+  },
+  "test-fixture.schema.json": {
+    "source": "synthesized",
+    "specification": "https://ols.otyg.org/schema/v1.0/test-fixture.schema.json",
+    "revision": "1.0.0",
+    "sha256": "ffad907b6499b8b40ed581811b63da944d0045fccf4653fa0683a452192b03fc"
+  },
+  "transliteration.schema.json": {
+    "source": "synthesized",
+    "specification": "https://ols.otyg.org/schema/v1.0/transliteration.schema.json",
+    "revision": "1.0.0",
+    "sha256": "bd4da9b5df4faf5858412a063de45825d9dd9af42f5af2a19a66cc7ad39b3e74"
+  },
+  "utterance.schema.json": {
+    "source": "synthesized",
+    "specification": "https://ols.otyg.org/schema/v1.0/utterance.schema.json",
+    "revision": "1.0.0",
+    "sha256": "fdd791476acbd9b34c00e362f6e5a3bab9d8452031ea1e51c9169dd3746acaeb"
+  },
+  "variant.schema.json": {
+    "source": "synthesized",
+    "specification": "https://ols.otyg.org/schema/v1.0/variant.schema.json",
+    "revision": "1.0.0",
+    "sha256": "7515bcd51f1a18f273ee551ccc1d88c2dcd6afeea209fdd9af0d2ee19437c78f"
+  },
+  "verse-line-group.schema.json": {
+    "source": "synthesized",
+    "specification": "https://ols.otyg.org/schema/v1.0/verse-line-group.schema.json",
+    "revision": "1.0.0",
+    "sha256": "acb05b45eb6df242abc2922f221b06bae22e089cec00908535b2cd5023b8326c"
+  }
+}

@@ -7,3 +7,12 @@ coverage/
 *.log
 .env*
 !.env.example
+.venv/
+*.egg-info/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.npm-cache/
+packages/*/dist/
+python/dist/

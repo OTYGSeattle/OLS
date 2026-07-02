@@ -1,0 +1,9 @@
+{
+  "$schema": "https://ols.otyg.org/schema/v1.0/reading.schema.json",
+  "ols_version": "1.0.0",
+  "type": "reading",
+  "kind": "gospel",
+  "id": "reading-valid",
+  "role": "role-reader",
+  "reference": { "system": "osis", "osisRef": "John.1.1" }
+}

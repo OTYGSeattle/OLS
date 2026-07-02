@@ -1,0 +1,52 @@
+name: SDK CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  typescript:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node: [22, 24]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '${{ matrix.node }}', cache: npm }
+      - run: npm ci
+      - run: npm run check
+      - run: npm run test --workspaces --if-present
+      - run: npm run build
+      - run: npm pack --workspace @ols/schemas --workspace @ols/types --workspace @ols/sdk --workspace @ols/cli
+
+  python:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python: ['3.10', '3.12']
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '${{ matrix.python }}', cache: pip }
+      - run: python -m pip install -e "python[dev]"
+      - run: python -m pytest python/tests
+      - run: python -m mypy --config-file python/pyproject.toml python/ols_sdk
+      - run: python -m ruff check python
+      - run: python -m build python
+
+  parity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: npm ci
+      - run: python -m venv .venv
+      - run: .venv/bin/python -m pip install -e python
+      - run: npm run build --workspace @ols/types && npm run build --workspace @ols/sdk && npm run build --workspace @ols/cli
+      - run: npm run test:parity

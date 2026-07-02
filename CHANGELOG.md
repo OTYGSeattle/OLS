@@ -8,6 +8,21 @@ The format is based on Keep a Changelog, and this project follows semantic versi
 
 ### Added
 
+- Added canonical checked-in OLS v1.0 schemas, shared conformance fixtures, TypeScript `@ols/*` workspaces, and the Python `ols-sdk` distribution.
+- Added offline package loading, reference resolution, six-layer validation, stable diagnostics, self-test runners, matching `ols` CLIs, schema refresh caches, and cross-language parity checks.
+- Added multi-platform SDK CI and manually triggered npm/PyPI release dry-run workflows.
+
+### Fixed
+
+- Fixed Node 24 compatibility by making the `esbuild` override global, preventing peer dependency mismatch on Linux runners.
+- Upgraded CI Node.js version targets and release dry-run workflows from Node 20 to 22/24 to support Astro 6 requirements.
+- Configured `.gitattributes` to enforce `LF` line endings for all JSON files, resolving schema check failures on Windows CI runners.
+
+### Changed
+
+- Reserved `type` for OLS entity identity and introduced `kind` for domain subtypes.
+- Changed public schema routes to serve canonical checked-in artifacts rather than dynamic schema objects.
+
 - Added a complete Schema.org JSON-LD graph at `/schema.json` and page-specific structured data for every public landing page, category, and specification article.
 - Set `https://ols.otyg.org` as the canonical domain and added a visible footer link that opens the OLS JSON Schema in a new tab.
 - Corrected repository links from `OTYGSeattle/OSL` to `OTYGSeattle/OLS`.
