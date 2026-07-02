@@ -4,6 +4,11 @@
   "description": "Offline-first OLS package loader, resolver, and validator",
   "type": "module",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OTYGSeattle/OLS.git",
+    "directory": "packages/sdk"
+  },
   "files": ["dist/index.js", "dist/index.d.ts"],
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
