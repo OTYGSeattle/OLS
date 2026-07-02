@@ -8,10 +8,10 @@ on:
 
 permissions:
   contents: read
-  id-token: write # Required for PyPI OIDC
+  id-token: write # Required for PyPI/npm OIDC
 
 jobs:
-  release:
+  release-npm:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,18 +21,13 @@ jobs:
           node-version: 22
           registry-url: 'https://registry.npmjs.org'
           
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-          
       - run: npm ci
       
       - run: npm run build --workspace @openliturgy/types && npm run build --workspace @openliturgy/sdk && npm run build --workspace @openliturgy/cli
       
-      # Isolate npm and Python artifacts
-      - run: mkdir -p artifacts/npm artifacts/python
+      # Isolate npm artifacts
+      - run: mkdir -p artifacts/npm
       - run: npm pack --pack-destination artifacts/npm --workspace @openliturgy/schemas --workspace @openliturgy/types --workspace @openliturgy/sdk --workspace @openliturgy/cli
-      - run: python -m pip install build && python -m build python --outdir artifacts/python
       
       # Ensure using a recent version of npm supporting trusted publishing
       - run: npm install -g npm@latest
@@ -40,7 +35,20 @@ jobs:
       # Publish TS workspaces to npm using OIDC trusted publishing
       - name: Publish to npm
         run: npm publish --workspaces --provenance --access public
+
+  release-pypi:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
           
+      # Isolate Python artifacts
+      - run: mkdir -p artifacts/python
+      - run: python -m pip install build && python -m build python --outdir artifacts/python
+      
       # Publish strictly from the python directory to production PyPI
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1

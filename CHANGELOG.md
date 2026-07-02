@@ -6,6 +6,8 @@ The format is based on Keep a Changelog, and this project follows semantic versi
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-07-01
+
 ### Added
 
 - Added canonical checked-in OLS v1.0 schemas, shared conformance fixtures, TypeScript `@openliturgy/*` workspaces, and the Python `openliturgy` distribution.

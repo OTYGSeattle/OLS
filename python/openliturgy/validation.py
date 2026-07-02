@@ -194,6 +194,19 @@ def validate_package(root: Union[str, Path], registry: Optional[SchemaRegistry] 
         else:
             entity["value"]["__source"] = entity["source"]
             index[identifier] = entity["value"]
+
+        if any(c.isupper() for c in identifier):
+            diagnostics.append(
+                Diagnostic(
+                    layer="consistency",
+                    source=entity["source"],
+                    entityId=identifier,
+                    jsonPointer=entity["pointer"] + "/id",
+                    code="OLS_ID_UPPERCASE",
+                    message="IDs should be lowercase for compatibility and consistency.",
+                    severity="warning",
+                )
+            )
     for reference in refs:
         target = reference["value"]["$ref"]
         if resolve_reference(target, index, directory, reference["source"]) is None:
@@ -262,6 +275,41 @@ def validate_package(root: Union[str, Path], registry: Optional[SchemaRegistry] 
         package_restricted = set(package_authority.get("restrictedUse", []))
         package_license = manifest.get("license") if isinstance(manifest.get("license"), str) else None
         allowed_licenses = set(manifest.get("allowedLicenseOverrides", []))
+
+        manifest_source = (directory / "manifest.ols.json").as_posix()
+        manifest_files = manifest.get("files", [])
+        absolute_manifest_files = {
+            (directory / f).resolve().as_posix() for f in manifest_files
+        }
+
+        for idx, f in enumerate(manifest_files):
+            abs_path = (directory / f).resolve().as_posix()
+            if not any(doc.source == abs_path for doc in documents):
+                diagnostics.append(
+                    Diagnostic(
+                        layer="consistency",
+                        source=manifest_source,
+                        jsonPointer=f"/files/{idx}",
+                        code="OLS_MANIFEST_FILE_NOT_FOUND",
+                        message=f"Declared file {f} does not exist in the package.",
+                        severity="error",
+                    )
+                )
+
+        for doc in documents:
+            if doc.source == manifest_source:
+                continue
+            if doc.source not in absolute_manifest_files:
+                diagnostics.append(
+                    Diagnostic(
+                        layer="consistency",
+                        source=doc.source,
+                        jsonPointer="",
+                        code="OLS_MANIFEST_FILE_UNDECLARED",
+                        message="File is not declared in the manifest.ols.json files list.",
+                        severity="error",
+                    )
+                )
         for entity in entities:
             authority = entity["value"].get("authority", {})
             allowed = authority.get("allowedUse")

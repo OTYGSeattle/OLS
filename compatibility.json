@@ -1,5 +1,5 @@
 {
-  "sdkVersion": "1.0.0",
+  "sdkVersion": "1.0.1",
   "olsVersion": ">=1.0.0 <1.1.0",
   "schemaDialect": "https://json-schema.org/draft/2020-12/schema"
 }
