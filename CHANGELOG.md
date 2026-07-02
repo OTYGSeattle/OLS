@@ -8,9 +8,9 @@ The format is based on Keep a Changelog, and this project follows semantic versi
 
 ### Added
 
-- Added canonical checked-in OLS v1.0 schemas, shared conformance fixtures, TypeScript `@ols/*` workspaces, and the Python `ols-sdk` distribution.
+- Added canonical checked-in OLS v1.0 schemas, shared conformance fixtures, TypeScript `@openliturgy/*` workspaces, and the Python `openliturgy` distribution.
 - Added offline package loading, reference resolution, six-layer validation, stable diagnostics, self-test runners, matching `ols` CLIs, schema refresh caches, and cross-language parity checks.
-- Added multi-platform SDK CI and manually triggered npm/PyPI release dry-run workflows.
+- Added multi-platform SDK CI, manually triggered npm/PyPI release dry-run workflows, and the tag-triggered automated production release workflow.
 
 ### Fixed
 

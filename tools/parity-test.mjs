@@ -5,7 +5,7 @@ const exec = promisify(execFile);
 const fixture = resolve('fixtures/complete-minimal/manifest.ols.json');
 const node = await exec(process.execPath, ['packages/cli/dist/cli.js', 'validate', fixture, '--format', 'json']);
 const pythonExecutable = process.platform === 'win32' ? resolve('.venv/Scripts/python.exe') : resolve('.venv/bin/python');
-const python = await exec(pythonExecutable, ['-m', 'ols_sdk.cli', 'validate', fixture, '--format', 'json']);
+const python = await exec(pythonExecutable, ['-m', 'openliturgy.cli', 'validate', fixture, '--format', 'json']);
 const normalize = (text) => {
   const report = JSON.parse(text);
   return {

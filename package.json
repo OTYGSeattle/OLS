@@ -34,7 +34,7 @@
     "start": "astro dev --host 0.0.0.0 --port 3000",
     "build": "astro build && pagefind --site dist",
     "preview": "astro preview --host 0.0.0.0 --port 3000",
-    "check": "npm run schemas:check && npm run build --workspace @ols/types && npm run build --workspace @ols/sdk && astro check && npm run check --workspaces --if-present",
+    "check": "npm run schemas:check && npm run build --workspace @openliturgy/types && npm run build --workspace @openliturgy/sdk && astro check && npm run check --workspaces --if-present",
     "test": "npm run test --workspaces --if-present && python -m pytest python/tests",
     "test:parity": "node tools/parity-test.mjs",
     "schemas:check": "node tools/check-schemas.mjs",

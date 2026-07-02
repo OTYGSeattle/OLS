@@ -1,5 +1,5 @@
 {
-  "name": "@ols/types",
+  "name": "@openliturgy/types",
   "version": "1.0.0",
   "description": "TypeScript and Zod models for OLS v1.0",
   "type": "module",

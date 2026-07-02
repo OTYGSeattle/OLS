@@ -43,7 +43,7 @@ npm run clean
 - Preserve the existing Astro, Tailwind, and MDX patterns unless there is a strong reason to change them.
 - Treat `packages/schemas/schemas/v1.0` as canonical. After schema changes, refresh provenance and run `node tools/sync-python-schemas.mjs`.
 - Update schemas, generated models, documentation examples, and valid/invalid fixtures together.
-- Keep `@ols/*` and `ols-sdk` versions aligned with `compatibility.json`.
+- Keep `@openliturgy/*` and `openliturgy` versions aligned with `compatibility.json`.
 
 ## Before Opening a PR
 
@@ -54,7 +54,7 @@ npm run clean
 - Verify keyboard behavior and basic accessibility for any interactive UI changes.
 - Update `README.md` and `CHANGELOG.md` when the change affects setup, usage, or end-user behavior.
 - If contributor workflow changed, update `CONTRIBUTING.md` too.
-- For template releases, keep `package.json`, `package-lock.json`, `CHANGELOG.md`, and `.github/releases/` in sync with the GitHub release tag.
+- For template and package releases, keep `package.json`, `package-lock.json`, `CHANGELOG.md`, and `.github/releases/` in sync with the GitHub release tag. Pushing a tag matching `v*` triggers the automated production release workflow (`sdk-release.yml`) to build and publish packages to npm and PyPI.
 
 ## Content Notes
 
