@@ -1,0 +1,12 @@
+{
+  "$schema": "https://ols.otyg.org/schema/v1.0/utterance.schema.json",
+  "ols_version": "1.0.0",
+  "type": "utterance",
+  "id": "ut-variant-lang-mismatch",
+  "roles": ["role-deacon"],
+  "mode": "spoken",
+  "text": { "en": "Lord, have mercy" },
+  "variants": {
+    "fr": [{ "value": "Seigneur, aie pitié", "label": "FR", "source": "Missel" }]
+  }
+}

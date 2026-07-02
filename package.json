@@ -1,6 +1,6 @@
 {
   "name": "openliturgy-docs",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "OpenLiturgy Standard v1.0 technical specification and data standard documentation repository.",
   "type": "module",
   "license": "Apache-2.0",

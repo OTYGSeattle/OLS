@@ -2,7 +2,7 @@ import { mkdtemp, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { validateDocument, validatePackage } from './index.js';
+import { validateDocument, validatePackage, validateTranslationVariants } from './index.js';
 
 describe('validateDocument', () => {
   it('reports malformed JSON at layer one', async () => {
@@ -12,6 +12,46 @@ describe('validateDocument', () => {
     const result = await validateDocument(source);
     expect(result.valid).toBe(false);
     expect(result.diagnostics[0]?.code).toBe('OLS_JSON_PARSE');
+  });
+});
+
+describe('validateTranslationVariants', () => {
+  const run = (value: unknown) => {
+    const diagnostics: import('@openliturgy/types').Diagnostic[] = [];
+    validateTranslationVariants(value, 'inline', '', diagnostics);
+    return diagnostics.map((item) => item.code);
+  };
+
+  it('accepts a well-formed variant block', () => {
+    const codes = run({
+      text: { en: 'Lord, have mercy' },
+      variants: { en: [{ value: 'Lord, have mercy', label: 'A', source: 'S', default: true }] },
+    });
+    expect(codes).toEqual([]);
+  });
+
+  it('flags a variant language missing from the text map', () => {
+    const codes = run({ text: { en: 'Lord, have mercy' }, variants: { fr: [{ value: 'Seigneur', label: 'F', source: 'S' }] } });
+    expect(codes).toContain('OLS_VARIANT_LANG_MISMATCH');
+  });
+
+  it('flags multiple defaults in one language', () => {
+    const codes = run({
+      text: { en: 'Lord, have mercy' },
+      variants: { en: [
+        { value: 'Lord, have mercy', label: 'A', source: 'S', default: true },
+        { value: 'Lord, have mercy', label: 'B', source: 'S', default: true },
+      ] },
+    });
+    expect(codes).toContain('OLS_VARIANT_MULTI_DEFAULT');
+  });
+
+  it('flags a default whose value does not match the text entry', () => {
+    const codes = run({
+      text: { en: 'Lord, have mercy' },
+      variants: { en: [{ value: 'O Lord, show mercy', label: 'A', source: 'S', default: true }] },
+    });
+    expect(codes).toContain('OLS_VARIANT_DEFAULT_SYNC');
   });
 });
 

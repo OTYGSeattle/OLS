@@ -3,10 +3,14 @@ title: 'Variants & Scholarly Apparatus'
 description: 'Scholarly variants, apparatus footnotes, and manuscript sources.'
 category: 'advanced-features'
 order: 31
-updatedAt: 2026-07-01
+updatedAt: 2026-07-02
 ---
 
 OLS v1.0 supports textual variation without collapsing all traditions, editions, and local customs into one flattened text.
+
+<Callout type="info">
+**Scholarly variants vs. Translation variants:** Scholarly variants (this article) track *manuscript-level* textual differences within the same language and script — e.g. two Ge'ez codices with different wording. [Translation Variants](/liturgical-elements/data-model/translation-variants) handle multiple *translation renderings* of the same source text into a target language (e.g. two English translations of the same Ge'ez prayer).
+</Callout>
 
 ```json
 {
@@ -30,3 +34,14 @@ A variant supplements an identified base entity; it should not silently overwrit
 Use one variant record per materially distinct reading or custom, and attach the source that supports it. Differences caused only by typography, line wrapping, or Unicode normalization do not need scholarly variants.
 
 When several witnesses support the same reading, reference each witness instead of copying the same variant text several times. When a local custom changes service structure rather than wording, model it as a proper mutation and cite the custom there.
+
+### Scholarly Variant Object
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `id` | `string` | ✓ | Unique identifier matching `^variant-[a-z0-9-]+$`. |
+| `type` | `string` | ✓ | One of: `manuscript`, `local-custom`, `editorial`, `reconstructed`. |
+| `source` | `string` | ✓ | Reference to a declared source `id`. |
+| `text` | `LocalizedText` | ✓ | The variant reading. |
+| `note` | `string` | | Apparatus footnote or editorial comment. |
+| `confidence` | `string` | | One of: `certain`, `probable`, `possible`, `uncertain`. |

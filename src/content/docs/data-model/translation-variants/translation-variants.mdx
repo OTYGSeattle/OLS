@@ -1,0 +1,169 @@
+---
+title: 'Translation Variants'
+description: 'Support for multiple translation variants of the same text within a single language.'
+category: 'data-model'
+order: 8
+updatedAt: 2026-07-02
+---
+
+
+A single liturgical text often has more than one accepted translation in the same language. `TranslationVariants` extends `LocalizedText` to allow multiple variant translations per language tag, each annotated with provenance and usage context.
+
+
+### Motivation
+
+In liturgical practice a single source utterance — e.g. _ኪርያ ኤሌይሶን_ — may have several sanctioned English renderings:
+
+- "Lord, have mercy" (EOTC official)
+- "O Lord, show mercy" (diaspora prayer book)
+- "Lord, be merciful to us" (scholarly literal)
+
+Rather than forcing a single canonical choice per language, OLS allows publishers to ship all accepted variants and let consuming applications select the most appropriate one by context.
+
+
+### Schema Pattern
+
+The `variants` key sits alongside the existing `text` map inside any `LocalizedText` block. Each entry under `variants` is keyed by language tag and holds an array of variant objects.
+
+```json
+{
+  "text": {
+    "gez-Ethi": "ኪርያ ኤሌይሶን",
+    "en": "Lord, have mercy"
+  },
+  "variants": {
+    "en": [
+      {
+        "value": "Lord, have mercy",
+        "label": "EOTC Official",
+        "source": "EOTC English Missal 2019",
+        "default": true
+      },
+      {
+        "value": "O Lord, show mercy",
+        "label": "Diaspora Prayer Book",
+        "source": "St. Mary Cathedral, Los Angeles, 2021"
+      },
+      {
+        "value": "Lord, be merciful to us",
+        "label": "Scholarly Literal",
+        "source": "Getatchew Haile, CSCO vol. 542"
+      }
+    ],
+    "am-Ethi": [
+      {
+        "value": "ጌታ ሆይ ማረን",
+        "label": "Traditional",
+        "default": true
+      },
+      {
+        "value": "አቤቱ ይቅር በለን",
+        "label": "Contemporary"
+      }
+    ]
+  },
+  "textMeta": {
+    "direction": "ltr",
+    "register": "liturgical"
+  }
+}
+```
+
+
+### Variant Object Fields
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `value` | `string` | ✓ | The translated text content. |
+| `label` | `string` | | Short human-readable name for this variant (e.g. "EOTC Official"). |
+| `source` | `string` | | Bibliographic or provenance reference. |
+| `default` | `boolean` | | When `true`, this variant is the preferred rendering. At most one variant per language may be marked default. |
+| `register` | `string` | | Overrides the parent `textMeta.register` for this variant (e.g. "scholarly", "pastoral"). |
+| `audience` | `string` | | Intended audience context: "general", "academic", "children", "neophyte". |
+
+
+### Resolution Rules
+
+1. **Backward-compatible** — If no `variants` key is present, the `text` map value is treated as the sole (default) translation for each language.
+2. **Default selection** — Applications SHOULD display the variant marked `"default": true`. If none is marked, the first item in the array is treated as default.
+3. **text ↔ variants sync** — When `variants` exists for a given language, the corresponding `text` entry MUST equal the `value` of the default variant. This ensures legacy consumers that ignore `variants` still receive the preferred translation.
+
+
+### Usage in Utterances
+
+Translation variants integrate naturally with existing content types:
+
+```json
+{
+  "id": "ut-kyrie-deacon",
+  "roles": ["role-deacon"],
+  "mode": "chanted",
+  "text": {
+    "gez-Ethi": "ኪርያ ኤሌይሶን",
+    "en": "Lord, have mercy"
+  },
+  "variants": {
+    "en": [
+      { "value": "Lord, have mercy", "label": "EOTC Official", "default": true },
+      { "value": "O Lord, show mercy", "label": "Diaspora Prayer Book" }
+    ]
+  }
+}
+```
+
+
+### When to Use Variants
+
+<Callout type="tip">
+Use translation variants when a liturgical text has multiple **sanctioned or published** translations in the same language. Do not use variants for draft or unapproved renderings — those belong in scholarly commentary annotations.
+</Callout>
+
+
+### SDK Implementation Guide
+
+Implementers building libraries or applications that consume OLS data SHOULD follow these patterns:
+
+#### Parsing
+
+1. Parse the `text` map first — this is always safe and backward-compatible.
+2. If `variants` is present, validate against the rules in [JSON Schema & Validation](/advanced-profiles/conformance-schemas/schemas).
+3. Build an internal lookup: `Map<languageTag, TranslationVariant[]>`.
+
+#### Selection Algorithm
+
+```
+function resolveVariant(lang, variants, preferences):
+  candidates = variants[lang]
+  if candidates is empty:
+    return text[lang]
+
+  // 1. User preference by label
+  if preferences.label exists:
+    match = candidates.find(v => v.label == preferences.label)
+    if match: return match.value
+
+  // 2. Audience filter
+  if preferences.audience exists:
+    match = candidates.find(v => v.audience == preferences.audience)
+    if match: return match.value
+
+  // 3. Default variant
+  defaultVariant = candidates.find(v => v.default == true)
+  if defaultVariant: return defaultVariant.value
+
+  // 4. Fallback to first
+  return candidates[0].value
+```
+
+#### Error Handling
+
+SDKs MUST surface validation errors clearly:
+
+| Behavior | Requirement |
+| --- | --- |
+| Invalid language tag in `variants` | Reject with `OLS_VARIANT_LANG_MISMATCH`. |
+| Multiple `"default": true` in same language | Reject with `OLS_VARIANT_MULTI_DEFAULT`. |
+| Default value ≠ text entry | Reject with `OLS_VARIANT_DEFAULT_SYNC`. |
+| Unknown fields in variant object | Ignore (forward-compatible), but log a warning. |
+| Missing `variants` key entirely | Valid — treat `text` values as sole translations. |
+

@@ -3,7 +3,7 @@ title: 'Conformance Levels'
 description: 'Conformance level requirements and feature checklists (L0 to L7).'
 category: 'conformance-schemas'
 order: 34
-updatedAt: 2026-07-01
+updatedAt: 2026-07-02
 ---
 
 Tools do not need to support every feature. OLS v1.0 defines conformance levels so apps can honestly state what they implement.
@@ -11,7 +11,7 @@ Tools do not need to support every feature. OLS v1.0 defines conformance levels 
 ```json
 {
   "conformance": {
-    "ols": "1.0.0",
+    "ols": "1.1.0",
     "levels": ["L0", "L1", "L2", "L5", "L7"],
     "profiles": ["eotc.v1"],
     "unsupported": ["service-instance", "audio-assets"]
@@ -32,3 +32,20 @@ The `unsupported` list is important even when levels are declared. It prevents a
 </Callout>
 
 Conformance testing should include schema validation, reference resolution, deterministic calendar fixtures, and round-trip tests for every claimed profile feature.
+
+
+## Level Requirements for Translation Variants
+
+Translation variant support maps to conformance levels as follows:
+
+| Level | Requirement |
+| --- | --- |
+| L0 (Minimal) | Ignore `variants` entirely; use `text` map values as-is. |
+| L1 (Basic) | Parse `variants` without error; select the default variant. |
+| L2 (Standard) | Validate `variants` against all error-severity rules. Present default variant to users. |
+| L3 (Full Text) | Allow user/application selection of non-default variants by `label` or `audience`. |
+| L5 (Scholarly) | Expose all variants with full provenance (`source`, `register`). Support variant-level apparatus cross-reference. |
+
+<Callout type="info">
+Implementations at L0 are unaffected by translation variants — the `text` map always holds the default rendering. Higher levels must validate and resolve variants according to the rules in [JSON Schema & Validation](/advanced-profiles/conformance-schemas/schemas).
+</Callout>

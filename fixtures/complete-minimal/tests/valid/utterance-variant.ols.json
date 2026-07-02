@@ -1,0 +1,15 @@
+{
+  "$schema": "https://ols.otyg.org/schema/v1.0/utterance.schema.json",
+  "ols_version": "1.0.0",
+  "type": "utterance",
+  "id": "ut-variant-valid",
+  "roles": ["role-deacon"],
+  "mode": "spoken",
+  "text": { "en": "Lord, have mercy" },
+  "variants": {
+    "en": [
+      { "value": "Lord, have mercy", "label": "Official", "source": "EOTC English Missal 2019", "default": true },
+      { "value": "O Lord, show mercy", "label": "Diaspora", "source": "Parish handout 2021" }
+    ]
+  }
+}
