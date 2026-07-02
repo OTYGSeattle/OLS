@@ -32,8 +32,13 @@ jobs:
       # Ensure using a recent version of npm supporting trusted publishing
       - run: npm install -g npm@latest
       
-      # Publish TS workspaces to npm using OIDC trusted publishing (idempotent loop)
+      # Publish TS workspaces to npm.
+      # First publish of a brand-new package cannot use OIDC trusted publishing alone,
+      # so authenticate with an npm granular/automation token (NPM_TOKEN secret).
+      # Provenance still attaches because id-token: write is granted above.
       - name: Publish to npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           for dir in packages/schemas packages/types packages/sdk packages/cli; do
             name=$(node -p "require('./$dir/package.json').name")
