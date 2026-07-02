@@ -11,7 +11,7 @@
   "author": "OpenLiturgy Contributors",
   "homepage": "https://ols.otyg.org",
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.12.0"
   },
   "repository": {
     "type": "git",

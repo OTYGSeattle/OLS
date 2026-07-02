@@ -15,6 +15,7 @@ The format is based on Keep a Changelog, and this project follows semantic versi
 ### Fixed
 
 - Fixed Node 24 compatibility by making the `esbuild` override global, preventing peer dependency mismatch on Linux runners.
+- Upgraded CI Node.js version targets and release dry-run workflows from Node 20 to 22/24 to support Astro 6 requirements.
 
 ### Changed
 
