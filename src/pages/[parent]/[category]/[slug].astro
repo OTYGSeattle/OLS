@@ -19,7 +19,7 @@ import {
   getSuggestedSearchArticles,
 } from '../../../data/docs';
 import Layout from '../../../layouts/Layout.astro';
-import { supportedValuesBySlug } from '../../../data/supported-values';
+import { documentSchemasBySlug, supportedValuesBySlug } from '../../../data/supported-values';
 
 export async function getStaticPaths() {
   const allDocs = await getCollection('docs');
@@ -63,6 +63,7 @@ const articlePagefindAttributes = doc.data.hideFromSearch
       'data-pagefind-meta': `category:${pagefindCategory}`,
     };
 const supportedValues = supportedValuesBySlug[getCleanDocSlug(doc.id)] ?? [];
+const documentSchemas = documentSchemasBySlug[getCleanDocSlug(doc.id)] ?? [];
 ---
 
 <Layout
@@ -221,7 +222,7 @@ const supportedValues = supportedValuesBySlug[getCleanDocSlug(doc.id)] ?? [];
           <Content components={mdxComponents} />
         </div>
 
-        <SupportedValues groups={supportedValues} />
+        <SupportedValues groups={supportedValues} documentSchemas={documentSchemas} />
 
         {
           doc.data.relatedLinks.length > 0 && (

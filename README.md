@@ -71,6 +71,8 @@ Every public page embeds page-specific [Schema.org](https://schema.org/) JSON-LD
 
 Specification articles that define a closed or recommended vocabulary display a **Supported values** section with every documented value and a direct link to its definition in the generated [OLS vocabulary schema](https://ols.otyg.org/schema/v1.0/corpus.schema.json). Closed enums and open recommendation lists are explicitly distinguished. The site footer opens this OLS schema in a new tab from every page.
 
+Each modeled entity also has a standalone Draft 2020-12 validator, such as `/schema/v1.0/localized-text.schema.json`, `/schema/v1.0/utterance.schema.json`, and `/schema/v1.0/rubric.schema.json`. Relevant documentation pages link directly to every entity schema they document.
+
 ---
 
 ## Document Modification and Authoring

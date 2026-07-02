@@ -1,30 +1,34 @@
 ---
 import { schemaDefinitionUrl, type SupportedValueGroup } from '../../data/supported-values';
-
 interface Props {
   groups: SupportedValueGroup[];
+  documentSchemas?: string[];
 }
-const { groups } = Astro.props;
+const { groups, documentSchemas = [] } = Astro.props;
 ---
 
 {
-  groups.length > 0 && (
+  (groups.length > 0 || documentSchemas.length > 0) && (
     <section
       class="docs-supported-values mt-12 border-t border-[var(--color-border)] pt-8"
       aria-labelledby="supported-values-heading"
     >
-      <div class="flex flex-wrap items-center justify-between gap-3">
+      <div class="flex flex-wrap items-start justify-between gap-4">
         <h2 id="supported-values-heading" class="text-2xl font-semibold text-[var(--color-text-strong)]">
-          Supported values
+          Schemas and supported values
         </h2>
-        <a
-          href="/schema/v1.0/corpus.schema.json"
-          target="_blank"
-          rel="noreferrer"
-          class="text-sm font-medium text-[var(--color-accent)] hover:underline"
-        >
-          Open full OLS JSON Schema ↗
-        </a>
+        <div class="flex max-w-xl flex-wrap justify-end gap-x-4 gap-y-2">
+          {documentSchemas.map((schema) => (
+            <a
+              href={`/schema/v1.0/${schema}.schema.json`}
+              target="_blank"
+              rel="noreferrer"
+              class="text-sm font-medium text-[var(--color-accent)] hover:underline"
+            >
+              {schema}.schema.json ↗
+            </a>
+          ))}
+        </div>
       </div>
       <div class="mt-6 space-y-6">
         {groups.map((group) => (
@@ -38,7 +42,7 @@ const { groups } = Astro.props;
                 rel="noreferrer"
                 class="text-xs font-medium text-[var(--color-accent)] hover:underline"
               >
-                JSON Schema ↗
+                Definition ↗
               </a>
             </div>
             <p class="mt-1 text-sm text-[var(--color-text-muted)]">
