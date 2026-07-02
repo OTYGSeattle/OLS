@@ -3,8 +3,8 @@ import { homedir } from 'node:os';
 import { resolve } from 'node:path';
 import { stat } from 'node:fs/promises';
 import { Command } from 'commander';
-import { runSelfTests, SchemaRegistry, validateDocument, validatePackage } from '@ols/sdk';
-import type { ValidationReport } from '@ols/sdk';
+import { runSelfTests, SchemaRegistry, validateDocument, validatePackage } from '@openliturgy/sdk';
+import type { ValidationReport } from '@openliturgy/sdk';
 
 function printReport(report: ValidationReport, format: string): void {
   if (format === 'json') {

@@ -1,5 +1,5 @@
 {
-  "name": "@ols/schemas",
+  "name": "@openliturgy/schemas",
   "version": "1.0.0",
   "description": "Canonical OpenLiturgy Standard JSON Schemas",
   "type": "module",

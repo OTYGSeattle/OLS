@@ -1,6 +1,9 @@
-name: SDK release dry run
+name: SDK Release
 
 on:
+  push:
+    tags:
+      - 'v*'
   workflow_dispatch:
 
 permissions:
@@ -8,15 +11,22 @@ permissions:
   id-token: write # Required for PyPI OIDC
 
 jobs:
-  package:
+  release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
       - uses: actions/setup-node@v4
-        with: { node-version: 22, registry-url: 'https://registry.npmjs.org' }
+        with:
+          node-version: 22
+          registry-url: 'https://registry.npmjs.org'
+          
       - uses: actions/setup-python@v5
-        with: { python-version: '3.12' }
+        with:
+          python-version: '3.12'
+          
       - run: npm ci
+      
       - run: npm run build --workspace @openliturgy/types && npm run build --workspace @openliturgy/sdk && npm run build --workspace @openliturgy/cli
       
       # Isolate npm and Python artifacts
@@ -24,12 +34,15 @@ jobs:
       - run: npm pack --pack-destination artifacts/npm --workspace @openliturgy/schemas --workspace @openliturgy/types --workspace @openliturgy/sdk --workspace @openliturgy/cli
       - run: python -m pip install build && python -m build python --outdir artifacts/python
       
-      - uses: actions/upload-artifact@v4
-        with: { name: openliturgy-1.0.0, path: artifacts }
-
-      # Publish strictly from the python directory
-      - name: Publish to TestPyPI (Dry Run)
+      # Ensure using a recent version of npm supporting trusted publishing
+      - run: npm install -g npm@latest
+      
+      # Publish TS workspaces to npm using OIDC trusted publishing
+      - name: Publish to npm
+        run: npm publish --workspaces --provenance --access public
+          
+      # Publish strictly from the python directory to production PyPI
+      - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: artifacts/python
-          repository-url: https://test.pypi.org/legacy/

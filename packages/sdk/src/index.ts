@@ -3,9 +3,9 @@ import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import { dirname, isAbsolute, relative, resolve } from 'node:path';
 import Ajv2020Import, { type ErrorObject, type ValidateFunction } from 'ajv/dist/2020.js';
 import addFormatsImport from 'ajv-formats';
-import { listSchemas, loadSchema } from '@ols/schemas';
-import type { Diagnostic, JsonValue, LoadedDocument, OlsDocument, ValidationLayer, ValidationReport } from '@ols/types';
-export type { Diagnostic, LoadedDocument, OlsDocument, ValidationReport } from '@ols/types';
+import { listSchemas, loadSchema } from '@openliturgy/schemas';
+import type { Diagnostic, JsonValue, LoadedDocument, OlsDocument, ValidationLayer, ValidationReport } from '@openliturgy/types';
+export type { Diagnostic, LoadedDocument, OlsDocument, ValidationReport } from '@openliturgy/types';
 type AjvLike = { addSchema(schema: object, id: string): void; getSchema(id: string): ValidateFunction | undefined };
 
 const layerOrder: ValidationLayer[] = ['parse', 'schema-selection', 'structural', 'consistency', 'references', 'semantic'];

@@ -16,3 +16,4 @@ __pycache__/
 .npm-cache/
 packages/*/dist/
 python/dist/
+python/tmp_pytest/

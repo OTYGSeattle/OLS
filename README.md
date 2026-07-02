@@ -67,7 +67,7 @@ Pagefind's generated full-text index is intentionally not loaded by `npm run dev
 
 ### TypeScript and Python SDKs
 
-This repository is also the OLS SDK monorepo. The npm workspaces publish `@ols/schemas`, `@ols/types`, `@ols/sdk`, and `@ols/cli`; `python/` publishes the unified `ols-sdk` distribution. Both SDKs use the same checked-in Draft 2020-12 schemas and golden fixtures.
+This repository is also the OLS SDK monorepo. The npm workspaces publish `@openliturgy/schemas`, `@openliturgy/types`, `@openliturgy/sdk`, and `@openliturgy/cli`; `python/` publishes the unified `openliturgy` distribution. Both SDKs use the same checked-in Draft 2020-12 schemas and golden fixtures.
 
 ```bash
 npm install

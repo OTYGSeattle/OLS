@@ -19,7 +19,7 @@ jobs:
       - run: npm run check
       - run: npm run test --workspaces --if-present
       - run: npm run build
-      - run: npm pack --workspace @ols/schemas --workspace @ols/types --workspace @ols/sdk --workspace @ols/cli
+      - run: npm pack --workspace @openliturgy/schemas --workspace @openliturgy/types --workspace @openliturgy/sdk --workspace @openliturgy/cli
 
   python:
     strategy:
@@ -33,7 +33,7 @@ jobs:
         with: { python-version: '${{ matrix.python }}', cache: pip }
       - run: python -m pip install -e "python[dev]"
       - run: python -m pytest python/tests
-      - run: python -m mypy --config-file python/pyproject.toml python/ols_sdk
+      - run: python -m mypy --config-file python/pyproject.toml python/openliturgy
       - run: python -m ruff check python
       - run: python -m build python
 
@@ -48,5 +48,5 @@ jobs:
       - run: npm ci
       - run: python -m venv .venv
       - run: .venv/bin/python -m pip install -e python
-      - run: npm run build --workspace @ols/types && npm run build --workspace @ols/sdk && npm run build --workspace @ols/cli
+      - run: npm run build --workspace @openliturgy/types && npm run build --workspace @openliturgy/sdk && npm run build --workspace @openliturgy/cli
       - run: npm run test:parity

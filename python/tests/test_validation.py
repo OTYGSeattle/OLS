@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from ols_sdk.validation import validate_document
+from openliturgy.validation import validate_document
 
 
 def test_malformed_json_is_layer_one(tmp_path: Path) -> None:
