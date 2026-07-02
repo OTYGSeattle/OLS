@@ -168,6 +168,18 @@ export async function validatePackage(root: string, registry?: SchemaRegistry): 
     const id = String(entity.value.id);
     if (index.has(id)) diagnostics.push({ layer: 'references', source: entity.source, entityId: id, jsonPointer: `${entity.pointer}/id`, code: 'OLS_ID_DUPLICATE', message: `Duplicate ID ${id}.`, severity: 'error' });
     else index.set(id, entity);
+
+    if (/[A-Z]/.test(id)) {
+      diagnostics.push({
+        layer: 'consistency',
+        source: entity.source,
+        entityId: id,
+        jsonPointer: `${entity.pointer}/id`,
+        code: 'OLS_ID_UPPERCASE',
+        message: 'IDs should be lowercase for compatibility and consistency.',
+        severity: 'warning'
+      });
+    }
   }
   const absoluteRoot = resolve(root);
   for (const ref of refs) {
@@ -207,6 +219,38 @@ export async function validatePackage(root: string, registry?: SchemaRegistry): 
       if (packageRestricted.size && restricted && [...packageRestricted].some((use) => !restricted.includes(use))) diagnostics.push({ layer: 'semantic', source: entity.source, entityId: String(entity.value.id), jsonPointer: `${entity.pointer}/authority/restrictedUse`, code: 'OLS_AUTHORITY_BROADENED', message: 'Entity restrictedUse removes a package restriction.', severity: 'error' });
       const license = entity.value.license;
       if (packageLicense && typeof license === 'string' && license !== packageLicense && !allowedLicenses.has(license)) diagnostics.push({ layer: 'semantic', source: entity.source, entityId: String(entity.value.id), jsonPointer: `${entity.pointer}/license`, code: 'OLS_LICENSE_BROADENED', message: `License override ${license} is not permitted by the manifest.`, severity: 'error' });
+    }
+
+    const manifestFiles = manifest.files as string[] ?? [];
+    const absoluteManifestFiles = new Set(manifestFiles.map(f => normalizePath(resolve(root, f))));
+    const manifestSource = normalizePath(resolve(root, 'manifest.ols.json'));
+
+    for (const file of manifestFiles) {
+      const absPath = normalizePath(resolve(root, file));
+      if (!documents.some(d => d.source === absPath)) {
+        diagnostics.push({
+          layer: 'consistency',
+          source: manifestSource,
+          jsonPointer: `/files/${manifestFiles.indexOf(file)}`,
+          code: 'OLS_MANIFEST_FILE_NOT_FOUND',
+          message: `Declared file ${file} does not exist in the package.`,
+          severity: 'error'
+        });
+      }
+    }
+
+    for (const document of documents) {
+      if (document.source === manifestSource) continue;
+      if (!absoluteManifestFiles.has(document.source)) {
+        diagnostics.push({
+          layer: 'consistency',
+          source: document.source,
+          jsonPointer: '',
+          code: 'OLS_MANIFEST_FILE_UNDECLARED',
+          message: 'File is not declared in the manifest.ols.json files list.',
+          severity: 'error'
+        });
+      }
     }
   }
   const graph = new Map<string, string[]>();
