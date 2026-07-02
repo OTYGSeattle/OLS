@@ -1,6 +1,6 @@
 {
   "name": "@openliturgy/cli",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Command-line validator for OpenLiturgy Standard packages",
   "type": "module",
   "license": "Apache-2.0",
@@ -12,7 +12,7 @@
   "files": ["dist"],
   "bin": { "ols": "./dist/cli.js" },
   "scripts": { "build": "tsc -p tsconfig.json", "check": "tsc -p tsconfig.json --noEmit", "test": "vitest run --passWithNoTests" },
-  "dependencies": { "@openliturgy/sdk": "1.0.1", "commander": "^14.0.0" },
+  "dependencies": { "@openliturgy/sdk": "1.1.0", "commander": "^14.0.0" },
   "devDependencies": { "typescript": "^5.9.3", "@types/node": "^24.0.0", "vitest": "^3.2.4" },
   "engines": { "node": ">=20" }
 }

@@ -124,6 +124,7 @@ export async function validateDocument(input: string | LoadedDocument, registry?
   if (!/^1\.[01]\.\d+$/.test(loaded.data.ols_version ?? '')) diagnostics.push({ layer: 'consistency', source: loaded.source, entityId: loaded.data.id, jsonPointer: '/ols_version', code: 'OLS_VERSION_UNSUPPORTED', message: 'Only OLS 1.0.x and 1.1.x are supported.', severity: 'error' });
   if (schema['x-ols-schema-source'] === 'synthesized') diagnostics.push({ layer: 'schema-selection', source: loaded.source, entityId: loaded.data.id, jsonPointer: '/$schema', code: 'OLS_SCHEMA_PROVISIONAL', message: 'This per-entity schema is provisional.', severity: 'warning' });
   if (loaded.data.status === 'deprecated') diagnostics.push({ layer: 'consistency', source: loaded.source, entityId: loaded.data.id, jsonPointer: '/status', code: 'OLS_SCHEMA_DEPRECATED', message: 'This document is deprecated.', severity: 'warning' });
+  validateTranslationVariants(loaded.data as Record<string, unknown>, loaded.source, '', diagnostics);
   return report(diagnostics, [loaded.source], [String(schema['x-ols-revision'] ?? '1.0.0')], validator?.errors?.length ? ['references', 'semantic'] : []);
 }
 
@@ -338,7 +339,6 @@ export async function validatePackage(root: string, registry?: SchemaRegistry): 
     const overlap = Object.keys(a.fills as object ?? {}).some((slot) => slot in (b.fills as object ?? {}));
     if (overlap && a.priority === b.priority && a.priorityClass === b.priorityClass) diagnostics.push({ layer: 'semantic', source: propers[right]!.source, entityId: String(b.id), jsonPointer: propers[right]!.pointer, code: 'OLS_CALENDAR_DETERMINISM_UNPROVEN', message: `Proper ${a.id} ties with ${b.id}; an explicit conflict rule or fixture is required.`, severity: 'warning' });
   }
-  for (const document of documents) if (document.data) validateTranslationVariants(document.data as Record<string, unknown>, document.source, '', diagnostics);
   return report(diagnostics, documents.map((item) => item.source), versions);
 }
 

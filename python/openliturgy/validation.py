@@ -130,6 +130,7 @@ def validate_document(
                 severity="warning",
             )
         )
+    diagnostics.extend(_validate_translation_variants(loaded.raw, loaded.source))
     return _report(
         diagnostics,
         [loaded.source],
@@ -526,9 +527,6 @@ def validate_package(root: Union[str, Path], registry: Optional[SchemaRegistry] 
                         severity="warning",
                     )
                 )
-    for document in documents:
-        if isinstance(document.raw, dict):
-            diagnostics.extend(_validate_translation_variants(document.raw, document.source))
     return _report(diagnostics, [document.source for document in documents], versions)
 
 

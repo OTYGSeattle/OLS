@@ -1,7 +1,46 @@
 import json
 from pathlib import Path
 
-from openliturgy.validation import validate_document, validate_package
+from openliturgy.validation import validate_document, validate_package, validate_translation_variants
+
+
+def _codes(value: dict) -> list[str]:
+    return [item.code for item in validate_translation_variants(value)]
+
+
+def test_variants_accepts_well_formed_block() -> None:
+    codes = _codes({
+        "text": {"en": "Lord, have mercy"},
+        "variants": {"en": [{"value": "Lord, have mercy", "label": "A", "source": "S", "default": True}]},
+    })
+    assert codes == []
+
+
+def test_variants_language_mismatch() -> None:
+    codes = _codes({
+        "text": {"en": "Lord, have mercy"},
+        "variants": {"fr": [{"value": "Seigneur", "label": "F", "source": "S"}]},
+    })
+    assert "OLS_VARIANT_LANG_MISMATCH" in codes
+
+
+def test_variants_multiple_defaults() -> None:
+    codes = _codes({
+        "text": {"en": "Lord, have mercy"},
+        "variants": {"en": [
+            {"value": "Lord, have mercy", "label": "A", "source": "S", "default": True},
+            {"value": "Lord, have mercy", "label": "B", "source": "S", "default": True},
+        ]},
+    })
+    assert "OLS_VARIANT_MULTI_DEFAULT" in codes
+
+
+def test_variants_default_sync() -> None:
+    codes = _codes({
+        "text": {"en": "Lord, have mercy"},
+        "variants": {"en": [{"value": "O Lord, show mercy", "label": "A", "source": "S", "default": True}]},
+    })
+    assert "OLS_VARIANT_DEFAULT_SYNC" in codes
 
 
 def test_malformed_json_is_layer_one(tmp_path: Path) -> None:
