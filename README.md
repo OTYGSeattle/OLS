@@ -5,7 +5,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-Configured-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue?style=for-the-badge)](./LICENSE)
 
-This repository houses the full technical documentation and specification for the **OpenLiturgy Standard (OLS) v1.0**—a source-aware, authority-aware data standard for encoding Christian liturgical texts, actions, calendars, music, and commentary notes. 
+This repository houses the full technical documentation and specification for the **OpenLiturgy Standard (OLS) v1.0**—a source-aware, authority-aware data standard for encoding Christian liturgical texts, actions, calendars, music, and commentary notes.
 
 The site is built as a highly performant static documentation portal using **Astro**, **React**, and **Tailwind CSS**, based on the [andreialba/compass](https://github.com/andreialba/compass) theme.
 
@@ -36,8 +36,8 @@ To run the documentation portal locally on your machine, you must have Node.js (
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/OTYGSeattle/OSL.git
-   cd OSL
+   git clone https://github.com/OTYGSeattle/OLS.git
+   cd OLS
    ```
 2. Install dependencies:
    ```bash
@@ -63,6 +63,14 @@ Use the following npm commands for linting, format checks, building, and preview
 - `npm run format`: Standardizes file formatting using Prettier.
 - `npm run clean`: Cleans up local build outputs (`dist/`, `.astro/`).
 
+Pagefind's generated full-text index is intentionally not loaded by `npm run dev`; local search suggestions remain available without requesting a missing module. Use `npm run build` followed by `npm run preview` to test complete search results.
+
+### Structured Data
+
+Every public page embeds page-specific [Schema.org](https://schema.org/) JSON-LD, including its canonical URL and breadcrumb hierarchy. The generated [schema.json](https://ols.otyg.org/schema.json) endpoint provides the complete site graph for the organization, website, OLS standard, parent sections, categories, and all published technical articles. Because it is generated from the Astro content collection, it stays synchronized as documentation pages are added, archived, or reorganized.
+
+Specification articles that define a closed or recommended vocabulary display a **Supported values** section with every documented value and a direct link to its definition in the generated [OLS vocabulary schema](https://ols.otyg.org/schema/v1.0/corpus.schema.json). Closed enums and open recommendation lists are explicitly distinguished. The site footer opens this OLS schema in a new tab from every page.
+
 ---
 
 ## Document Modification and Authoring
@@ -72,6 +80,7 @@ All documentation content resides under the `src/content/docs/` directory.
 ### Structure
 
 Articles are grouped by category folders, with each article having its own subfolder and `.mdx` file:
+
 ```text
 src/content/docs/[category]/[slug]/[slug].mdx
 ```

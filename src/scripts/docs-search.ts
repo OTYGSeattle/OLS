@@ -102,6 +102,11 @@ const normalizeSearchUrl = (value: string) => {
 
 const getPagefind = () => {
   if (!pagefindPromise) {
+    if (import.meta.env.DEV) {
+      pagefindPromise = Promise.resolve(null);
+      return pagefindPromise;
+    }
+
     pagefindPromise = import(/* @vite-ignore */ PAGEFIND_BUNDLE_URL)
       .then((module) => module as PagefindApi)
       .catch((error) => {
