@@ -8,6 +8,8 @@ The format is based on Keep a Changelog, and this project follows semantic versi
 
 ### Added
 
+- Expanded all OLS specification articles with practical usage guidance, connected JSON samples, validation notes, edge cases, and a complete minimal corpus walkthrough.
+- Fixed scripture citation labels that displayed Markdown emphasis markers as literal text.
 - Migrated OpenLiturgy Standard (OLS) v1.0 single-page specification from `base.html` into a full documentation repository using Astro, React, and Tailwind CSS.
 - Split the specification into 40 structured MDX articles, organized into 3 parent categories and 9 sub-categories.
 - Integrated theme-specific custom MDX components (like Callouts, Badges, QuoteBlocks, and Tables) for richer specification aesthetics.

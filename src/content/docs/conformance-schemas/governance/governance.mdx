@@ -6,10 +6,8 @@ order: 35
 updatedAt: 2026-07-01
 ---
 
-
 OLS v1.0 separates technical evolution from ecclesial approval. A schema can be technically valid while still not approved for liturgical use.
 
-        
 <div className="flex flex-wrap gap-2 my-4">
   <Badge>technical-validation</Badge>
   <Badge>source-review</Badge>
@@ -18,3 +16,20 @@ OLS v1.0 separates technical evolution from ecclesial approval. A schema can be 
   <Badge>diocesan-approval</Badge>
 </div>
 
+## Change Classification
+
+| Change | Version impact                                                             | Example                                            |
+| ------ | -------------------------------------------------------------------------- | -------------------------------------------------- |
+| Patch  | Clarifies wording or fixes a schema defect without changing valid meaning. | Correct a description or an erroneous example.     |
+| Minor  | Adds an optional, backward-compatible capability.                          | Add an optional asset metadata field.              |
+| Major  | Removes, renames, or changes the meaning of existing data.                 | Replace the reference model or required ID format. |
+
+Profile versions should be explicit and independently reviewable. A technical schema release does not update an ecclesial approval automatically, and an authority decision does not silently change the JSON schema.
+
+## Review Workflow
+
+1. Record the proposal and affected use cases.
+2. Add or update schemas, examples, and valid/invalid fixtures together.
+3. Complete technical, source, language, and ecclesial review as applicable.
+4. Document migration behavior and version impact.
+5. Publish the decision and preserve superseded material when archival use requires it.

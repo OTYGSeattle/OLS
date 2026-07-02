@@ -6,9 +6,7 @@ order: 30
 updatedAt: 2026-07-01
 ---
 
-
 Media files should be linked, not embedded. OLS supports audio, video, images, scans, PDFs, notation, and manuscript images.
-
 
 ```json
 {
@@ -19,3 +17,15 @@ Media files should be linked, not embedded. OLS supports audio, video, images, s
 }
 ```
 
+## Asset Responsibilities
+
+An asset record is metadata and linkage, not the binary file itself. Keep large media outside JSON and use a relative package URI or a stable external URI.
+
+For portable packages, processors should resolve relative URIs from the package root. They should report a missing file without discarding the liturgical entity linked by `linkedTo`.
+
+Record enough metadata to distinguish a demonstration from an authoritative source. At minimum, document the media type, rights or license, provenance, and the entity being illustrated. For audio and video, timeline bindings can connect service entities to exact segments without splitting the media into many files.
+
+<Callout tone="warning" title="Media can identify people">
+  Apply `ServiceInstance` consent and privacy rules before publishing recordings, photographs, or scans. A public asset
+  URI can disclose more than the surrounding JSON record.
+</Callout>

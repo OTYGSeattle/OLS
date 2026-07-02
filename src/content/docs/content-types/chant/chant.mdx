@@ -6,9 +6,7 @@ order: 16
 updatedAt: 2026-07-01
 ---
 
-
 OLS v1.0 separates text from chant metadata while allowing them to be linked.
-
 
 ```json
 {
@@ -30,3 +28,14 @@ OLS v1.0 separates text from chant metadata while allowing them to be linked.
 }
 ```
 
+## Reuse Chant Metadata
+
+Attach chant metadata at the narrowest level where it is true:
+
+- Attach it to an utterance when the whole utterance shares one mode and performance treatment.
+- Use sub-utterance alignment when mode, milikit, or phrasing changes within the text.
+- Reference an asset when a recording or notation file demonstrates the chant.
+
+Text and chant should remain independently addressable. The same text may have several chant realizations, and a chant record should cite its musical source rather than relying only on the text’s citation.
+
+Performance fields describe a rendition or established practice. They do not replace rubric fields when an action, posture, or instrument use must be validated as part of service execution.

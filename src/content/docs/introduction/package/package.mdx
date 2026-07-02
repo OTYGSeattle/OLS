@@ -6,11 +6,9 @@ order: 4
 updatedAt: 2026-07-01
 ---
 
-
 Real liturgical corpora are large. OLS v1.0 therefore defines a package layout, manifest, and modular references.
 
-
-```json
+```text
 openliturgy-package/
   manifest.ols.json
   schema/
@@ -34,9 +32,7 @@ openliturgy-package/
     invalid/
 ```
 
-        
-### Manifest
-
+## Manifest
 
 ```json
 {
@@ -53,10 +49,7 @@ openliturgy-package/
     "tradition": "eotc",
     "profile": "eotc.v1"
   },
-  "dependencies": [
-    "org.openliturgy.common.bible@1",
-    "org.openliturgy.common.psalter@1"
-  ],
+  "dependencies": ["org.openliturgy.common.bible@1", "org.openliturgy.common.psalter@1"],
   "license": {
     "spec": "Apache-2.0",
     "content": "see-individual-sources"
@@ -64,16 +57,48 @@ openliturgy-package/
 }
 ```
 
-        
-### Package Rules
+## Package Rules
 
-        
-| Rule | Requirement |
-| --- | --- |
-| Manifest | Every distributable package MUST include `manifest.ols.json`. |
-| References | Cross-file references MUST use stable IDs or package-qualified IDs. |
-| Assets | Binary files SHOULD be stored outside JSON and linked by URI. |
-| Content license | MUST be declared per package and MAY be overridden per entity. |
-| Review status | MUST be declared at package level and MAY be overridden per entity. |
+| Rule            | Requirement                                                         |
+| --------------- | ------------------------------------------------------------------- |
+| Manifest        | Every distributable package MUST include `manifest.ols.json`.       |
+| References      | Cross-file references MUST use stable IDs or package-qualified IDs. |
+| Assets          | Binary files SHOULD be stored outside JSON and linked by URI.       |
+| Content license | MUST be declared per package and MAY be overridden per entity.      |
+| Review status   | MUST be declared at package level and MAY be overridden per entity. |
 
+## A Small Referenced Package
 
+The directory layout is a convention for discoverability; references, not folder order, establish relationships. A small service package might contain:
+
+```text
+openliturgy-package/
+  manifest.ols.json
+  roles/
+    deacon.ols.json
+  blocks/
+    kyrie.ols.json
+  sections/
+    entrance.ols.json
+  ordos/
+    kidase.ols.json
+```
+
+The section can refer to the block by a stable ID:
+
+```json
+{
+  "$schema": "https://openliturgy.org/schema/v1.0/section.schema.json",
+  "ols_version": "1.0.0",
+  "type": "section",
+  "id": "sec-entrance",
+  "label": { "en": "Entrance" },
+  "blocks": [{ "$ref": "block-kyrie" }]
+}
+```
+
+Package processors should load the manifest first, resolve declared dependencies, index IDs, and only then resolve cross-file references. This makes failures such as a missing `block-kyrie` deterministic and easy to report.
+
+## Package-Level Defaults
+
+Package metadata can establish a default license or review status, but entity-level metadata can narrow it. An entity must not silently broaden a package restriction. For example, content from a package marked `educational-only` cannot become approved for sacramental use merely because an entity omits its authority object.

@@ -6,9 +6,7 @@ order: 14
 updatedAt: 2026-07-01
 ---
 
-
 An `Utterance` is the atomic unit of liturgical speech: spoken, chanted, sung, whispered, silent, or interior.
-
 
 ```json
 {
@@ -29,10 +27,8 @@ An `Utterance` is the atomic unit of liturgical speech: spoken, chanted, sung, w
 }
 ```
 
-        
-### Mode Values
+## Mode Values
 
-        
 <div className="flex flex-wrap gap-2 my-4">
   <Badge>spoken</Badge>
   <Badge>chanted</Badge>
@@ -44,3 +40,33 @@ An `Utterance` is the atomic unit of liturgical speech: spoken, chanted, sung, w
   <Badge>recited</Badge>
 </div>
 
+## Modeling Responses
+
+An utterance should contain one addressable act of liturgical speech. Put a call and its response in separate utterances, then preserve their order in a block:
+
+```json
+{
+  "id": "block-peace-dialogue",
+  "type": "dialogue",
+  "elements": [
+    {
+      "utterance": {
+        "id": "ut-peace-call",
+        "roles": ["role-priest"],
+        "mode": "spoken",
+        "text": { "en": "Peace be with you." }
+      }
+    },
+    {
+      "utterance": {
+        "id": "ut-peace-response",
+        "roles": ["role-congregation"],
+        "mode": "responsive",
+        "text": { "en": "And with your spirit." }
+      }
+    }
+  ]
+}
+```
+
+Split utterances when the role, delivery mode, audience, or timeline target changes. Do not split only because a translation wraps onto another display line; visual line wrapping is a renderer concern.

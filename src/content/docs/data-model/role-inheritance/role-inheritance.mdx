@@ -6,9 +6,7 @@ order: 13
 updatedAt: 2026-07-01
 ---
 
-
 Liturgical roles are not flat. A bishop may serve in the place of a priest, a senior celebrant may fulfill a lower role, and local practice may allow substitutions.
-
 
 ```json
 {
@@ -28,3 +26,24 @@ Liturgical roles are not flat. A bishop may serve in the place of a priest, a se
 }
 ```
 
+## Resolution Rules
+
+Role substitution is contextual. A consumer should check all of the following before accepting a substitute:
+
+1. The requested role appears in `implements` or `substitutesFor`.
+2. The service or action matches the declared `scope`.
+3. Every `validWhen` authority condition is satisfied.
+4. The active tradition profile permits the substitution.
+
+Substitution is directional: a bishop may implement a priest role, but that does not imply that a priest implements a bishop role. Implementations should reject inheritance cycles and should not infer substitutions from similar labels.
+
+```json
+{
+  "requestedRole": "role-priest",
+  "assignedRole": "role-bishop",
+  "scope": "eucharist",
+  "result": "valid"
+}
+```
+
+The result above illustrates a resolver output, not an additional OLS entity.

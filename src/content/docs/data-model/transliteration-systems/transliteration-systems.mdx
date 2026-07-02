@@ -6,12 +6,9 @@ order: 8
 updatedAt: 2026-07-01
 ---
 
-
 `gez-Latn` is not sufficient by itself. Ge’ez transliteration may be scholarly, phonetic, pedagogical, or parish-specific. OLS v1.0 therefore requires transliteration metadata when Latin-script Ge’ez is used.
 
-        
-### Transliteration Metadata
-
+## Transliteration Metadata
 
 ```json
 {
@@ -33,17 +30,21 @@ updatedAt: 2026-07-01
 }
 ```
 
-        
-### Transliteration Systems
+## Transliteration Systems
 
-        
-| System | Purpose |
-| --- | --- |
-| `scholarly-ies` | Academic transliteration preserving classical distinctions. |
-| `bgn-pcgn` | Standardized romanization where available. |
-| `phonetic-amharic` | Pronunciation-oriented guide for Amharic-speaking readers. |
+| System             | Purpose                                                              |
+| ------------------ | -------------------------------------------------------------------- |
+| `scholarly-ies`    | Academic transliteration preserving classical distinctions.          |
+| `bgn-pcgn`         | Standardized romanization where available.                           |
+| `phonetic-amharic` | Pronunciation-oriented guide for Amharic-speaking readers.           |
 | `phonetic-english` | Pronunciation-oriented guide for English-speaking diaspora learners. |
-| `parish-custom` | Local parish handout style; MUST identify source or reviewer. |
-| `custom` | Requires a declared mapping table. |
+| `parish-custom`    | Local parish handout style; MUST identify source or reviewer.        |
+| `custom`           | Requires a declared mapping table.                                   |
 
+## Publishing a Transliteration
 
+Always identify the source text, target tag, system, purpose, and review status. Two `gez-Latn` values can look similar while following different scholarly or parish conventions; the language tag alone cannot distinguish them.
+
+For a `custom` or `parish-custom` system, publish enough documentation for a reader to interpret the spelling. Include a mapping table or a stable reference to one, note how ambiguous characters are handled, and identify the reviewer.
+
+Do not mark a transliteration `reversible: true` unless every relevant source distinction can be reconstructed. Pronunciation-oriented systems commonly merge distinctions and should normally be treated as non-reversible.

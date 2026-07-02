@@ -6,10 +6,8 @@ order: 37
 updatedAt: 2026-07-01
 ---
 
-
 The Oriental Orthodox layer provides shared modeling categories while preserving each church’s distinct rite, language, music, calendar, and governance.
 
-        
 <div className="flex flex-wrap gap-2 my-4">
   <Badge>apostolic-tradition</Badge>
   <Badge>liturgical-calendar</Badge>
@@ -19,3 +17,16 @@ The Oriental Orthodox layer provides shared modeling categories while preserving
   <Badge>chant</Badge>
 </div>
 
+## Shared Layer Versus Church Profile
+
+The shared layer should contain concepts that retain the same meaning across participating churches. A church profile owns its rite-specific vocabulary, language rules, calendars, music, sacred-space model, and approval process.
+
+| Put in the shared layer                                   | Put in a church profile                   |
+| --------------------------------------------------------- | ----------------------------------------- |
+| Stable IDs and references                                 | Native role titles                        |
+| Localized text containers                                 | Calendar calculations and precedence      |
+| Generic utterance, reading, rubric, and block composition | Chant systems and mode vocabulary         |
+| Source, provenance, and authority structures              | Sanctuary zones and access rules          |
+| Extension namespace mechanism                             | Jurisdiction-specific review requirements |
+
+Similarity is not enough for standardization. When two traditions use related terms with different liturgical consequences, preserve both in their profiles and document the relationship rather than collapsing them.

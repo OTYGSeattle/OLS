@@ -6,9 +6,7 @@ order: 19
 updatedAt: 2026-07-01
 ---
 
-
 Each tradition profile defines its own zones and access rules to accurately model movement.
-
 
 ```json
 {
@@ -25,3 +23,38 @@ Each tradition profile defines its own zones and access rules to accurately mode
 }
 ```
 
+## Refer to Zones by ID
+
+Rubrics and state transitions should use zone IDs, not localized labels. Labels may change by language; the ID is the stable value used for access checks.
+
+```json
+{
+  "id": "rb-deacon-enters-qeddest",
+  "category": "movement",
+  "actors": ["role-deacon"],
+  "from": "qene_mahlet",
+  "to": "qeddest"
+}
+```
+
+Access is profile-specific. A generic OLS consumer may display a movement without understanding every zone, while a profile-aware validator should confirm that each actor is permitted in the destination zone.
+
+Model nested or adjacent spaces only when that distinction changes access, movement, performance, or interpretation. A detailed architectural floor plan is outside the purpose of `sacredSpace` unless its geometry is needed by an application.
+
+## Refer to Zones by ID
+
+Rubrics and state transitions should use zone IDs, not localized labels. Labels may change by language; the ID is the stable value used for access checks.
+
+```json
+{
+  "id": "rb-deacon-enters-qeddest",
+  "category": "movement",
+  "actors": ["role-deacon"],
+  "from": "qene_mahlet",
+  "to": "qeddest"
+}
+```
+
+Access is profile-specific. A generic OLS consumer may display a movement without understanding every zone, while a profile-aware validator should confirm that each actor is permitted in the destination zone.
+
+Model nested or adjacent spaces only when that distinction changes access, movement, performance, or interpretation. A detailed architectural floor plan is outside the purpose of `sacredSpace` unless its geometry is needed by an application.

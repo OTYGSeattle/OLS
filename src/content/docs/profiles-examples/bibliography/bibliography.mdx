@@ -6,15 +6,32 @@ order: 40
 updatedAt: 2026-07-01
 ---
 
-
 OLS content packages SHOULD include their own exact citations. The following are recommended categories and commonly useful resources for building EOTC and Oriental Orthodox teaching material.
 
-        
-| Source | Use |
-| --- | --- |
-| *Mäṣḥafä Qeddase* | Primary source for the Divine Liturgy and anaphoras. |
-| *Deggwa* | Saint Yared’s hymnody and chant tradition. |
-| *Mäṣḥafä Sä‘atat* | Book of Hours and prayer structure. |
-| *Synaxarium of the Ethiopian Church* | Saints, commemorations, and feast teaching. |
+| Source                               | Use                                                  |
+| ------------------------------------ | ---------------------------------------------------- |
+| _Mäṣḥafä Qeddase_                    | Primary source for the Divine Liturgy and anaphoras. |
+| _Deggwa_                             | Saint Yared’s hymnody and chant tradition.           |
+| _Mäṣḥafä Sä‘atat_                    | Book of Hours and prayer structure.                  |
+| _Synaxarium of the Ethiopian Church_ | Saints, commemorations, and feast teaching.          |
 
+## Turn a Recommendation into a Citation
 
+The table above identifies source categories, not complete bibliographic records. Before encoding content, identify the exact edition, language, publisher, year, page or folio, and usage rights.
+
+```json
+{
+  "id": "src-qeddase-edition-page",
+  "type": "printed-book",
+  "title": "Mäṣḥafä Qeddase",
+  "language": "gez",
+  "edition": "verify-exact-edition",
+  "page": "42",
+  "license": "restricted",
+  "notes": {
+    "en": "Replace provisional edition metadata before publication."
+  }
+}
+```
+
+Never cite only a generic work title when multiple editions differ. For manuscripts, record repository, shelfmark, folio, and image rights. For oral and recorded sources, document provenance, consent, and the limits of what the source establishes.

@@ -6,9 +6,7 @@ order: 39
 updatedAt: 2026-07-01
 ---
 
-
 This minimal example shows the core v1.0 pattern: schema header, metadata, authority, roles, reading, block, section, ordo, proper, and teaching note.
-
 
 ```json
 {
@@ -19,8 +17,34 @@ This minimal example shows the core v1.0 pattern: schema header, metadata, autho
   "metadata": {
     "title": { "en": "EOTC Kidase Demo Corpus" }
   },
+  "authority": {
+    "status": "educational-only",
+    "allowedUse": ["education", "private-study"],
+    "restrictedUse": ["altar-use"],
+    "requiresClergyReview": true
+  },
   "roles": [
-    { "id": "role-deacon", "type": "deacon" }
+    {
+      "id": "role-deacon",
+      "type": "deacon",
+      "labels": { "en": "Deacon" }
+    },
+    {
+      "id": "role-congregation",
+      "type": "congregation",
+      "labels": { "en": "Congregation" }
+    }
+  ],
+  "readings": [
+    {
+      "id": "reading-john-1-1-5",
+      "type": "gospel",
+      "role": "role-deacon",
+      "reference": {
+        "system": "osis",
+        "osisRef": "John.1.1-John.1.5"
+      }
+    }
   ],
   "blocks": [
     {
@@ -28,11 +52,94 @@ This minimal example shows the core v1.0 pattern: schema header, metadata, autho
       "type": "response",
       "elements": [
         {
-          "utterance": { "roles": ["role-deacon"], "text": { "en": "Lord, have mercy" } }
+          "utterance": {
+            "id": "ut-kyrie-call",
+            "roles": ["role-deacon"],
+            "mode": "chanted",
+            "text": { "en": "Lord, have mercy." }
+          }
+        },
+        {
+          "utterance": {
+            "id": "ut-kyrie-response",
+            "roles": ["role-congregation"],
+            "mode": "responsive",
+            "text": { "en": "Lord, have mercy." }
+          }
         }
       ]
+    },
+    {
+      "id": "block-gospel",
+      "type": "reading-block",
+      "elements": [{ "$ref": "reading-john-1-1-5" }]
+    }
+  ],
+  "sections": [
+    {
+      "id": "sec-liturgy-of-word",
+      "type": "section",
+      "label": { "en": "Liturgy of the Word" },
+      "blocks": [{ "$ref": "block-kyrie" }, { "$ref": "block-gospel" }]
+    }
+  ],
+  "ordos": [
+    {
+      "id": "ordo-kidase-demo",
+      "type": "eucharist",
+      "tradition": "eotc",
+      "label": { "en": "Kidase Demo" },
+      "sections": [{ "$ref": "sec-liturgy-of-word" }],
+      "properSlots": ["gospel-of-the-day"]
+    }
+  ],
+  "propers": [
+    {
+      "id": "proper-demo-feast",
+      "priority": 10,
+      "priorityClass": "commemoration",
+      "conditions": {
+        "calendarDate": {
+          "system": "gregorian",
+          "month": 1,
+          "day": 1
+        }
+      },
+      "fills": {
+        "gospel-of-the-day": { "$ref": "reading-john-1-1-5" }
+      }
+    }
+  ],
+  "teachingNotes": [
+    {
+      "id": "teaching-kyrie",
+      "target": "block-kyrie",
+      "teaching": {
+        "summary": {
+          "en": "This response asks for God’s mercy."
+        },
+        "bibleLinks": ["Heb.4.16"],
+        "ageLevel": "general"
+      }
     }
   ]
 }
 ```
 
+## How the References Connect
+
+The corpus uses IDs to form one directed graph:
+
+```text
+ordo-kidase-demo
+  -> sec-liturgy-of-word
+     -> block-kyrie
+     -> block-gospel
+        -> reading-john-1-1-5
+
+proper-demo-feast
+  -> gospel-of-the-day
+     -> reading-john-1-1-5
+```
+
+The proper reuses the reading instead of copying it. The teaching note targets the block but remains separate from performable content. Before publishing this illustrative corpus, add complete citations, provenance, people or organizations for review, and profile-specific metadata required by the intended use.

@@ -6,9 +6,7 @@ order: 20
 updatedAt: 2026-07-01
 ---
 
-
 Rubrics act as state transitions for validating performative continuity.
-
 
 ```json
 {
@@ -23,3 +21,32 @@ Rubrics act as state transitions for validating performative continuity.
 }
 ```
 
+## Replay and Diagnose
+
+A state-aware validator replays rubrics in liturgical order. For each transition, it checks `requires`, reports unmet preconditions, and applies `sets` only after the transition succeeds.
+
+```text
+initial: role-deacon.zone = qene_mahlet
+rubric:  rb-deacon-enters-qeddest
+check:   requires qene_mahlet -> satisfied
+result:  role-deacon.zone = qeddest
+```
+
+State keys should identify both the subject and property, such as `role-deacon.zone` or `gospel-book.carriedBy`. Profiles may define additional state vocabulary, but they should document initial values and allowed transitions so two validators reach the same result.
+
+An unmet precondition is more useful than a generic invalid-rubric error. Diagnostics should name the rubric, expected state, observed state, and position in the resolved service.
+
+## Replay and Diagnose
+
+A state-aware validator replays rubrics in liturgical order. For each transition, it checks `requires`, reports unmet preconditions, and applies `sets` only after the transition succeeds.
+
+```text
+initial: role-deacon.zone = qene_mahlet
+rubric:  rb-deacon-enters-qeddest
+check:   requires qene_mahlet -> satisfied
+result:  role-deacon.zone = qeddest
+```
+
+State keys should identify both the subject and property, such as `role-deacon.zone` or `gospel-book.carriedBy`. Profiles may define additional state vocabulary, but they should document initial values and allowed transitions so two validators reach the same result.
+
+An unmet precondition is more useful than a generic invalid-rubric error. Diagnostics should name the rubric, expected state, observed state, and position in the resolved service.

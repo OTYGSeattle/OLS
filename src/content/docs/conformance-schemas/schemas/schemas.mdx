@@ -6,9 +6,7 @@ order: 33
 updatedAt: 2026-07-01
 ---
 
-
 OLS v1.0 is validatable. Every file must declare a schema, version, and type.
-
 
 ```json
 {
@@ -18,3 +16,26 @@ OLS v1.0 is validatable. Every file must declare a schema, version, and type.
 }
 ```
 
+## Validation Layers
+
+Validation should happen in a predictable order:
+
+1. Parse JSON and reject malformed syntax.
+2. Select the schema declared by `$schema`.
+3. Validate required fields and value shapes.
+4. Verify that `ols_version` is supported and `type` matches the schema.
+5. Resolve IDs and references across the package.
+6. Apply active profile constraints, authority rules, and deterministic behavior checks.
+
+JSON Schema catches structural errors, but it cannot by itself prove that a reference exists, a calendar tie is resolved, a rubric transition is possible, or content has ecclesial approval.
+
+```json
+{
+  "$schema": "https://openliturgy.org/schema/v1.0/reading.schema.json",
+  "ols_version": "1.0.0",
+  "type": "reading",
+  "id": "reading-john-1-1-17"
+}
+```
+
+Use the schema for the actual file type. A manifest, reading, section, and complete corpus should not all claim `corpus.schema.json` merely because they are distributed together.

@@ -6,9 +6,7 @@ order: 27
 updatedAt: 2026-07-01
 ---
 
-
 Calendar resolution must be deterministic. OLS v1.0 MUST NOT rely on JSON object key order or file-loading order to resolve liturgical conflicts.
-
 
 ```json
 {
@@ -22,3 +20,24 @@ Calendar resolution must be deterministic. OLS v1.0 MUST NOT rely on JSON object
 }
 ```
 
+## Resolution Order
+
+For the same package set, profile, and date, every conforming resolver should produce the same ordered result:
+
+1. Calculate the liturgical date and season.
+2. Collect every feast, fast, commemoration, and lectionary rule whose conditions match.
+3. Apply explicit `overrides` rules.
+4. Compare remaining candidates by `priorityClass` and numeric priority.
+5. Apply the profile’s canonical fallback for any unresolved tie.
+6. Record winners, suppressed candidates, and the rule used for each decision.
+
+```json
+{
+  "slot": "gospel-of-the-day",
+  "winner": "proper-timkat",
+  "suppressed": ["proper-wednesday-fast"],
+  "rule": "cr-timkat-overrides-weekday-fast"
+}
+```
+
+The result above is an explanatory resolution trace. Keeping a trace makes calendar behavior testable and prevents a UI from hiding unresolved conflicts.

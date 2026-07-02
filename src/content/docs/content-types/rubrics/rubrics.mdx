@@ -6,9 +6,7 @@ order: 18
 updatedAt: 2026-07-01
 ---
 
-
 A `Rubric` encodes what is done, by whom, where, with what force, and under what conditions.
-
 
 ```json
 {
@@ -27,10 +25,8 @@ A `Rubric` encodes what is done, by whom, where, with what force, and under what
 }
 ```
 
-        
-### Rubric Categories
+## Rubric Categories
 
-        
 <div className="flex flex-wrap gap-2 my-4">
   <Badge>action</Badge>
   <Badge>posture</Badge>
@@ -41,3 +37,16 @@ A `Rubric` encodes what is done, by whom, where, with what force, and under what
   <Badge>permission</Badge>
 </div>
 
+## Separate Instructions from Speech
+
+Use a rubric for an action or instruction and an utterance for words that are performed. For “The deacon raises the Gospel book and says, ‘Wisdom,’” encode two ordered elements: a rubric for raising the object and an utterance for the spoken word.
+
+Choose `force` carefully:
+
+| Force         | Consumer behavior                                          |
+| ------------- | ---------------------------------------------------------- |
+| `required`    | Treat omission as a validation or execution error.         |
+| `recommended` | Preserve by default; allow an explained local exception.   |
+| `optional`    | Present as an available action without assuming execution. |
+
+Conditions should be machine-readable and use vocabulary defined by the core schema or active profile. Free-form prose can explain a condition, but it cannot be the only representation when deterministic service resolution depends on it.

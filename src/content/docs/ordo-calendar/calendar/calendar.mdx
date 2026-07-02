@@ -6,9 +6,7 @@ order: 26
 updatedAt: 2026-07-01
 ---
 
-
 The calendar model must resolve a complete `LiturgicalDay`: date, season, feast, fast, commemorations, readings, propers, and conflicts.
-
 
 ```json
 {
@@ -16,12 +14,27 @@ The calendar model must resolve a complete `LiturgicalDay`: date, season, feast,
   "system": "ethiopian",
   "epoch": "amete-mihret",
   "monthCount": 13,
-  "supports": [
-    "fixed-feasts",
-    "movable-feasts",
-    "fasting-periods",
-    "lectionary"
-  ]
+  "supports": ["fixed-feasts", "movable-feasts", "fasting-periods", "lectionary"]
 }
 ```
 
+## Resolution Input and Output
+
+A calendar definition is not itself a resolved day. Given a civil or liturgical date, a calendar engine produces a `LiturgicalDay` containing the applicable season, observances, fast, readings, and propers.
+
+```json
+{
+  "date": {
+    "gregorian": "2026-01-19",
+    "ethiopian": { "year": 2018, "month": 5, "day": 11 }
+  },
+  "season": "timkat",
+  "feasts": ["timkat"],
+  "activePropers": ["proper-timkat"],
+  "conflicts": []
+}
+```
+
+The example is a resolution result, not a replacement for the calendar definition. Implementations should retain the input date system and the rules or profile version used to calculate the result so it can be reproduced later.
+
+Calendar arithmetic, feast activation, and proper conflict resolution are separate stages. A valid date conversion does not by itself prove that the correct proper won.

@@ -6,9 +6,7 @@ order: 21
 updatedAt: 2026-07-01
 ---
 
-
 A `Block` is a reusable unit. It can contain utterances, readings, rubrics, line groups, references, and teaching notes.
-
 
 ```json
 {
@@ -26,3 +24,27 @@ A `Block` is a reusable unit. It can contain utterances, readings, rubrics, line
 }
 ```
 
+## Inline or Referenced Elements
+
+Inline an element when it is private to one block. Reference it when it is reused, independently reviewed, or targeted by a proper or timeline entry.
+
+```json
+{
+  "id": "block-liturgy-of-word-opening",
+  "type": "sequence",
+  "label": { "en": "Opening of the Liturgy of the Word" },
+  "elements": [
+    { "$ref": "rb-gospel-procession" },
+    { "$ref": "reading-john-1-1-17" },
+    {
+      "utterance": {
+        "roles": ["role-congregation"],
+        "mode": "responsive",
+        "text": { "en": "Glory to you, O Lord." }
+      }
+    }
+  ]
+}
+```
+
+Element order is liturgical order. A renderer may group or style elements, but it must not reorder them based on JSON type, role, or visual layout.

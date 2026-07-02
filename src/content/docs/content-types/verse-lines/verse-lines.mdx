@@ -6,9 +6,7 @@ order: 22
 updatedAt: 2026-07-01
 ---
 
-
 OLS v1.0 supports fine-grained verse structure for Psalms, Deggwa hymns, and antiphonal performance.
-
 
 ```json
 {
@@ -31,3 +29,10 @@ OLS v1.0 supports fine-grained verse structure for Psalms, Deggwa hymns, and ant
 }
 ```
 
+## Preserve Literary Structure
+
+Use verse and hemistich structure when line identity affects chanting, antiphony, citation, or comparison. Ordinary prose that merely wraps across lines should remain a single utterance.
+
+Line numbers are identifiers within the containing work, not array indexes. Keep them stable when adding a translation or changing typography. If two languages divide a phrase differently, preserve each language’s literary structure and record explicit alignment rather than forcing identical line breaks.
+
+For antiphonal text, assign roles to each line as shown above. Assign a role to the containing group only when every line is genuinely performed by the same role.

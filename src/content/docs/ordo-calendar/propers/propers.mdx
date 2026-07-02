@@ -6,9 +6,7 @@ order: 24
 updatedAt: 2026-07-01
 ---
 
-
 The ordinary is fixed service structure. The propers vary by day, feast, season, commemoration, or local usage.
-
 
 ```json
 {
@@ -28,3 +26,38 @@ The ordinary is fixed service structure. The propers vary by day, feast, season,
 }
 ```
 
+## Slot Filling
+
+The Ordo declares available slot IDs; a proper supplies content for those IDs. A processor should report a proper that fills an unknown slot instead of silently appending its content.
+
+```json
+{
+  "id": "proper-timkat",
+  "fills": {
+    "psalm-of-the-day": { "$ref": "block-timkat-psalm" },
+    "gospel-of-the-day": { "$ref": "reading-timkat-gospel" }
+  }
+}
+```
+
+A slot fill changes variable content without changing the surrounding service structure. When content must be inserted, omitted, moved, or replaced outside a slot, use a structural proper mutation.
+
+Priority is only one part of resolution. `priorityClass`, explicit conflict rules, and canonical fallback rules must agree on which active proper wins when two propers claim the same slot.
+
+## Slot Filling
+
+The Ordo declares available slot IDs; a proper supplies content for those IDs. A processor should report a proper that fills an unknown slot instead of silently appending its content.
+
+```json
+{
+  "id": "proper-timkat",
+  "fills": {
+    "psalm-of-the-day": { "$ref": "block-timkat-psalm" },
+    "gospel-of-the-day": { "$ref": "reading-timkat-gospel" }
+  }
+}
+```
+
+A slot fill changes variable content without changing the surrounding service structure. When content must be inserted, omitted, moved, or replaced outside a slot, use a structural proper mutation.
+
+Priority is only one part of resolution. `priorityClass`, explicit conflict rules, and canonical fallback rules must agree on which active proper wins when two propers claim the same slot.

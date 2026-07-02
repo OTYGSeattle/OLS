@@ -6,12 +6,9 @@ order: 12
 updatedAt: 2026-07-01
 ---
 
-
 A `Role` is a liturgical function. A `RoleGroup` is an addressable ensemble such as clergy, choir, congregation, or all present.
 
-        
-### Role
-
+## Role
 
 ```json
 {
@@ -36,19 +33,41 @@ A `Role` is a liturgical function. A `RoleGroup` is an addressable ensemble such
 }
 ```
 
-        
-### Core Role Types
+## Core Role Types
 
-        
-| Type | Meaning | Examples |
-| --- | --- | --- |
-| `bishop` | Presiding hierarch. | Abune, bishop. |
-| `celebrant` | Presiding priest. | Priest serving Kidase. |
-| `concelebrant` | Additional priest. | Priests serving together. |
-| `deacon` | Deacon or liturgical assistant. | Deacon reading Gospel or assisting. |
-| `cantor` | Chanter or trained singer. | Debtera, merigeta. |
-| `choir` | Collective singers. | Mahlet choir. |
-| `reader` | Scripture or text reader. | Epistle reader. |
-| `congregation` | Faithful assembly. | All present faithful. |
+| Type           | Meaning                         | Examples                            |
+| -------------- | ------------------------------- | ----------------------------------- |
+| `bishop`       | Presiding hierarch.             | Abune, bishop.                      |
+| `celebrant`    | Presiding priest.               | Priest serving Kidase.              |
+| `concelebrant` | Additional priest.              | Priests serving together.           |
+| `deacon`       | Deacon or liturgical assistant. | Deacon reading Gospel or assisting. |
+| `cantor`       | Chanter or trained singer.      | Debtera, merigeta.                  |
+| `choir`        | Collective singers.             | Mahlet choir.                       |
+| `reader`       | Scripture or text reader.       | Epistle reader.                     |
+| `congregation` | Faithful assembly.              | All present faithful.               |
 
+## RoleGroup
 
+Use a `RoleGroup` when one instruction or utterance addresses a stable ensemble. Do not create a group merely to replace a single role.
+
+```json
+{
+  "id": "role-group-clergy",
+  "type": "role-group",
+  "labels": { "en": "Clergy" },
+  "members": ["role-priest", "role-deacon"]
+}
+```
+
+A block can then address the group without repeating its membership:
+
+```json
+{
+  "id": "ut-clergy-response",
+  "roles": ["role-group-clergy"],
+  "mode": "chanted",
+  "text": { "en": "Amen" }
+}
+```
+
+Role IDs describe liturgical functions, not people. Bind a person to a role in `ServiceInstance`; this keeps reusable service content free of personal data.

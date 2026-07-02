@@ -6,9 +6,7 @@ order: 28
 updatedAt: 2026-07-01
 ---
 
-
 A `ServiceInstance` records a real or planned service. It references the Ordo and records what happened.
-
 
 ```json
 {
@@ -29,3 +27,24 @@ A `ServiceInstance` records a real or planned service. It references the Ordo an
 }
 ```
 
+## Plan Versus Record
+
+A planned instance states what is expected; a completed instance records what occurred. Preserve that distinction with status and timeline data instead of overwriting the plan after the service.
+
+```json
+{
+  "id": "si-2026-01-19-timkat-seattle",
+  "type": "service-instance",
+  "ordo": "ordo-kidase",
+  "activePropers": ["proper-timkat"],
+  "privacy": {
+    "visibility": "private-parish",
+    "anonymizeParticipants": true,
+    "publicRelease": false
+  }
+}
+```
+
+`cast` binds people to roles for this occurrence only. Reusable blocks and sections should continue to reference roles, never the people assigned on one date.
+
+Before publishing a service record, evaluate participant consent, asset licenses, retention policy, and authority restrictions. Removing display names is not sufficient anonymization when timestamps, locations, or media still identify participants.
